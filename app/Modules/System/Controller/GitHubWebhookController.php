@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\System\Controller;
 
-use App\Core\Config;
 use App\Core\GitClient;
 use App\Core\Logger;
 use App\Core\Request;
@@ -20,47 +19,47 @@ final class GitHubWebhookController
             return Response::text('Webhook unavailable.', 503, ['Cache-Control' => 'no-store']);
         }
 
-        $payload = file_get_contents('php://input');
-        if ($payload === false) {
-            return Response::text('Invalid payload.', 400, ['Cache-Control' => 'no-store']);
-        }
-
+        $payload = $request->rawBody();
         $signature = trim((string) ($_SERVER['HTTP_X_HUB_SIGNATURE_256'] ?? ''));
         $expected = 'sha256=' . hash_hmac('sha256', $payload, $secret);
-        if ($signature === '' || !hash_equals($expected, $signature)) {
+        if ($payload === '' || $signature === '' || !hash_equals($expected, $signature)) {
             Logger::security('GitHub webhook signature verification failed.', ['ip' => $request->ip()]);
             return Response::text('Invalid signature.', 401, ['Cache-Control' => 'no-store']);
         }
 
         $event = trim((string) ($_SERVER['HTTP_X_GITHUB_EVENT'] ?? ''));
+        $data = json_decode($payload, true);
+        if (!is_array($data)) {
+            return Response::text('Invalid payload.', 400, ['Cache-Control' => 'no-store']);
+        }
+
+        $configuredRepo = trim((string) ($_ENV['GIT_GITHUB_REPO'] ?? ''));
+        $targetBranch = trim((string) ($_ENV['GIT_DEPLOY_BRANCH'] ?? 'main'));
+        $repository = trim((string) ($data['repository']['full_name'] ?? ''));
+        if ($configuredRepo === '' || $repository !== $configuredRepo) {
+            Logger::security('GitHub webhook repository mismatch.', ['repo' => $repository]);
+            return Response::text('Invalid webhook repository.', 403, ['Cache-Control' => 'no-store']);
+        }
+
         if ($event === 'ping') {
-            return Response::json(['ok' => true, 'event' => 'ping'], 200);
+            return Response::json(['ok' => true, 'event' => 'ping']);
         }
 
         if ($event !== 'push') {
             return Response::json(['ok' => true, 'ignored' => true], 202);
         }
 
-        $repo = trim((string) ($_ENV['GIT_GITHUB_REPO'] ?? ''));
-        $targetBranch = trim((string) ($_ENV['GIT_DEPLOY_BRANCH'] ?? 'main'));
-        $autoPull = filter_var($_ENV['GIT_AUTO_PULL'] ?? false, FILTER_VALIDATE_BOOLEAN);
-        $payloadData = json_decode($payload, true);
-
-        if ($repo === '' || !is_array($payloadData)) {
-            Logger::warning('GitHub push webhook rejected: repository configuration or payload invalid.');
-            return Response::text('Invalid webhook configuration.', 400, ['Cache-Control' => 'no-store']);
-        }
-
-        $ref = (string) ($payloadData['ref'] ?? '');
+        $ref = (string) ($data['ref'] ?? '');
         if ($ref !== 'refs/heads/' . $targetBranch) {
             return Response::json(['ok' => true, 'ignored' => true, 'reason' => 'branch'], 202);
         }
 
-        if (!$autoPull) {
+        if (!filter_var($_ENV['GIT_AUTO_PULL'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
             return Response::json(['ok' => true, 'pulled' => false], 202);
         }
 
-        $workingDirectory = dirname(__DIR__, 3);
+        // Four levels above Controller reaches the repository root.
+        $workingDirectory = dirname(__DIR__, 4);
         $git = new GitClient($workingDirectory);
         $status = $git->status();
         if (!$status['clean']) {
@@ -70,9 +69,8 @@ final class GitHubWebhookController
 
         $git->fetch();
         $git->pullFastForwardOnly('origin', $targetBranch);
+        Logger::info('GitHub auto-pull completed.', ['repo' => $repository, 'branch' => $targetBranch]);
 
-        Logger::info('GitHub auto-pull completed.', ['repo' => $repo, 'branch' => $targetBranch]);
-
-        return Response::json(['ok' => true, 'pulled' => true], 200);
+        return Response::json(['ok' => true, 'pulled' => true]);
     }
 }
