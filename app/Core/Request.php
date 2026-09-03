@@ -9,6 +9,7 @@ final class Request
     private array $routeParams = [];
     private array $body;
     private array $query;
+    private string $rawBody = '';
 
     public function __construct()
     {
@@ -16,7 +17,9 @@ final class Request
 
         $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
         if (str_contains($contentType, 'application/json')) {
-            $this->body = json_decode(file_get_contents('php://input'), true) ?? [];
+            $this->rawBody = (string) file_get_contents('php://input');
+            $decoded = json_decode($this->rawBody, true);
+            $this->body = is_array($decoded) ? $decoded : [];
         } else {
             $this->body = $_POST;
         }
@@ -111,5 +114,10 @@ final class Request
         $header = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
 
         return str_starts_with($header, 'Bearer ') ? substr($header, 7) : null;
+    }
+
+    public function rawBody(): string
+    {
+        return $this->rawBody;
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Cms\Controller;
 
 use App\Core\BaseController;
+use App\Core\Config;
 use App\Core\Request;
 use App\Core\Response;
 use App\Core\Session;
@@ -49,10 +50,7 @@ final class PublicSiteController extends BaseController
     public function page(Request $request): Response
     {
         $page = $this->pages->findBySlug((string) $request->param('slug'));
-
-        if (!$page) {
-            return $this->view('public.404', [], 404);
-        }
+        if (!$page) return $this->view('public.404', [], 404);
 
         return $this->view('public.page', [
             'page' => $page,
@@ -66,7 +64,6 @@ final class PublicSiteController extends BaseController
     {
         $page = max(1, (int) $request->input('page', 1));
         $categorySlug = $request->input('category');
-
         return $this->view('public.blog-index', [
             'posts' => $this->posts->paginatePublished($page, 9, $categorySlug ?: null),
             'categories' => $this->categories->allActive(),
@@ -79,11 +76,7 @@ final class PublicSiteController extends BaseController
     public function blogShow(Request $request): Response
     {
         $post = $this->posts->findBySlug((string) $request->param('slug'));
-
-        if (!$post) {
-            return $this->view('public.404', [], 404);
-        }
-
+        if (!$post) return $this->view('public.404', [], 404);
         return $this->view('public.blog-show', ['post' => $post]);
     }
 
@@ -102,10 +95,7 @@ final class PublicSiteController extends BaseController
     public function serviceShow(Request $request): Response
     {
         $service = $this->services->findBySlug((string) $request->param('slug'));
-
-        if (!$service) {
-            return $this->view('public.404', [], 404);
-        }
+        if (!$service) return $this->view('public.404', [], 404);
 
         $all = $this->services->allPublished();
         $relatedIds = json_decode((string)($service['related_service_ids'] ?? '[]'), true);
@@ -121,10 +111,9 @@ final class PublicSiteController extends BaseController
 
     public function robotsTxt(Request $request): Response
     {
-        $baseUrl = rtrim(\App\Core\Config::get('app.url'), '/');
-        $adminPath = \App\Core\Config::get('admin.path', '/admin');
-        $loginPath = \App\Core\Config::get('auth.login_path', '/login');
-
+        $baseUrl = rtrim(Config::get('app.url'), '/');
+        $adminPath = Config::get('admin.path', '/admin');
+        $loginPath = Config::get('auth.login_path', '/login');
         $lines = [
             'User-agent: *',
             'Allow: /',
@@ -132,17 +121,21 @@ final class PublicSiteController extends BaseController
             "Disallow: {$loginPath}",
             'Disallow: /register',
             'Disallow: /dashboard',
+            'Disallow: /account/',
+            'Disallow: /quote/',
+            'Disallow: /request/',
+            'Disallow: /review/',
+            'Disallow: /receipt/',
+            'Disallow: /get-help/thanks',
             '',
             "Sitemap: {$baseUrl}/sitemap.xml",
         ];
-
         return Response::text(implode("\n", $lines), 200);
     }
 
     public function sitemapXml(Request $request): Response
     {
-        $baseUrl = rtrim(\App\Core\Config::get('app.url'), '/');
-
+        $baseUrl = rtrim(Config::get('app.url'), '/');
         $urls = [
             ['loc' => $baseUrl . '/', 'priority' => '1.0'],
             ['loc' => $baseUrl . '/services', 'priority' => '0.9'],
@@ -154,40 +147,42 @@ final class PublicSiteController extends BaseController
         ];
 
         foreach ($this->pages->allForAdmin() as $page) {
-            if ($page['status'] === 'published' && empty($page['noindex'])) {
-                $urls[] = ['loc' => $baseUrl . '/' . $page['slug'], 'lastmod' => $page['updated_at'], 'priority' => '0.6'];
+            if (($page['status'] ?? null) === 'published' && empty($page['noindex'])) {
+                $urls[] = ['loc' => $baseUrl . '/' . ltrim((string)$page['slug'], '/'), 'lastmod' => $page['updated_at'], 'priority' => '0.6'];
             }
         }
-
         foreach ($this->services->allPublished() as $service) {
-            $urls[] = ['loc' => $baseUrl . '/services/' . $service['slug'], 'lastmod' => $service['updated_at'], 'priority' => '0.8'];
+            $urls[] = ['loc' => $baseUrl . '/services/' . ltrim((string)$service['slug'], '/'), 'lastmod' => $service['updated_at'], 'priority' => '0.8'];
         }
-
         foreach ($this->projects->allPublished() as $project) {
-            $urls[] = ['loc' => $baseUrl . '/projects/' . $project['slug'], 'lastmod' => $project['updated_at'], 'priority' => '0.8'];
+            $urls[] = ['loc' => $baseUrl . '/projects/' . ltrim((string)$project['slug'], '/'), 'lastmod' => $project['updated_at'], 'priority' => '0.8'];
         }
-
         foreach ($this->posts->allForAdmin() as $post) {
             if (($post['status'] ?? null) === 'published') {
-                $urls[] = ['loc' => $baseUrl . '/blog/' . $post['slug'], 'lastmod' => $post['updated_at'] ?? $post['created_at'], 'priority' => '0.6'];
+                $urls[] = ['loc' => $baseUrl . '/blog/' . ltrim((string)$post['slug'], '/'), 'lastmod' => $post['updated_at'] ?? $post['created_at'], 'priority' => '0.6'];
             }
         }
+
+        // Deduplicate canonical locations so a high-intent job has exactly one
+        // sitemap entry; parameterized/token URLs are never added here.
+        $seen = [];
+        $urls = array_values(array_filter($urls, static function (array $url) use (&$seen): bool {
+            $loc = rtrim((string)$url['loc'], '/') ?: '/';
+            if (isset($seen[$loc])) return false;
+            $seen[$loc] = true;
+            return true;
+        }));
 
         $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
-
         foreach ($urls as $url) {
-            $xml .= '  <url>' . "\n";
-            $xml .= '    <loc>' . htmlspecialchars($url['loc'], ENT_XML1) . '</loc>' . "\n";
-            if (!empty($url['lastmod'])) {
-                $xml .= '    <lastmod>' . date('Y-m-d', strtotime($url['lastmod'])) . '</lastmod>' . "\n";
-            }
-            $xml .= '    <priority>' . $url['priority'] . '</priority>' . "\n";
-            $xml .= '  </url>' . "\n";
+            $xml .= "  <url>\n";
+            $xml .= '    <loc>' . htmlspecialchars($url['loc'], ENT_XML1) . "</loc>\n";
+            if (!empty($url['lastmod'])) $xml .= '    <lastmod>' . date('Y-m-d', strtotime((string)$url['lastmod'])) . "</lastmod>\n";
+            $xml .= '    <priority>' . e((string)$url['priority']) . "</priority>\n";
+            $xml .= "  </url>\n";
         }
-
         $xml .= '</urlset>';
-
         return Response::html($xml, 200, ['Content-Type' => 'application/xml; charset=UTF-8']);
     }
 
@@ -218,24 +213,18 @@ final class PublicSiteController extends BaseController
 
     public function contactPage(Request $request): Response
     {
-        return $this->view('public.contact', [
-            'page' => $this->pages->findBySlug('contact'),
-        ]);
+        return $this->view('public.contact', ['page' => $this->pages->findBySlug('contact')]);
     }
 
     public function contactSubmit(Request $request): Response
     {
         $result = $this->contactService->submit($request->all(), $request->ip());
-
         if (!$result['success']) {
             Session::flash('_errors', $result['errors']);
             Session::flash('_old', $request->only(['name', 'email', 'phone', 'subject', 'message']));
-
             return $this->back();
         }
-
         Session::flash('_success', "Thanks for reaching out — we'll get back to you shortly.");
-
         return $this->redirect('/contact');
     }
 }
