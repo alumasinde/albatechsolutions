@@ -4,17 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="csrf-token" content="<?= e(\App\Core\Helpers\Csrf::token()) ?>">
-    <meta name="theme-color" content="<?= e(setting('theme_color_primary', '#0f766e')) ?>">
+    <meta name="theme-color" content="<?= e(setting('theme_color_primary', '#078a9a')) ?>">
     <title><?= e($title ?? setting('site_name', 'AlbaTech Solutions')) ?></title>
 
-    <?php if (isset($metaDescription) || isset($jsonLd)): ?>
+    <?php
+    $requestPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+    $privatePath = $requestPath === '/get-help/thanks'
+        || $requestPath === '/login'
+        || str_starts_with($requestPath, '/login/')
+        || $requestPath === '/register'
+        || $requestPath === '/forgot-password'
+        || str_starts_with($requestPath, '/reset-password')
+        || str_starts_with($requestPath, '/verify-email')
+        || $requestPath === '/dashboard'
+        || str_starts_with($requestPath, '/account')
+        || str_starts_with($requestPath, '/admin')
+        || str_starts_with($requestPath, '/quote/')
+        || str_starts_with($requestPath, '/request/')
+        || str_starts_with($requestPath, '/review/')
+        || str_starts_with($requestPath, '/receipt/');
+    $resolvedRobots = $privatePath ? 'noindex, nofollow' : ($robots ?? 'index, follow');
+    ?>
+
+    <?php if (isset($metaDescription) || isset($jsonLd) || $privatePath): ?>
         <?php
-        // Public-facing page — full SEO head: meta description,
-        // canonical, Open Graph, Twitter Card, and JSON-LD. Every
-        // page also gets Organization + WebSite schema so search
-        // engines/LLMs can confidently attribute content to the site,
-        // in addition to any page-specific schema (Service, Article,
-        // FAQPage, BreadcrumbList) the view supplies via $jsonLd.
         $allJsonLd = array_merge(
             [\App\Core\Seo::organization(), \App\Core\Seo::website()],
             $jsonLd ?? []
@@ -26,11 +39,10 @@
             $ogImage ?? null,
             $ogType ?? 'website',
             $allJsonLd,
-            $robots ?? null
+            $resolvedRobots
         );
         ?>
     <?php else: ?>
-        <!-- Admin/account pages are not meant for search engines. -->
         <meta name="robots" content="noindex, nofollow">
     <?php endif; ?>
 
@@ -41,15 +53,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="<?= asset('css/v4/production.css') ?>">
     <style>
-        /* Theme tokens rendered from DB settings — admin panel changes
-           these without touching code or CSS files. */
         :root {
-            --color-primary: <?= e(setting('theme_color_primary', '#0f766e')) ?>;
-            --color-secondary: <?= e(setting('theme_color_secondary', '#1e293b')) ?>;
-            --color-accent: <?= e(setting('theme_color_accent', '#f59e0b')) ?>;
+            --color-primary: <?= e(setting('theme_color_primary', '#078a9a')) ?>;
+            --color-secondary: <?= e(setting('theme_color_secondary', '#075e68')) ?>;
+            --color-accent: <?= e(setting('theme_color_accent', '#f2b84b')) ?>;
             --color-background: <?= e(setting('theme_color_background', '#f8fafc')) ?>;
             --font-family: <?= e(setting('theme_font_family', "'Inter', sans-serif")) ?>;
-            --radius-base: <?= e(setting('theme_radius', '10px')) ?>;
+            --radius-base: <?= e(setting('theme_radius', '12px')) ?>;
         }
     </style>
     <?php if (isset($extraHead)) echo $extraHead; ?>
@@ -62,8 +72,8 @@
         <?= $content ?? '' ?>
     </div>
 
-   <script src="<?= asset('js/v4/app.js') ?>" defer></script>
-<script src="<?= asset('js/v4/theme.js') ?>" defer></script>
+    <script src="<?= asset('js/v4/app.js') ?>" defer></script>
+    <script src="<?= asset('js/v4/theme.js') ?>" defer></script>
     <?php if (isset($metaDescription)): ?>
         <script src="<?= asset('js/v4/growth-analytics.js') ?>" defer></script>
     <?php endif; ?>
@@ -71,9 +81,9 @@
     <?php if (setting('whatsapp_number')): ?>
         <div class="mobile-cta-bar" aria-label="Quick contact actions">
             <a href="/get-help" class="mobile-cta-bar__quote">Get Assistance</a>
-          <a href="<?= e(whatsapp_url('Hi AlbaTech Solutions, I would like to speak with someone about what I need help with.')) ?>" target="_blank" rel="noopener noreferrer" class="mobile-cta-bar__whatsapp js-whatsapp" data-whatsapp-number="<?= e(preg_replace('/\D+/', '', (string) setting('whatsapp_number'))) ?>">
+            <a href="<?= e(whatsapp_url('Hi AlbaTech Solutions, I would like to speak with someone about what I need help with.')) ?>" target="_blank" rel="noopener noreferrer" class="mobile-cta-bar__whatsapp js-whatsapp" data-whatsapp-number="<?= e(preg_replace('/\D+/', '', (string) setting('whatsapp_number'))) ?>">
                 <i class="fa-brands fa-whatsapp" aria-hidden="true"></i> WhatsApp
-		</a>  
+            </a>
         </div>
     <?php endif; ?>
 </body>
