@@ -10,9 +10,8 @@ use App\Core\Request;
 use App\Core\Response;
 
 /**
- * Rate-limit bearer-token routes by both the source IP and the bearer token.
- * Only the long opaque route token is used as a key; short human references
- * such as AT-HLP-* are never authorization credentials.
+ * Rate-limit bearer-token routes by both the source IP and bearer token.
+ * Short human references such as AT-HLP-* are never authorization keys.
  */
 final class TokenRateLimitMiddleware implements MiddlewareInterface
 {
@@ -20,14 +19,14 @@ final class TokenRateLimitMiddleware implements MiddlewareInterface
     {
         $bucket = $param ?: 'token';
         $token = trim((string) $request->param('token'));
-        if ($token === '' || strlen($token) < 32) {
+        if (!preg_match('/^[a-f0-9]{48}$/', $token)) {
             return Response::text('Not found', 404);
         }
 
-        $ipKey = $bucket . ':ip:' . $request->ip();
-        $tokenKey = $bucket . ':token:' . hash('sha256', $token);
         $maxAttempts = max(5, (int) ($_ENV['TOKEN_RATE_LIMIT_MAX_ATTEMPTS'] ?? 30));
         $decayMinutes = max(1, (int) ($_ENV['TOKEN_RATE_LIMIT_DECAY_MINUTES'] ?? 1));
+        $ipKey = $bucket . ':ip:' . $request->ip();
+        $tokenKey = $bucket . ':token:' . hash('sha256', $token);
 
         if (!$this->consume($ipKey, $maxAttempts, $decayMinutes) || !$this->consume($tokenKey, $maxAttempts, $decayMinutes)) {
             Logger::security('Bearer token route rate limit exceeded.', ['bucket' => $bucket, 'ip' => $request->ip()]);
@@ -45,21 +44,17 @@ final class TokenRateLimitMiddleware implements MiddlewareInterface
         $row = $stmt->fetch();
 
         if (!$row) {
-            $pdo->prepare('INSERT INTO rate_limits (`key`, attempts, window_started_at) VALUES (:key, 1, NOW())')
-                ->execute(['key' => $key]);
+            $pdo->prepare('INSERT INTO rate_limits (`key`, attempts, window_started_at) VALUES (:key, 1, NOW())')->execute(['key' => $key]);
             return true;
         }
 
         if (time() - strtotime((string) $row['window_started_at']) > ($decayMinutes * 60)) {
-            $pdo->prepare('UPDATE rate_limits SET attempts = 1, window_started_at = NOW() WHERE `key` = :key')
-                ->execute(['key' => $key]);
+            $pdo->prepare('UPDATE rate_limits SET attempts = 1, window_started_at = NOW() WHERE `key` = :key')->execute(['key' => $key]);
             return true;
         }
 
         if ((int) $row['attempts'] >= $maxAttempts) return false;
-
-        $pdo->prepare('UPDATE rate_limits SET attempts = attempts + 1 WHERE `key` = :key')
-            ->execute(['key' => $key]);
+        $pdo->prepare('UPDATE rate_limits SET attempts = attempts + 1 WHERE `key` = :key')->execute(['key' => $key]);
         return true;
     }
 }
