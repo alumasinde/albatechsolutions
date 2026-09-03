@@ -19,9 +19,11 @@ final class CsrfMiddleware implements MiddlewareInterface
             return $next($request);
         }
 
-        $token = $request->input('_csrf_token') ?? $request->bearerToken();
+        // CSRF is a browser/session concern. Only accept the explicit
+        // `_csrf_token` request field; API bearer tokens are never CSRF tokens.
+        $token = $request->input('_csrf_token');
 
-        if (!Csrf::verify($token)) {
+        if (!Csrf::verify(is_string($token) ? $token : null)) {
             Logger::security('CSRF token mismatch', ['ip' => $request->ip(), 'path' => $request->path()]);
 
             if ($request->isAjax()) {
