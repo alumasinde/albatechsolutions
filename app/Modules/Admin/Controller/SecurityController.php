@@ -27,7 +27,6 @@ final class SecurityController extends BaseController
     {
         $user = Auth::user();
         $pendingSecret = Session::get(self::SESSION_PENDING_SECRET);
-
         $setupUri = null;
         if ($pendingSecret && empty($user['two_factor_enabled'])) {
             $setupUri = Totp::provisioningUri($pendingSecret, $user['email'], Config::get('app.name', 'AlbaTech Solutions'));
@@ -40,16 +39,9 @@ final class SecurityController extends BaseController
         ]);
     }
 
-    /**
-     * Generates a new pending secret, stores it in session, then
-     * redirects to the GET show() page to render it — never renders
-     * directly from a POST handler, so the resulting page is always
-     * safe to refresh without re-triggering the action.
-     */
     public function startSetup(Request $request): Response
     {
         Session::put(self::SESSION_PENDING_SECRET, Totp::generateSecret());
-
         return $this->redirect(Config::get('admin.path', '/admin') . '/security/2fa');
     }
 
@@ -57,23 +49,27 @@ final class SecurityController extends BaseController
     {
         $secret = Session::get(self::SESSION_PENDING_SECRET);
         $code = (string) $request->input('code', '');
-
         if (!$secret || !Totp::verify($secret, $code)) {
             Session::flash('_errors', ['code' => ['Invalid code. Please try again.']]);
-
             return $this->back();
         }
 
         $recoveryCodes = Totp::generateRecoveryCodes();
+        $hashedCodes = array_map(
+            static fn (string $recoveryCode): string => password_hash($recoveryCode, PASSWORD_DEFAULT),
+            $recoveryCodes
+        );
 
         $this->users->update((int) Auth::id(), [
             'two_factor_secret'         => $secret,
             'two_factor_enabled'        => 1,
-            'two_factor_recovery_codes' => json_encode($recoveryCodes),
+            'two_factor_recovery_codes' => json_encode($hashedCodes, JSON_THROW_ON_ERROR),
             'two_factor_confirmed_at'   => date('Y-m-d H:i:s'),
         ]);
 
         Session::forget(self::SESSION_PENDING_SECRET);
+        // Plaintext recovery codes are displayed once from flash session only;
+        // the database contains password hashes, never these values.
         Session::flash('_recovery_codes', $recoveryCodes);
         AuditLog::record('2fa.enabled', 'user', Auth::id());
 
@@ -83,34 +79,27 @@ final class SecurityController extends BaseController
     public function showRecoveryCodes(Request $request): Response
     {
         $codes = Session::getFlash('_recovery_codes');
-
-        if (!$codes) {
-            return $this->redirect(Config::get('admin.path', '/admin') . '/security/2fa');
-        }
-
+        if (!$codes) return $this->redirect(Config::get('admin.path', '/admin') . '/security/2fa');
         return $this->view('admin.security.recovery-codes', ['codes' => $codes]);
     }
 
     public function disable(Request $request): Response
     {
         $user = Auth::user();
-
-        if (!password_verify((string) $request->input('password', ''), $user['password'])) {
+        if (!password_verify((string) $request->input('password', ''), (string) ($user['password'] ?? ''))) {
             Session::flash('_errors', ['password' => ['Incorrect password.']]);
-
             return $this->back();
         }
 
         $this->users->update((int) Auth::id(), [
-            'two_factor_secret'         => null,
-            'two_factor_enabled'        => 0,
+            'two_factor_secret' => null,
+            'two_factor_enabled' => 0,
             'two_factor_recovery_codes' => null,
-            'two_factor_confirmed_at'   => null,
+            'two_factor_confirmed_at' => null,
         ]);
 
         AuditLog::record('2fa.disabled', 'user', Auth::id());
         Session::flash('_success', 'Two-factor authentication disabled.');
-
         return $this->redirect(Config::get('admin.path', '/admin') . '/security/2fa');
     }
 }
