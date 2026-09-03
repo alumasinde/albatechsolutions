@@ -68,8 +68,6 @@ final class SecurityController extends BaseController
         ]);
 
         Session::forget(self::SESSION_PENDING_SECRET);
-        // Plaintext recovery codes are displayed once from flash session only;
-        // the database contains password hashes, never these values.
         Session::flash('_recovery_codes', $recoveryCodes);
         AuditLog::record('2fa.enabled', 'user', Auth::id());
 
