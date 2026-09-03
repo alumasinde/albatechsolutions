@@ -1,0 +1,4 @@
+<?php $title='My Payments | AlbaTech'; ob_start(); ?>
+<section class="customer-page-head"><span class="eyebrow">Account</span><h1>My payments</h1><p>Payment submissions and verified receipts linked to your AlbaTech requests.</p></section>
+<div class="customer-list"><?php if(!$payments): ?><div class="card empty-state"><h3>No payments yet</h3><p>Payments you submit against AlbaTech quotes will appear here.</p></div><?php else: foreach($payments as $payment): ?><div class="card customer-list-row"><div><strong><?= e($payment['quote_number']) ?></strong><span><?= e($payment['request_number']) ?> · <?= e(date('d M Y H:i',strtotime($payment['created_at']))) ?></span></div><div><strong>KES <?= e(number_format((float)$payment['amount'],2)) ?></strong><span class="status-pill status-<?= e($payment['status']) ?>"><?= e($payment['status']) ?></span></div></div><?php endforeach; endif; ?></div>
+<?php $customerContent=ob_get_clean(); require __DIR__.'/layout.php'; ?>

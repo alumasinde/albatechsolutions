@@ -1,0 +1,368 @@
+/* ===== polish.css ===== */
+/* AlbaTech — Polish */
+
+
+/* Source group: final-ui.css */
+/* ==========================================================================
+   AlbaTech final UI layer
+   Last-loaded compatibility layer for the consolidated design system.
+   ========================================================================== */
+
+:root {
+    --ui-bg: #f6f8fb;
+    --ui-surface: var(--color-surface);
+    --ui-surface-soft: var(--color-surface-page);
+    --ui-text: var(--color-text-strong);
+    --ui-muted: var(--color-text-subtle);
+    --ui-border: #e5e7eb;
+    --ui-border-strong: #d7dde6;
+    --ui-content: 1180px;
+    --ui-radius: 14px;
+    --ui-shadow: 0 1px 2px rgba(15,23,42,.04), 0 8px 24px rgba(15,23,42,.045);
+    --ui-shadow-hover: 0 12px 30px rgba(15,23,42,.09);
+}
+
+html { background: var(--ui-bg); }
+body {
+    background: var(--ui-bg);
+    color: var(--ui-text);
+    line-height: 1.55;
+}
+
+.page-wrapper,
+.admin-content {
+    width: min(var(--ui-content), calc(100% - 48px));
+    max-width: none;
+    margin-inline: auto;
+}
+
+.page-wrapper { padding: 42px 0 72px; }
+.admin-content { padding: 34px 34px 64px; }
+
+.page-header { margin-bottom: 28px; gap: 18px; }
+.page-header h1,
+.admin-content h1 {
+    margin: 0;
+    color: var(--ui-text);
+    letter-spacing: -.035em;
+    line-height: 1.08;
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+}
+.page-header p { color: var(--ui-muted); margin: 8px 0 0; }
+
+/* Buttons */
+.btn {
+    min-height: 42px;
+    padding: 9px 16px;
+    border-radius: 10px;
+    font-size: .9rem;
+    letter-spacing: -.005em;
+    box-shadow: none;
+}
+.btn-primary { box-shadow: 0 1px 1px rgba(15,23,42,.08); }
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 7px 18px color-mix(in srgb, var(--color-primary) 22%, transparent);
+}
+.btn-secondary {
+    background: var(--color-on-primary);
+    border: 1px solid var(--ui-border);
+}
+.btn-secondary:hover {
+    background: var(--ui-surface-soft);
+    border-color: var(--ui-border-strong);
+}
+.btn-sm { min-height: 34px; padding: 6px 11px; border-radius: 8px; }
+.btn-lg { min-height: 48px; padding-inline: 20px; border-radius: 11px; }
+
+/* Cards */
+.card,
+.stat-card,
+.service-card,
+.catalogue-card,
+.project-card {
+    border: 1px solid var(--ui-border);
+    box-shadow: var(--ui-shadow);
+}
+.card { border-radius: var(--ui-radius); padding: 24px; }
+.card:hover { box-shadow: var(--ui-shadow-hover); }
+.service-card:hover,
+.catalogue-card:hover,
+.project-card:hover { box-shadow: var(--ui-shadow-hover); }
+
+/* Forms */
+label { color: var(--color-text-secondary); font-size: .82rem; margin: 17px 0 7px; }
+input,
+select,
+textarea {
+    min-height: 43px;
+    border: 1px solid var(--ui-border-strong);
+    border-radius: 10px;
+    background: var(--color-on-primary);
+    color: var(--ui-text);
+}
+textarea { min-height: 120px; resize: vertical; }
+input::placeholder,
+textarea::placeholder { color: var(--color-text-faint); }
+input:hover,
+select:hover,
+textarea:hover { border-color: var(--color-border-strong); }
+
+/* Public header */
+.site-header {
+    background: rgba(255,255,255,.94);
+    border-bottom: 1px solid rgba(226,232,240,.85);
+    box-shadow: 0 1px 12px rgba(15,23,42,.035);
+}
+.site-header-inner {
+    width: min(var(--ui-content), calc(100% - 48px));
+    max-width: none;
+    padding: 10px 0;
+}
+.site-logo { color: var(--ui-text); font-size: 1rem; }
+.site-nav { gap: 6px; }
+.site-nav a {
+    padding: 8px 11px;
+    border-radius: 9px;
+    color: var(--color-text-muted);
+    font-size: .88rem;
+}
+.site-nav a:hover { background: var(--color-surface-muted); color: var(--ui-text); }
+
+/* Admin shell */
+.admin-shell { background: var(--ui-bg); }
+.admin-sidebar {
+    width: 232px;
+    background: #111827;
+    padding: 18px 10px;
+    border-right: 1px solid rgba(255,255,255,.05);
+}
+.admin-brand { padding: 10px 12px 18px; font-size: .95rem; }
+.admin-sidebar nav { gap: 2px; }
+.admin-sidebar nav a {
+    border-radius: 9px;
+    padding: 9px 11px;
+    color: #aeb8c7;
+    font-size: .86rem;
+}
+.admin-sidebar nav a:hover { background: rgba(255,255,255,.07); color: var(--color-on-primary); }
+.admin-sidebar nav a.active,
+.admin-sidebar nav a[aria-current="page"] {
+    background: rgba(255,255,255,.1);
+    color: var(--color-on-primary);
+}
+
+/* Dashboard */
+.dashboard-header { margin-bottom: 24px; }
+.dashboard-subtitle { color: var(--ui-muted); }
+.stat-grid { gap: 12px; margin-bottom: 24px; }
+.stat-card { padding: 17px; border-radius: var(--ui-radius); }
+.stat-card:hover { transform: translateY(-1px); }
+.stat-icon { width: 40px; height: 40px; border-radius: 11px; }
+.stat-value { font-size: 1.3rem; }
+.stat-label { font-size: .76rem; }
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--color-on-primary);
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius);
+    overflow: hidden;
+}
+th, td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #eef2f6;
+    text-align: left;
+}
+th {
+    background: var(--color-surface-page);
+    color: var(--color-text-muted);
+    font-size: .74rem;
+    text-transform: uppercase;
+    letter-spacing: .055em;
+    font-weight: 700;
+}
+td { color: var(--color-text-secondary); font-size: .88rem; }
+tbody tr:last-child td { border-bottom: 0; }
+tbody tr:hover td { background: #fafbfc; }
+
+/* Authentication */
+.auth-wrapper {
+    min-height: 100vh;
+    padding: 24px;
+    background: radial-gradient(circle at top, var(--color-on-primary), var(--ui-bg) 55%);
+}
+.auth-card {
+    max-width: 400px;
+    border: 1px solid var(--ui-border);
+    border-radius: 18px;
+    box-shadow: 0 20px 60px rgba(15,23,42,.08);
+    padding: 30px;
+}
+.auth-card h1 { font-size: 1.35rem; }
+.auth-card p { color: var(--ui-muted); }
+
+/* WhatsApp composer */
+.wa-composer { min-width: 0; }
+.wa-composer__intro {
+    margin: 0 0 16px;
+    color: var(--color-text-subtle);
+    line-height: 1.6;
+}
+.wa-composer__context {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 0 0 14px;
+}
+.wa-composer__chip {
+    appearance: none;
+    border: 1px solid var(--color-border);
+    background: var(--color-on-primary);
+    color: var(--color-text-strong);
+    border-radius: 999px;
+    padding: 8px 12px;
+    font: inherit;
+    font-size: .8rem;
+    cursor: pointer;
+}
+.wa-composer__chip:hover {
+    border-color: var(--color-whatsapp);
+    background: var(--color-success-bg);
+}
+.wa-composer__textarea {
+    display: block;
+    width: 100%;
+    min-height: 140px;
+    resize: vertical;
+    padding: 12px 14px;
+    border: 1px solid #d7dde6;
+    border-radius: 11px;
+    background: var(--color-on-primary);
+    font: inherit;
+    line-height: 1.5;
+}
+.wa-composer__meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 6px;
+    color: var(--color-text-subtle);
+    font-size: .76rem;
+}
+.wa-composer__privacy {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin: 12px 0 0;
+    color: var(--color-text-subtle);
+    font-size: .76rem;
+    line-height: 1.5;
+}
+.wa-composer__privacy i { color: var(--color-whatsapp); margin-top: 2px; }
+.wa-composer .ui-modal__footer .btn-primary {
+    background: var(--color-whatsapp);
+    border-color: var(--color-whatsapp);
+    color: var(--color-on-primary);
+}
+.wa-composer .ui-modal__footer .btn-primary:hover {
+    background: #20bd5b;
+    border-color: #20bd5b;
+}
+
+/* Floating WhatsApp button */
+.whatsapp-float {
+    display: flex !important;
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 56px;
+    height: 56px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--color-whatsapp);
+    color: var(--color-on-primary);
+    box-shadow: 0 8px 24px rgba(15,23,42,.18);
+    z-index: 1050;
+}
+.whatsapp-float:hover { color: var(--color-on-primary); transform: translateY(-2px); }
+.whatsapp-float__label { display: none; }
+
+/* Catalogue */
+.catalogue-card,
+.project-card { border-radius: 16px; }
+.service-card { border-radius: 15px; padding: 21px; }
+.service-icon { width: 44px; height: 44px; border-radius: 12px; }
+
+/* Footer */
+.site-footer { margin-top: 48px; background: var(--color-text-strong); }
+.site-footer-inner {
+    width: min(var(--ui-content), calc(100% - 48px));
+    max-width: none;
+    padding: 48px 0 28px;
+}
+
+/* Prevent media and rich content from breaking the layout */
+img,
+video,
+svg { max-width: 100%; }
+.article-content,
+.seo-rich-content,
+.phase1-detail__content { min-width: 0; }
+.article-content img,
+.seo-rich-content img { height: auto; }
+
+/* Mobile */
+@media (max-width: 900px) {
+    .page-wrapper,
+    .admin-content,
+    .site-header-inner,
+    .site-footer-inner {
+        width: min(var(--ui-content), calc(100% - 32px));
+    }
+}
+@media (max-width: 768px) {
+    .page-wrapper { padding: 28px 0 56px; }
+    .admin-content { padding: 24px 0 48px; }
+    .card { padding: 20px; }
+    .catalogue-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+    .catalogue-search { width: 100%; }
+
+    .ui-modal__footer .btn,
+    .modal-footer .btn {
+        min-height: 44px;
+    }
+}
+@media (max-width: 480px) {
+    .page-wrapper,
+    .admin-content,
+    .site-header-inner,
+    .site-footer-inner {
+        width: min(var(--ui-content), calc(100% - 24px));
+    }
+    .auth-wrapper { padding: 14px; }
+    .auth-card { padding: 24px 20px; border-radius: 15px; }
+    th, td { padding: 10px 9px; }
+    .whatsapp-float {
+        right: 16px;
+        bottom: 16px;
+        width: 52px;
+        height: 52px;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

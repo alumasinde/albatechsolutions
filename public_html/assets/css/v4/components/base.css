@@ -1,0 +1,42 @@
+/* ===== base.css ===== */
+/* AlbaTech — Foundation */
+
+
+/* Source group: base.css */
+/* ==========================================================================
+   Base — reset, typography, accessibility, shared primitives
+   ========================================================================== */
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: var(--font-family, 'Inter', sans-serif);
+    background: var(--color-background, var(--color-surface-page));
+    color: var(--color-text);
+    -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--color-primary); text-decoration: none; }
+
+/* Visible focus states everywhere (accessibility) */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* Shared hamburger toggle button used by both the public header and the
+   admin sidebar — each context turns it on at its own breakpoint. */
+.nav-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    color: inherit;
+    cursor: pointer;
+    padding: 8px;
+    min-width: 44px;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+}

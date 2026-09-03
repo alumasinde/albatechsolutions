@@ -1,0 +1,3 @@
+-- Historical no-op. The features column is already created by
+-- 020_add_additional_fields_to_services.sql.
+-- This file is retained so previously recorded migration history remains stable.

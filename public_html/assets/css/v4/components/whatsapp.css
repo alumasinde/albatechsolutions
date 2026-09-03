@@ -1,0 +1,38 @@
+/* ===== whatsapp.css ===== */
+/* AlbaTech — Whatsapp */
+
+
+/* Source group: phase5-whatsapp.css */
+/* Phase 5 — WhatsApp conversion layer */
+.wa-composer__intro{margin:0 0 1rem;color:var(--text-muted,var(--color-text-subtle));line-height:1.6}.wa-composer__context{display:flex;gap:.55rem;flex-wrap:wrap;margin:0 0 1rem}.wa-composer__chip{border:1px solid var(--border,var(--color-border));background:var(--surface,var(--color-on-primary));border-radius:999px;padding:.45rem .75rem;font-size:.82rem;color:var(--text,var(--color-text-strong));cursor:pointer}.wa-composer__chip:hover,.wa-composer__chip:focus-visible{border-color:var(--color-whatsapp);outline:0}.wa-composer__textarea{width:100%;min-height:130px;resize:vertical;border:1px solid var(--border,var(--color-border));border-radius:12px;padding:.85rem 1rem;font:inherit;line-height:1.5;box-sizing:border-box}.wa-composer__textarea:focus{outline:3px solid rgba(37,211,102,.16);border-color:var(--color-whatsapp)}.wa-composer__meta{display:flex;justify-content:space-between;gap:1rem;margin-top:.5rem;font-size:.78rem;color:var(--text-muted,var(--color-text-subtle))}.wa-composer__privacy{margin:.85rem 0 0;font-size:.78rem;color:var(--text-muted,var(--color-text-subtle))}.wa-composer__privacy i{color:var(--color-whatsapp);margin-right:.3rem}.whatsapp-float{display:flex!important}.whatsapp-float__label{display:none}.whatsapp-float:hover .whatsapp-float__label{display:inline-block;font-size:.78rem;font-weight:700;margin-left:.45rem}.whatsapp-float:focus-visible{outline:3px solid rgba(37,211,102,.35);outline-offset:4px}.wa-composer .ui-modal__footer .btn-primary{background:var(--color-whatsapp);border-color:var(--color-whatsapp);color:var(--color-on-primary)}.wa-composer .ui-modal__footer .btn-primary:hover{filter:brightness(.95)}
+@media (max-width:640px){.wa-composer__textarea{min-height:115px}.whatsapp-float{width:52px;height:52px;bottom:18px;right:18px}.whatsapp-float:hover .whatsapp-float__label{display:none}}
+
+
+
+/* Source group: whatsapp-float.css */
+/* ==========================================================================
+   Floating WhatsApp button
+   ========================================================================== */
+
+.whatsapp-float {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+    background: #25D366;
+    color: var(--color-on-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    z-index: 500;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.whatsapp-float:hover { transform: scale(1.08); box-shadow: 0 6px 20px rgba(0,0,0,0.3); color: var(--color-on-primary); }
+
+@media (max-width: 480px) {
+    .whatsapp-float { bottom: 16px; right: 16px; width: 50px; height: 50px; font-size: 1.4rem; }
+}

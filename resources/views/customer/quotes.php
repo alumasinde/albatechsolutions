@@ -1,0 +1,4 @@
+<?php $title='My Quotes | AlbaTech'; ob_start(); ?>
+<section class="customer-page-head"><span class="eyebrow">Account</span><h1>My quotes</h1><p>Quotes AlbaTech has prepared for your requests.</p></section>
+<div class="customer-list"><?php if(!$quotes): ?><div class="card empty-state"><h3>No quotes yet</h3><p>Quotes will appear here when AlbaTech prepares one for you.</p></div><?php else: foreach($quotes as $quote): ?><a class="card customer-list-row" href="/account/quotes/<?= (int)$quote['id'] ?>"><div><strong><?= e($quote['quote_number']) ?></strong><span><?= e($quote['request_number']) ?> · <?= e(date('d M Y',strtotime($quote['created_at']))) ?></span></div><div><strong>KES <?= e(number_format((float)$quote['total'],2)) ?></strong><span class="status-pill status-<?= e($quote['status']) ?>"><?= e($quote['status']) ?></span></div></a><?php endforeach; endif; ?></div>
+<?php $customerContent=ob_get_clean(); require __DIR__.'/layout.php'; ?>

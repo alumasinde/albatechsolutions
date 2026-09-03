@@ -1,0 +1,504 @@
+/* ===== admin.css ===== */
+/* AlbaTech — Admin */
+
+
+/* Source group: dashboard.css */
+/* ==========================================================================
+   Dashboard
+   ========================================================================== */
+
+.dashboard-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 28px; }
+.dashboard-header h1 { margin: 0 0 4px; }
+.dashboard-subtitle { color: var(--color-text-subtle); margin: 0; font-size: 0.95rem; }
+
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 28px; }
+
+.stat-card {
+    background: var(--color-on-primary);
+    border-radius: var(--radius-base, 10px);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 1px 3px color-mix(in srgb, var(--color-text-strong) 8%, transparent), 0 1px 2px color-mix(in srgb, var(--color-text-strong) 6%, transparent);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    color: inherit;
+}
+.stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px color-mix(in srgb, var(--color-text-strong) 10%, transparent); }
+
+.stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.stat-value { font-size: 1.4rem; font-weight: 700; color: var(--color-secondary, var(--color-text)); line-height: 1.2; }
+.stat-label { font-size: 0.8rem; color: var(--color-text-subtle); }
+
+.dashboard-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+
+.quick-actions { display: flex; flex-direction: column; gap: 6px; }
+.quick-action {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background 0.15s ease;
+}
+.quick-action:hover { background: var(--color-surface-muted); color: var(--color-primary); }
+.quick-action i { width: 18px; text-align: center; color: var(--color-primary); }
+
+.activity-list { list-style: none; margin: 0 0 16px; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.activity-list li { border-bottom: 1px solid var(--color-surface-muted); padding-bottom: 10px; }
+.activity-list li:last-child { border-bottom: none; padding-bottom: 0; }
+.activity-action { display: block; font-size: 0.9rem; font-weight: 600; color: var(--color-text-secondary); text-transform: capitalize; }
+.activity-meta { display: block; font-size: 0.78rem; color: var(--color-text-faint); margin-top: 2px; }
+
+@media (max-width: 900px) {
+    .dashboard-columns { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+    .dashboard-header { flex-direction: column; align-items: stretch; gap: 12px; }
+}
+
+@media (max-width: 480px) {
+    .stat-grid { grid-template-columns: 1fr; }
+}
+
+
+
+/* Source group: service-admin-toggles.css */
+/* AlbaTech — Service list visibility controls
+   Drop-in replacement for components/service-admin-toggles.css
+*/
+
+.service-admin-toggles {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.service-toggle-form {
+    margin: 0;
+}
+
+.service-toggle {
+    --toggle-track: #d9e0ea;
+    --toggle-track-hover: var(--color-border-strong);
+    --toggle-on: var(--color-success-hover);
+    --toggle-on-hover: var(--color-success);
+    --toggle-text: var(--color-text-muted);
+    --toggle-on-text: var(--color-success-strong);
+
+    appearance: none;
+    -webkit-appearance: none;
+    border: 1px solid transparent;
+    background: transparent;
+    margin: 0;
+    padding: 5px 7px 5px 5px;
+    min-height: 34px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 999px;
+    cursor: pointer;
+    color: var(--toggle-text);
+    font: inherit;
+    font-size: .78rem;
+    font-weight: 700;
+    line-height: 1;
+    transition: background .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease;
+}
+
+.service-toggle:hover {
+    background: rgba(15, 23, 42, .045);
+}
+
+.service-toggle:focus-visible {
+    outline: 0;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, .14);
+}
+
+.service-toggle__track {
+    position: relative;
+    flex: 0 0 auto;
+    width: 42px;
+    height: 24px;
+    padding: 3px;
+    box-sizing: border-box;
+    border-radius: 999px;
+    background: var(--toggle-track);
+    box-shadow: inset 0 0 0 1px rgba(15, 23, 42, .08);
+    transition: background .18s ease, box-shadow .18s ease;
+}
+
+.service-toggle__thumb {
+    display: block;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--color-on-primary);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, .25), 0 1px 2px rgba(15, 23, 42, .12);
+    transform: translateX(0);
+    transition: transform .18s cubic-bezier(.2,.8,.2,1), box-shadow .18s ease;
+}
+
+.service-toggle:hover .service-toggle__track {
+    background: var(--toggle-track-hover);
+}
+
+.service-toggle.is-on {
+    color: var(--toggle-on-text);
+    background: rgba(22, 163, 74, .07);
+}
+
+.service-toggle.is-on .service-toggle__track {
+    background: var(--toggle-on);
+    box-shadow: inset 0 0 0 1px rgba(21, 128, 61, .25), 0 1px 2px rgba(22, 163, 74, .18);
+}
+
+.service-toggle.is-on .service-toggle__thumb {
+    transform: translateX(18px);
+}
+
+.service-toggle.is-on:hover {
+    background: rgba(22, 163, 74, .11);
+}
+
+.service-toggle.is-on:hover .service-toggle__track {
+    background: var(--toggle-on-hover);
+}
+
+/* Homepage visibility uses AlbaTech blue rather than the service availability green. */
+.service-homepage-toggle {
+    --toggle-on: var(--color-primary);
+    --toggle-on-hover: var(--color-primary-hover);
+    --toggle-on-text: var(--color-primary-hover);
+}
+
+.service-homepage-toggle.is-on {
+    background: rgba(37, 99, 235, .07);
+}
+
+.service-homepage-toggle.is-on:hover {
+    background: rgba(37, 99, 235, .11);
+}
+
+/* Make the current state instantly readable. */
+.service-toggle__label {
+    min-width: 52px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.service-status-toggle:not(.is-on) .service-toggle__label {
+    color: var(--color-text-subtle);
+}
+
+.service-homepage-toggle:not(.is-on) .service-toggle__label {
+    color: var(--color-text-subtle);
+}
+
+/* Disabled homepage switch = service is inactive. Keep it understandable rather than invisible. */
+.service-toggle:disabled {
+    cursor: not-allowed;
+    opacity: .55;
+    background: transparent;
+}
+
+.service-toggle:disabled .service-toggle__track {
+    background: var(--color-border);
+    box-shadow: inset 0 0 0 1px rgba(15, 23, 42, .06);
+}
+
+.service-toggle:disabled .service-toggle__thumb {
+    box-shadow: 0 1px 2px rgba(15, 23, 42, .14);
+}
+
+/* Small helper state if you add .is-saving during AJAX/progressive enhancement. */
+.service-toggle.is-saving {
+    pointer-events: none;
+    opacity: .7;
+}
+
+.service-toggle.is-saving .service-toggle__thumb {
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, .12), 0 1px 3px rgba(15, 23, 42, .2);
+}
+
+@media (max-width: 900px) {
+    .service-admin-toggles {
+        gap: 6px;
+    }
+
+    .service-toggle {
+        padding-right: 5px;
+    }
+}
+
+@media (max-width: 760px) {
+    .service-admin-toggles {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 3px;
+    }
+
+    .service-toggle__label {
+        display: inline-block;
+        min-width: 48px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .service-toggle,
+    .service-toggle__track,
+    .service-toggle__thumb {
+        transition: none;
+    }
+}
+
+
+/* Service list visibility controls
+   Active = public availability. Homepage = featured on the home page. */
+.service-admin-toggles,
+.service-list__toggles,
+.service-visibility-controls {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.service-toggle-form { margin: 0; }
+
+.service-toggle {
+    --switch-on: var(--color-success-hover);
+    --switch-on-dark: var(--color-success);
+    --switch-off: var(--color-border-strong);
+    --switch-label: var(--color-text-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 38px;
+    padding: 4px 8px 4px 5px;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: var(--color-on-primary);
+    color: var(--switch-label);
+    font: inherit;
+    font-size: .78rem;
+    font-weight: 750;
+    line-height: 1;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 1px 2px rgba(15,23,42,.04);
+    transition: border-color .18s ease, background-color .18s ease, color .18s ease, box-shadow .18s ease;
+}
+
+.service-toggle:hover {
+    border-color: var(--color-border-strong);
+    background: var(--color-surface-page);
+    box-shadow: 0 3px 10px rgba(15,23,42,.07);
+}
+
+.service-toggle:focus-visible {
+    outline: 3px solid rgba(37,99,235,.18);
+    outline-offset: 2px;
+}
+
+.service-toggle__track {
+    position: relative;
+    display: block;
+    flex: 0 0 42px;
+    width: 42px;
+    height: 24px;
+    padding: 3px;
+    box-sizing: border-box;
+    border-radius: 999px;
+    background: var(--switch-off);
+    box-shadow: inset 0 0 0 1px rgba(15,23,42,.08);
+    transition: background-color .18s ease, box-shadow .18s ease;
+}
+
+.service-toggle__thumb {
+    display: block;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--color-on-primary);
+    box-shadow: 0 1px 3px rgba(15,23,42,.22);
+    transform: translateX(0);
+    transition: transform .18s cubic-bezier(.2,.8,.2,1);
+}
+
+.service-toggle.is-on {
+    border-color: rgba(22,163,74,.22);
+    background: var(--color-success-bg);
+    color: var(--color-success-strong);
+}
+
+.service-toggle.is-on .service-toggle__track {
+    background: var(--switch-on);
+    box-shadow: inset 0 0 0 1px rgba(21,128,61,.2);
+}
+
+.service-toggle.is-on .service-toggle__thumb {
+    transform: translateX(18px);
+}
+
+.service-toggle.is-on:hover .service-toggle__track {
+    background: var(--switch-on-dark);
+}
+
+/* Homepage visibility is deliberately blue, so it is not confused with
+   service availability. */
+.service-homepage-toggle {
+    --switch-on: var(--color-primary);
+    --switch-on-dark: var(--color-primary-hover);
+}
+
+.service-homepage-toggle.is-on {
+    border-color: rgba(37,99,235,.22);
+    background: #eff6ff;
+    color: var(--color-primary-hover);
+}
+
+.service-toggle__label {
+    min-width: 48px;
+    text-align: left;
+}
+
+.service-toggle:disabled {
+    cursor: not-allowed;
+    opacity: .55;
+    box-shadow: none;
+}
+
+.service-toggle.is-saving {
+    pointer-events: none;
+    opacity: .68;
+}
+
+.service-toggle.is-saving .service-toggle__track {
+    animation: service-switch-pulse .8s ease-in-out infinite alternate;
+}
+
+@keyframes service-switch-pulse {
+    from { opacity: .7; }
+    to { opacity: 1; }
+}
+
+/* Table columns should not collapse the controls into each other. */
+.services-table .service-status-cell,
+.services-table .service-homepage-cell,
+.service-list .service-status-cell,
+.service-list .service-homepage-cell {
+    min-width: 122px;
+    white-space: nowrap;
+}
+
+.services-table .service-admin-toggles,
+.service-list .service-admin-toggles {
+    justify-content: flex-start;
+}
+
+@media (max-width: 900px) {
+    .service-admin-toggles,
+    .service-list__toggles,
+    .service-visibility-controls {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 640px) {
+    .service-toggle {
+        min-height: 40px;
+    }
+
+    .service-toggle__label {
+        min-width: 44px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .service-toggle,
+    .service-toggle__track,
+    .service-toggle__thumb {
+        transition: none;
+    }
+
+    .service-toggle.is-saving .service-toggle__track {
+        animation: none;
+    }
+}
+
+/* Optional checkbox-based markup support. */
+.service-switch {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 38px;
+    cursor: pointer;
+    font-size: .78rem;
+    font-weight: 750;
+    color: var(--color-text-muted);
+}
+
+.service-switch input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.service-switch__track {
+    position: relative;
+    width: 42px;
+    height: 24px;
+    border-radius: 999px;
+    background: var(--color-border-strong);
+    transition: background-color .18s ease;
+}
+
+.service-switch__track::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--color-on-primary);
+    box-shadow: 0 1px 3px rgba(15,23,42,.22);
+    transition: transform .18s ease;
+}
+
+.service-switch input:checked + .service-switch__track {
+    background: var(--color-success-hover);
+}
+
+.service-switch input:checked + .service-switch__track::after {
+    transform: translateX(18px);
+}
+
+.service-switch input:focus-visible + .service-switch__track {
+    outline: 3px solid rgba(37,99,235,.18);
+    outline-offset: 2px;
+}

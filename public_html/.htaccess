@@ -1,0 +1,72 @@
+DirectoryIndex index.php
+Options -Indexes
+
+# The document root should never expose application/configuration files.
+<FilesMatch "^(?:\.env(?:\..*)?|composer\.(?:json|lock)|phpunit\.xml|.*\.(?:sql|log|bak|old|dist))$">
+    Require all denied
+</FilesMatch>
+
+<IfModule mod_mime.c>
+    AddType text/css .css
+    AddType application/javascript .js
+</IfModule>
+
+# Compress text-based responses (HTML/CSS/JS/JSON) — typically cuts
+# transfer size by 60-80% for these file types.
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml
+    AddOutputFilterByType DEFLATE application/javascript application/json
+    AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# Let browsers cache static assets instead of re-fetching them on every
+# visit. Long expiry is safe here because asset() appends a ?v=<mtime>
+# query string, so any changed file gets a new URL automatically — an
+# old cached copy is never served stale.
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/webp "access plus 1 month"
+    ExpiresByType image/svg+xml "access plus 1 month"
+</IfModule>
+
+# Prefer Brotli when Apache has it, otherwise fall back to mod_deflate below.
+<IfModule mod_brotli.c>
+    AddOutputFilterByType BROTLI_COMPRESS text/html text/css text/plain text/xml
+    AddOutputFilterByType BROTLI_COMPRESS application/javascript application/json application/xml image/svg+xml
+</IfModule>
+
+# Immutable caching is safe because asset() appends a file-mtime version.
+<IfModule mod_headers.c>
+    <FilesMatch "\.(?:css|js|jpg|jpeg|png|gif|webp|avif|svg|ico|woff|woff2)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set X-Permitted-Cross-Domain-Policies "none"
+</IfModule>
+
+RewriteEngine On
+
+# Only route through the front controller when the request does NOT
+# match a real file or directory (this correctly falls through to
+# index.php for "/" itself, which is a directory but has no static
+# index.html for the server to fall back on).
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [L]
+
+# Never allow direct access to dotfiles
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# Production hardening: do not expose source maps, backups, temporary files,
+# VCS metadata or common editor artifacts from the public document root.
+<FilesMatch "(?:^#.*#$|~$|\.swp$|\.swo$|\.map$|\.bak$|\.orig$|\.save$|\.tmp$|\.dist$)">
+    Require all denied
+</FilesMatch>
+

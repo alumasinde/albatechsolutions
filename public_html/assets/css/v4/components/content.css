@@ -1,0 +1,66 @@
+/* ===== content.css ===== */
+/* AlbaTech — Content */
+
+
+/* Source group: cards.css */
+/* ==========================================================================
+   Cards & page layout wrappers
+   ========================================================================== */
+
+.auth-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.page-wrapper { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+}
+
+.card {
+    background: var(--color-surface);
+    border-radius: var(--radius-base, 10px);
+    box-shadow: 0 1px 3px color-mix(in srgb, var(--color-text-strong) 8%, transparent), 0 1px 2px color-mix(in srgb, var(--color-text-strong) 6%, transparent);
+    padding: 32px;
+}
+
+.auth-card { width: 100%; max-width: 380px; }
+.auth-card h1 { font-size: 1.25rem; margin-bottom: 24px; display: flex; gap: 10px; align-items: center; }
+
+@media (max-width: 768px) {
+    .card { padding: 20px; }
+    .page-wrapper { padding: 20px 16px; }
+    .auth-wrapper { padding: 16px; }
+    .page-header { flex-direction: column; align-items: stretch; gap: 12px; }
+}
+
+@media (max-width: 480px) {
+    .auth-card { padding: 24px 20px; }
+}
+
+
+
+/* Source group: tables.css */
+/* ==========================================================================
+   Tables & badges
+   ========================================================================== */
+
+.table { width: 100%; border-collapse: collapse; background: var(--color-on-primary); border-radius: 10px; overflow: hidden; }
+.table th, .table td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--color-surface-muted); font-size: 0.9rem; }
+.table th { background: var(--color-surface-page); color: var(--color-text-subtle); font-weight: 600; }
+
+.badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+.badge-active { background: var(--color-success-bg); color: var(--color-success); }
+.badge-inactive { background: var(--color-danger-bg); color: var(--color-danger-hover); }
+
+@media (max-width: 768px) {
+    /* Tables scroll horizontally instead of breaking the page layout */
+    .table { display: block; overflow-x: auto; white-space: nowrap; }
+}

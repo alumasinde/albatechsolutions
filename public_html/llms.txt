@@ -1,0 +1,51 @@
+# AlbaTech Solutions
+
+AlbaTech Solutions provides web design, web hosting, KRA services, eCitizen services, business registration, IT support, software development, networking and digital solutions for individuals and businesses in Kenya.
+
+## Website
+
+- https://albatechsolutions.co.ke/
+
+## Services
+
+- https://albatechsolutions.co.ke/services
+- https://albatechsolutions.co.ke/services/kra-pin-registration
+- https://albatechsolutions.co.ke/services/kra-returns-filing
+- https://albatechsolutions.co.ke/services/tax-compliance
+- https://albatechsolutions.co.ke/services/ecitizen-services
+- https://albatechsolutions.co.ke/services/business-registration
+- https://albatechsolutions.co.ke/services/ntsa-services
+- https://albatechsolutions.co.ke/services/sha-registration
+- https://albatechsolutions.co.ke/services/nssf-services
+- https://albatechsolutions.co.ke/services/website-design-development
+- https://albatechsolutions.co.ke/services/software-development
+- https://albatechsolutions.co.ke/services/google-business-profile-setup
+
+## Search-focused landing pages
+
+- /web-development-kenya
+- /custom-software-development-kenya
+- /mpesa-integration-kenya
+- /solutions-for-schools
+- /solutions-for-small-businesses
+- /web-development-nairobi
+
+## Projects
+
+- /projects
+
+## Blog
+
+- https://albatechsolutions.co.ke/blog
+
+## Contact
+
+- https://albatechsolutions.co.ke/contact
+
+## FAQ
+
+- https://albatechsolutions.co.ke/faqs
+
+## Sitemap
+
+- https://albatechsolutions.co.ke/sitemap.xml

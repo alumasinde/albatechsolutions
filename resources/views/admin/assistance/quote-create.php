@@ -1,0 +1,10 @@
+<?php ob_start(); $adminPath=\App\Core\Config::get('admin.path','/admin'); $errors=\App\Core\Session::getFlash('_errors') ?? []; ?>
+<div class="admin-page-heading"><div><a class="back-link" href="<?= e($adminPath) ?>/assistance/<?= (int)$requestItem['id'] ?>"><i class="fa-solid fa-arrow-left"></i> Help request</a><span class="eyebrow">Create quote</span><h1>Quote <?= e($requestItem['request_number']) ?></h1><p><?= e($requestItem['name']) ?> · <?= e($requestItem['phone']) ?></p></div></div>
+<?php if($errors): ?><div class="alert alert-error"><strong>Could not create quote.</strong><?php foreach($errors as $field=>$list): foreach((array)$list as $err): ?><div><?= e($err) ?></div><?php endforeach; endforeach; ?></div><?php endif; ?>
+<div class="card quote-editor"><form method="POST" action="<?= e($adminPath) ?>/assistance/<?= (int)$requestItem['id'] ?>/quote"><?= csrf_field() ?>
+  <div class="table-scroll"><table class="table quote-lines"><thead><tr><th>Description</th><th style="width:130px">Qty</th><th style="width:180px">Unit price (KES)</th></tr></thead><tbody><?php for($i=0;$i<5;$i++): ?><tr><td><input name="description[]" maxlength="255" placeholder="e.g. Business registration assistance"></td><td><input type="number" name="quantity[]" min="0.01" step="0.01" value="<?= $i===0?'1':'' ?>"></td><td><input type="number" name="unit_price[]" min="0" step="0.01" placeholder="0.00"></td></tr><?php endfor; ?></tbody></table></div>
+  <div class="form-grid-2"><label>Quote expiry <span class="muted-small">optional</span><input type="datetime-local" name="expires_at"></label><label>Customer note <textarea name="note" rows="3" placeholder="What is included, what is excluded, or any important next step."></textarea></label></div>
+  <div class="quote-editor-note"><i class="fa-solid fa-circle-info"></i> The customer receives a private quote link. No payment is considered complete until you verify the M-Pesa transaction.</div>
+  <button class="btn btn-primary btn-lg" type="submit">Create & send quote <i class="fa-solid fa-arrow-right"></i></button>
+</form></div>
+<?php $adminContent=ob_get_clean(); require dirname(__DIR__).'/layout.php';

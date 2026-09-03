@@ -1,0 +1,53 @@
+/* ==========================================================================
+   Public brand skin — teal marketing theme layered over the base
+   component styles above. NOTE: several selectors here (.btn-primary,
+   .btn-secondary) are NOT scoped to public pages despite the comment
+   this replaced saying "Admin remains on v2" — they also render inside
+   the admin dashboard. That is left as-is here to avoid changing live
+   admin buttons without sign-off; see CSS_NOTES.md.
+   ========================================================================== */
+body{background:var(--brand-paper);color:var(--brand-ink);}
+.site-header{background:rgba(255,253,248,.94)!important;border-bottom:1px solid var(--brand-line)!important;backdrop-filter:blur(14px);}
+.site-logo{font-weight:800;letter-spacing:-.03em;color:var(--brand-ink)!important;}
+.site-nav a:not(.site-nav-cta){color:var(--brand-ink)!important;}
+.site-nav-cta{background:var(--brand-primary)!important; color:var(--brand-ink-2)!important; border-radius:999px!important;padding:10px 18px!important;}
+.public-container{max-width:1160px!important;}
+.phase4-hero,.catalogue-hero,.detail-hero{background:var(--brand-paper)!important;color:var(--brand-ink)!important;}
+.phase4-hero{padding:76px 0 54px!important;border-bottom:1px solid var(--brand-line);}
+.phase4-hero__grid{grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr)!important;align-items:center;gap:64px!important;}
+.phase4-eyebrow,.catalogue-eyebrow,.public-kicker{color:var(--brand-primary)!important;letter-spacing:.06em!important;text-transform:uppercase;}
+.phase4-hero h1{font-size:clamp(2.65rem,6vw,5.4rem)!important;line-height:.98!important;letter-spacing:-.055em!important;max-width:850px;}
+.phase4-hero__copy>p{font-size:1.18rem!important;line-height:1.7!important;color:var(--brand-muted)!important;max-width:680px;}
+.phase4-hero__signals span{color:var(--brand-muted)!important;}
+.phase4-hero__visual{filter:none!important;}
+.phase4-window{background:#fff!important;border:1px solid var(--brand-line)!important;border-radius:24px!important;box-shadow:var(--brand-shadow)!important;}
+.phase4-window__bar{background:var(--brand-paper-2)!important;color:var(--brand-ink)!important;}
+.phase4-window__content{background:#fff!important;}
+.phase4-float{border:1px solid var(--brand-line)!important;box-shadow:0 12px 32px rgba(23,32,51,.1)!important;background:#fff!important;color:var(--brand-ink)!important;}
+.phase4-proof{background:var(--brand-paper-2)!important;border-top:1px solid var(--brand-line);border-bottom:1px solid var(--brand-line);}
+.phase4-proof__grid>div{border-color:var(--brand-line)!important;}
+.public-section{padding:78px 0!important;}
+.phase4-section-head h2{letter-spacing:-.035em!important;font-size:clamp(2rem,4vw,3.1rem)!important;}
+.phase4-service-card,.phase4-project-card,.catalogue-card,.phase4-testimonials figure{background:#fff!important;border:1px solid var(--brand-line)!important;border-radius:var(--brand-radius)!important;box-shadow:none!important;}
+.phase4-service-card:hover,.catalogue-card:hover,.phase4-project-card:hover{transform:translateY(-3px);box-shadow:var(--brand-shadow)!important;border-color:#d4cec0!important;}
+.phase4-service-card__icon,.catalogue-card__icon{background:#edf8f5!important;color:var(--brand-primary)!important;}
+.btn-primary{background:var(--brand-primary)!important;border-radius:999px!important;}
+.btn-primary:hover{background:var(--brand-primary-dark)!important;}
+.btn-secondary,.btn-hero-ghost{border-radius:999px!important;border:1px solid var(--brand-line)!important;background:#fff!important;}
+.phase4-final-cta,.phase1-final-cta{background:var(--brand-primary-dark)!important;}
+.phase4-final-cta h2,.phase1-final-cta h2,.phase4-final-cta p,.phase1-final-cta p{color:#fff!important;}
+.whatsapp-float{border-radius:999px!important;box-shadow:0 12px 28px rgba(15,118,110,.25)!important;}
+/* v3 assistant UI */
+.v3-intent-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:32px}
+.v3-intent-card{display:block;background:#fff;border:1px solid var(--brand-line);border-radius:18px;padding:24px;color:var(--brand-ink);transition:.18s ease}
+.v3-intent-card:hover{transform:translateY(-3px);box-shadow:var(--brand-shadow);border-color:#cfc8ba}
+.v3-intent-card__icon{display:grid;place-items:center;width:46px;height:46px;border-radius:14px;background:#edf8f5;color:var(--brand-primary);margin-bottom:18px}
+.v3-intent-card h3{margin:0 0 8px;font-size:1.1rem}.v3-intent-card p{margin:0;color:var(--brand-muted);line-height:1.6}
+.v3-help-strip{display:flex;justify-content:space-between;align-items:center;gap:24px;padding:28px 30px;background:#fff;border:1px solid var(--brand-line);border-radius:22px;box-shadow:0 10px 30px rgba(23,32,51,.05)}
+.v3-help-strip h2{margin:0 0 6px;letter-spacing:-.025em}.v3-help-strip p{margin:0;color:var(--brand-muted)}
+.v3-answer{max-width:780px;margin:0 auto 36px;padding:22px 24px;background:#fff;border-left:4px solid var(--brand-primary);border-radius:12px;box-shadow:0 8px 26px rgba(23,32,51,.05)}
+.v3-answer strong{display:block;margin-bottom:6px}
+.v3-trust{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:28px}.v3-trust div{padding:18px;background:var(--brand-paper-2);border-radius:14px}.v3-trust strong{display:block;margin-bottom:4px}.v3-trust span{color:var(--brand-muted);font-size:.92rem}
+.v3-disclaimer{font-size:.88rem;color:var(--brand-muted);padding:16px 18px;background:var(--brand-paper-2);border-radius:12px;margin-top:24px}
+@media(max-width:900px){.phase4-hero__grid{grid-template-columns:1fr!important}.v3-intent-grid{grid-template-columns:1fr 1fr}.v3-trust{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.phase4-hero{padding:52px 0 40px!important}.phase4-hero h1{font-size:clamp(2.5rem,13vw,4rem)!important}.v3-intent-grid,.v3-trust{grid-template-columns:1fr}.v3-help-strip{display:block}.v3-help-strip .btn{margin-top:18px;width:100%}.public-section{padding:56px 0!important}}

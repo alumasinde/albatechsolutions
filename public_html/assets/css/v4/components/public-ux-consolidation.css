@@ -1,0 +1,50 @@
+/* ==========================================================================
+   Public UX consolidation notes
+   One conversion path: Get Assistance. WhatsApp remains the quick-contact
+   shortcut. The assistant is intentionally secondary and not in navigation.
+   ========================================================================== */
+.public-container,.site-header-inner,.site-footer-inner{max-width:var(--brand-container)!important}
+.site-nav{gap:4px!important;align-items:center}
+.site-nav a{font-weight:650!important}
+.site-nav-cta{margin-left:8px!important;background:var(--brand-primary)!important;color:#fff!important;border:1px solid var(--brand-primary)!important;padding:10px 18px!important;box-shadow:0 7px 18px rgba(15,118,110,.16)}
+.site-nav-cta:hover{background:var(--brand-primary-dark)!important;border-color:var(--brand-primary-dark)!important}
+.site-nav a:not(.site-nav-cta):hover{background:#f5f2ea!important;color:var(--brand-ink)!important}
+.phase4-hero__actions{gap:10px!important}
+.phase4-hero__actions .btn-primary{box-shadow:0 8px 20px rgba(15,118,110,.15)}
+.phase4-float--one{left:-8px!important}
+.phase4-float--two{display:none!important}
+.catalogue-card__price{font-weight:800}
+.catalogue-card__link{font-weight:800}
+.phase1-final-cta__inner{gap:28px!important}
+.phase1-final-cta__inner .btn-primary{background:#fff!important;color:var(--brand-primary)!important;border-color:#fff!important}
+.phase1-final-cta__inner .btn-primary:hover{background:#f5f2ea!important}
+.phase1-final-cta .public-kicker{color:#a7f3d0!important}
+.phase6-final-cta__actions .btn-primary{background:#fff!important;color:var(--brand-primary)!important;border-color:#fff!important}
+.phase6-final-cta__actions .btn-primary:hover{background:#f5f2ea!important}
+.phase6-contact-option--whatsapp{display:flex}
+.mobile-cta-bar__quote{background:var(--brand-primary)!important;color:#fff!important}
+.mobile-cta-bar__whatsapp{background:#edf8f1!important;color:#176b42!important}
+
+/* Consolidated service-detail conversion card. */
+.detail-cta,.service-cta-card{border-radius:var(--brand-radius)!important;border-color:var(--brand-line)!important}
+
+/* Consistent public form controls. */
+.public-section input,.public-section select,.public-section textarea,.growth-section input,.growth-section select,.growth-section textarea{border-radius:12px!important}
+
+/* Remove visual dependency on legacy phase-specific utility classes. */
+.public-kicker{font-weight:800!important}
+
+@media(max-width:900px){
+  .site-nav-cta{margin-left:0!important}
+  .site-nav{padding-bottom:16px}
+}
+@media(max-width:640px){
+  body.has-mobile-cta{padding-bottom:70px}
+  .site-nav-cta{width:100%;justify-content:center}
+  .phase4-hero__actions .btn,.phase6-final-cta__actions .btn{width:100%}
+  .mobile-cta-bar{grid-template-columns:1.15fr .85fr!important}
+}
+
+.service-detail-note-wrap{margin-top:24px!important}.related-services-head{margin-bottom:28px!important}
+
+.public-empty-copy{text-align:center;color:#94a3b8}.blog-category-nav{text-align:center;margin-bottom:32px}.blog-category-link{display:inline-block;margin-right:16px}.blog-category-link.is-active{font-weight:700;color:var(--brand-primary)}
