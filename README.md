@@ -1,115 +1,94 @@
 # Google Photos Transfer
 
-A local Python CLI for transferring media from one Google Photos account to another without Partner Sharing.
+A simple local wizard for transferring Google Photos **from a Google Takeout export** into another Google account without Partner Sharing.
 
-## Architecture
+## Simple flow
 
-The source account is exported with Google Takeout. The tool then extracts/scans the Takeout files locally and uploads supported photos/videos to the destination Google account through the Google Photos Library API.
+Run:
+
+```powershell
+photo-transfer
+```
+
+The wizard asks for:
+
+1. Source Google email (for identification)
+2. Google Takeout folder containing that account's photos/videos
+3. Destination Google email
+4. Confirmation
+
+It then opens the **official Google sign-in page in your system browser**. Enter the destination account password and complete 2FA **only on Google's page**. The application never asks for, sees, or stores your Google password.
+
+## Why the source account still uses Takeout
+
+The application cannot safely promise that entering two Google emails will allow it to copy an arbitrary existing Google Photos library directly. Current Google Photos API access does not provide a general-purpose unrestricted read/export API for a newly built app.
+
+The supported practical design is:
 
 ```text
 Source Google account
-        |
-        v
-   Google Takeout
-        |
-        v
- ZIP / extracted files
-        |
-        v
- Photo Transfer CLI
-   |     |      |
-   |     |      +--> SQLite transfer state
-   |     +---------> SHA-256 duplicate detection
-   +---------------> Google Photos upload API
-                         |
-                         v
-                  Destination account
+       |
+       | Google Takeout
+       v
+Local Takeout folder
+       |
+       v
+Photo Transfer wizard
+       |
+       | Secure Google OAuth in browser
+       v
+Destination Google account
 ```
 
-## Important API limitation
+## First setup
 
-This project deliberately uses Takeout as the source. Google Photos API access has changed over time; the supported write flow is to upload media bytes and then create media items. The project does not depend on old scripts that try to crawl an entire existing library through unsupported OAuth behavior.
+The current source-code version needs one OAuth desktop client configuration for the application itself:
 
-Uploads use the `photoslibrary.appendonly` scope. Google documents a two-step upload (`uploads` then `mediaItems:batchCreate`), with at most 50 media items per batch creation request and serial batch creation per user. See the official Google documentation linked below.
+- Create a Google Cloud project.
+- Enable the required Google Photos API.
+- Create a **Desktop app** OAuth client.
+- Download its JSON once as `client_secret.json`.
 
-## Requirements
+This is **application configuration**, not a user's Google password. A packaged public release can bundle the application's public desktop OAuth configuration so ordinary users do not perform this setup individually.
 
-- Python 3.11+
-- A Google Cloud project
-- Google Photos Library API enabled
-- OAuth 2.0 Desktop application credentials
-- Google Takeout export containing Google Photos
-
-## Setup
-
-### 1. Create OAuth credentials
-
-In Google Cloud Console:
-
-1. Create/select a project.
-2. Enable **Google Photos Library API**.
-3. Configure the OAuth consent screen.
-4. Create an OAuth client of type **Desktop app**.
-5. Download the JSON credentials and save them as `client_secret.json` in the project directory.
-
-Do **not** commit `client_secret.json`, `token.json`, or `transfer.db`.
-
-### 2. Install dependencies
+## Install
 
 ```powershell
+git clone https://github.com/alumasinde/photo-transfer.git
+cd photo-transfer
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
 
-### 3. Prepare your Takeout files
-
-Example:
-
-```text
-D:\GooglePhotosMigrator\takeout\
-    takeout-001.zip
-    takeout-002.zip
-```
-
-The tool can also accept an already extracted directory.
-
-### 4. Authenticate the destination account
-
-Run:
+## Run the wizard
 
 ```powershell
-python -m photo_transfer auth
+python -m photo_transfer
 ```
 
-A browser window opens. Sign in to **the destination Google account**. The token is saved locally in `token.json`.
-
-### 5. Scan
+or, after installing the package:
 
 ```powershell
-python -m photo_transfer scan --source D:\GooglePhotosMigrator\takeout
+photo-transfer
 ```
 
-Scanning is local. JSON sidecar metadata is not uploaded as media.
+The destination authentication browser opens automatically.
 
-### 6. Transfer
+## Security
 
-```powershell
-python -m photo_transfer transfer --source D:\GooglePhotosMigrator\takeout
-```
+- Never enter your Google password into this CLI.
+- Password and 2FA are handled by Google's official browser sign-in.
+- OAuth tokens are stored locally and are gitignored.
+- Source media is never deleted.
+- Destination media is never deleted by this application.
+- SQLite tracks progress so interrupted transfers can resume.
 
-The SQLite database records each file by SHA-256 so an interrupted run can be resumed.
+## Advanced commands
 
-## Safety
+The existing `auth`, `scan`, `transfer`, and `status` commands remain available for automation and troubleshooting.
 
-- Credentials are local and gitignored.
-- No source-account password is stored by this application.
-- The source account is represented by your downloaded Takeout data; the OAuth flow is performed against the destination account.
-- The tool never deletes source files or destination media.
-- Failed files remain retryable.
+## Official references
 
-## Official documentation
-
-- Google Photos upload media: https://developers.google.com/photos/library/legacy/guides/upload-media
-- Google API OAuth scopes: https://developers.google.com/identity/protocols/oauth2/scopes
-- Google Photos API: https://developers.google.com/photos
+- Google OAuth for desktop applications
+- Google API Console OAuth setup
