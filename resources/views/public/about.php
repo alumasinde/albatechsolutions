@@ -19,7 +19,7 @@ ob_start();
             <p class="phase6-lead">We build practical digital solutions for businesses and people who need technology to do a real job — not just look impressive.</p>
             <div class="phase6-hero-actions">
                 <a class="btn btn-primary btn-lg" href="/get-help">Get Assistance <i class="fa-solid fa-arrow-right"></i></a>
-                <a href="/projects" class="btn btn-secondary btn-lg">See our work <i class="fa-solid fa-arrow-right"></i></a>
+                <a href="/services" class="btn btn-secondary btn-lg">Explore services <i class="fa-solid fa-arrow-right"></i></a>
             </div>
         </div>
         <div class="phase6-about-hero__panel" aria-label="AlbaTech approach">
@@ -31,7 +31,6 @@ ob_start();
 
 <section class="public-section phase6-trust-strip">
     <div class="public-container phase6-stats">
-        <div><strong><?= (int) ($projectCount ?? 0) ?>+</strong><span>Published projects</span></div>
         <div><strong><?= (int) ($serviceCount ?? 0) ?>+</strong><span>Services available</span></div>
         <div><strong>01</strong><span>Direct point of contact</span></div>
         <div><strong>KE</strong><span>Based in Kenya</span></div>
@@ -60,24 +59,6 @@ ob_start();
         </div>
     </div>
 </section>
-
-<?php if (!empty($featuredProjects)): ?>
-<section class="public-section">
-    <div class="public-container">
-        <div class="phase6-section-heading phase6-section-heading--split"><div><span class="public-kicker">Proof of work</span><h2>See what we have built.</h2></div><a class="btn btn-secondary" href="/projects">View all projects <i class="fa-solid fa-arrow-right"></i></a></div>
-        <div class="phase6-mini-projects">
-            <?php foreach ($featuredProjects as $project): ?>
-                <a href="/projects/<?= e($project['slug']) ?>" class="phase6-mini-project">
-                    <div class="phase6-mini-project__media">
-                        <?php if (!empty($project['image_path'])): ?><img src="<?= e(url($project['image_path'])) ?>" alt="<?= e($project['title']) ?>" loading="lazy" decoding="async"><?php else: ?><span><i class="fa-solid fa-code"></i></span><?php endif; ?>
-                    </div>
-                    <div><span class="public-kicker"><?= e($project['industry'] ?: 'Digital project') ?></span><h3><?= e($project['title']) ?></h3><p><?= e($project['summary'] ?? '') ?></p><span class="phase6-inline-link">View project <i class="fa-solid fa-arrow-right"></i></span></div>
-                </a>
-            <?php endforeach; ?>
-        </div>
-    </div>
-</section>
-<?php endif; ?>
 
 <?php if (!empty($testimonials)): ?>
 <section class="public-section public-section--muted">
