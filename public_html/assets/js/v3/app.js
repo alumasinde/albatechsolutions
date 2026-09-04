@@ -204,7 +204,6 @@
         let eventName = null;
         if (href.startsWith('https://wa.me/')) eventName = 'whatsapp_click';
         else if (href === '/contact' || href.startsWith('/contact?')) eventName = 'contact_cta_click';
-        else if (href === '/projects' || href.startsWith('/projects/')) eventName = 'project_click';
         else if (href === '/services' || href.startsWith('/services/')) eventName = 'service_click';
         else if (link.target === '_blank' && /^https?:\/\//i.test(href)) eventName = 'outbound_click';
         if (eventName) window.gtag('event', eventName, { link_url: href, link_text: (link.textContent || '').trim().slice(0, 80) });
