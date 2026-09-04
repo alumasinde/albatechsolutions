@@ -6,7 +6,6 @@ use App\Core\Config;
 use App\Core\Middleware\AdminMiddleware;
 use App\Core\Middleware\AuthMiddleware;
 use App\Core\Middleware\CsrfMiddleware;
-use App\Core\Middleware\CustomerMiddleware;
 use App\Core\Middleware\RateLimitMiddleware;
 use App\Core\Middleware\RbacMiddleware;
 use App\Core\Middleware\TokenRateLimitMiddleware;
@@ -26,7 +25,6 @@ use App\Modules\Cms\Controller\FaqController;
 use App\Modules\Cms\Controller\MediaController;
 use App\Modules\Cms\Controller\PublicSiteController;
 use App\Modules\Cms\Controller\ServiceController;
-use App\Modules\Cms\Controller\TestimonialController;
 use App\Modules\System\Controller\GitHubWebhookController;
 use App\Modules\System\Controller\HealthController;
 
