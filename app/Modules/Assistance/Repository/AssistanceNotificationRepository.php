@@ -15,18 +15,7 @@ final class AssistanceNotificationRepository extends BaseRepository
     {
         $stmt = $this->db->prepare('SELECT * FROM assistance_notification_preferences WHERE assistance_request_id=:request_id LIMIT 1');
         $stmt->execute(['request_id' => $requestId]);
-        $row = $stmt->fetch();
-        if ($row) return $row;
-
-        $stmt = $this->db->prepare(
-            'SELECT cnp.email_enabled, cnp.sms_enabled, cnp.whatsapp_enabled
-             FROM assistance_requests ar
-             LEFT JOIN customer_notification_preferences cnp ON cnp.user_id=ar.customer_user_id
-             WHERE ar.id=:request_id LIMIT 1'
-        );
-        $stmt->execute(['request_id' => $requestId]);
-        $row = $stmt->fetch();
-        return $row ?: ['email_enabled'=>1,'sms_enabled'=>1,'whatsapp_enabled'=>1];
+        return $stmt->fetch() ?: ['email_enabled'=>1,'sms_enabled'=>1,'whatsapp_enabled'=>1];
     }
 
     public function savePreference(int $requestId, ?int $userId, array $values): bool
@@ -44,28 +33,6 @@ final class AssistanceNotificationRepository extends BaseRepository
             'email' => !empty($values['email_enabled']) ? 1 : 0,
             'sms' => !empty($values['sms_enabled']) ? 1 : 0,
             'whatsapp' => !empty($values['whatsapp_enabled']) ? 1 : 0,
-        ]);
-    }
-
-    public function userPreference(int $userId): array
-    {
-        $stmt = $this->db->prepare('SELECT * FROM customer_notification_preferences WHERE user_id=:user_id LIMIT 1');
-        $stmt->execute(['user_id'=>$userId]);
-        return $stmt->fetch() ?: ['user_id'=>$userId,'email_enabled'=>1,'sms_enabled'=>1,'whatsapp_enabled'=>1];
-    }
-
-    public function saveUserPreference(int $userId, array $values): bool
-    {
-        $stmt = $this->db->prepare(
-            'INSERT INTO customer_notification_preferences (user_id,email_enabled,sms_enabled,whatsapp_enabled)
-             VALUES (:user_id,:email,:sms,:whatsapp)
-             ON DUPLICATE KEY UPDATE email_enabled=VALUES(email_enabled), sms_enabled=VALUES(sms_enabled), whatsapp_enabled=VALUES(whatsapp_enabled)'
-        );
-        return $stmt->execute([
-            'user_id'=>$userId,
-            'email'=>!empty($values['email_enabled'])?1:0,
-            'sms'=>!empty($values['sms_enabled'])?1:0,
-            'whatsapp'=>!empty($values['whatsapp_enabled'])?1:0,
         ]);
     }
 
