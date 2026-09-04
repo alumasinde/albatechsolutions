@@ -75,8 +75,15 @@ final class PublicSiteController extends BaseController
 
     public function serviceShow(Request $request): Response
     {
-        $service = $this->services->findBySlug((string) $request->param('slug'));
-        if (!$service) return $this->view('public.404', [], 404);
+        $slug = (string) $request->param('slug');
+        $service = $this->services->findBySlug($slug);
+        if (!$service) {
+            $canonicalSlug = $this->services->canonicalSlugForAlias($slug);
+            if ($canonicalSlug !== null) {
+                return $this->redirect('/services/' . rawurlencode($canonicalSlug), 301);
+            }
+            return $this->view('public.404', [], 404);
+        }
 
         $all = $this->services->allPublished();
         $relatedIds = json_decode((string)($service['related_service_ids'] ?? '[]'), true);
