@@ -56,24 +56,12 @@ ob_start();
       <div><span class="public-kicker">Start here</span><h2>What are you trying to do?</h2><p>You don't need to know the name of the service. Pick the problem you're trying to solve.</p></div>
     </div>
     <div class="v3-intent-grid">
-      <a class="v3-intent-card" href="/get-help?category=government">
-        <span class="v3-intent-card__icon"><i class="fa-solid fa-landmark"></i></span><h3>Government & online services</h3><p>KRA, eCitizen, SHA, NSSF, NTSA and selected online applications.</p>
-      </a>
-      <a class="v3-intent-card" href="/get-help?category=business">
-        <span class="v3-intent-card__icon"><i class="fa-solid fa-store"></i></span><h3>Start or sort out my business</h3><p>Business registration, Google presence, email, websites and digital tools.</p>
-      </a>
-      <a class="v3-intent-card" href="/get-help?category=documents">
-        <span class="v3-intent-card__icon"><i class="fa-solid fa-file-lines"></i></span><h3>Documents & applications</h3><p>CVs, forms, document preparation and practical online application help.</p>
-      </a>
-      <a class="v3-intent-card" href="/get-help?category=website">
-        <span class="v3-intent-card__icon"><i class="fa-solid fa-globe"></i></span><h3>Get my business online</h3><p>Websites, domains, hosting, business email and Google Business Profile setup.</p>
-      </a>
-      <a class="v3-intent-card" href="/get-help?category=software">
-        <span class="v3-intent-card__icon"><i class="fa-solid fa-gears"></i></span><h3>Build a system</h3><p>Custom software, automation, integrations and business workflows.</p>
-      </a>
-      <a class="v3-intent-card" href="/contact">
-        <span class="v3-intent-card__icon"><i class="fa-solid fa-question"></i></span><h3>I'm not sure</h3><p>Just explain what you're stuck on. We'll help you identify the right next step.</p>
-      </a>
+      <a class="v3-intent-card" href="/services/kra-returns-filing"><span class="v3-intent-card__icon"><i class="fa-solid fa-file-invoice-dollar"></i></span><h3>KRA & tax help</h3><p>KRA returns, nil returns and practical tax compliance support.</p></a>
+      <a class="v3-intent-card" href="/services/ecitizen-services"><span class="v3-intent-card__icon"><i class="fa-solid fa-landmark"></i></span><h3>eCitizen help</h3><p>Independent help navigating selected eCitizen services.</p></a>
+      <a class="v3-intent-card" href="/services/business-registration"><span class="v3-intent-card__icon"><i class="fa-solid fa-store"></i></span><h3>Start a business</h3><p>Business registration, CR12 and practical next steps.</p></a>
+      <a class="v3-intent-card" href="/services/cv-writing"><span class="v3-intent-card__icon"><i class="fa-solid fa-file-lines"></i></span><h3>CV writing</h3><p>Get a clear, professional CV for your applications.</p></a>
+      <a class="v3-intent-card" href="/services/website-design-kenya"><span class="v3-intent-card__icon"><i class="fa-solid fa-globe"></i></span><h3>Get my business online</h3><p>Websites, domains, hosting and business email.</p></a>
+      <a class="v3-intent-card" href="/get-help"><span class="v3-intent-card__icon"><i class="fa-solid fa-question"></i></span><h3>I'm not sure</h3><p>Explain what you are trying to do and we will help with the next step.</p></a>
     </div>
   </div>
 </section>
