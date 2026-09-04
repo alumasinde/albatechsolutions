@@ -114,22 +114,6 @@ ob_start();
 </section>
 <?php endif; ?>
 
-<?php if (!empty($featuredProjects)): ?>
-<section class="public-section public-section--muted" id="work">
-  <div class="public-container">
-    <div class="phase4-section-head"><div><span class="public-kicker">For businesses</span><h2>When you need more than assistance.</h2><p>We also build websites, software and digital systems for businesses that are ready to grow.</p></div><a href="/projects" class="btn btn-secondary">See our work <i class="fa-solid fa-arrow-right"></i></a></div>
-    <div class="phase4-project-grid">
-      <?php foreach ($featuredProjects as $project): ?>
-        <a class="phase4-project-card" href="/projects/<?= e($project['slug']) ?>">
-          <div class="phase4-project-card__media"><?php if (!empty($project['image_path'])): ?><img src="<?= e(url($project['image_path'])) ?>" alt="<?= e($project['title']) ?>" loading="lazy" decoding="async"><?php else: ?><div class="phase4-project-card__placeholder"><i class="fa-solid fa-code"></i></div><?php endif; ?></div>
-          <div class="phase4-project-card__body"><span class="public-kicker"><?= e($project['industry'] ?: 'Digital solution') ?></span><h3><?= e($project['title']) ?></h3><p><?= e($project['summary']) ?></p><span class="phase4-arrow">View case study <i class="fa-solid fa-arrow-right"></i></span></div>
-        </a>
-      <?php endforeach; ?>
-    </div>
-  </div>
-</section>
-<?php endif; ?>
-
 <section class="public-section">
   <div class="public-container">
     <div class="v3-help-strip">
