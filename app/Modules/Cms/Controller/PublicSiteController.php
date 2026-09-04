@@ -100,9 +100,6 @@ final class PublicSiteController extends BaseController
             'Allow: /',
             "Disallow: {$adminPath}/",
             "Disallow: {$loginPath}",
-            'Disallow: /register',
-            'Disallow: /dashboard',
-            'Disallow: /account/',
             'Disallow: /quote/',
             'Disallow: /request/',
             'Disallow: /review/',
@@ -169,7 +166,7 @@ final class PublicSiteController extends BaseController
 
     public function contactPage(Request $request): Response
     {
-        return $this->view('public.contact', ['page' => $this->pages->findBySlug('contact')]);
+        return $this->view('public.contact');
     }
 
     public function contactSubmit(Request $request): Response
