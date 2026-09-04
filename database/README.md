@@ -1,23 +1,17 @@
-# Fixed database folder
+# AlbaTech Database
 
-This folder contains the audited migration chain for AlbaTech Solutions.
+Run migrations:
 
-## Fixes
+    php database/migrate.php
 
-- `016_add_service_featured_flag.sql` no longer adds `is_featured`, because migration 013 already creates that column. It retains the intended featured-service seed/update.
-- `021_add_missing_service_columns.sql` is now an intentional no-op because migration 020 already creates `features`.
-- Historical migration filenames were preserved. Do not rename already-deployed migrations merely to remove the duplicate numeric `020` prefix; the runner tracks migration identity by filename.
-- Migration `028_remove_legacy_orders_and_payments.sql` remains the controlled cleanup migration for the retired checkout/payment schema.
+Seed the AlbaTech baseline:
 
-## Expected fresh-install result
+    php database/seed.php
 
-Migrations 001–028 should execute without the duplicate-column failures encountered previously. The runner may still report the historical duplicate numeric prefix `020`; that is a warning about ordering labels, not a duplicate migration identity. The two migration files have different filenames and are tracked independently.
+The seed is idempotent and uses only real AlbaTech categories, services and settings. It does not create fake testimonials, projects, statistics or administrator credentials.
 
-After a clean migration, the retired tables should not exist:
+Active model:
 
-- orders
-- order_status_history
-- order_documents
-- payments
+Service Category -> Service -> Assistance Request -> Quote -> Payment Verification -> Work -> Completion
 
-The following current business/CMS tables should remain, including `quote_requests` for the lightweight Leads workflow.
+See docs/PHASE_2_DATABASE_AUDIT.md. Historical migrations remain append-only for deployed installation safety.
