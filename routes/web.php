@@ -18,9 +18,7 @@ use App\Modules\Admin\Controller\SecurityController;
 use App\Modules\Admin\Controller\SettingsController;
 use App\Modules\Admin\Controller\UserController;
 use App\Modules\Auth\Controller\AuthController;
-use App\Modules\Auth\Controller\GoogleAuthController;
 use App\Modules\Auth\Controller\PasswordResetController;
-use App\Modules\Assistant\Controller\AssistantController;
 use App\Modules\Assistance\Controller\AssistanceController;
 use App\Modules\Cms\Controller\BannerController;
 use App\Modules\Cms\Controller\BlogController;
@@ -28,14 +26,9 @@ use App\Modules\Cms\Controller\ContactMessageController;
 use App\Modules\Cms\Controller\FaqController;
 use App\Modules\Cms\Controller\MediaController;
 use App\Modules\Cms\Controller\MenuController;
-use App\Modules\Cms\Controller\PageController;
 use App\Modules\Cms\Controller\PublicSiteController;
 use App\Modules\Cms\Controller\ServiceController;
 use App\Modules\Cms\Controller\TestimonialController;
-use App\Modules\Customer\Controller\CustomerController;
-use App\Modules\Growth\Controller\IntelligenceController;
-use App\Modules\Growth\Controller\LeadController;
-use App\Modules\Growth\Controller\ProjectController;
 use App\Modules\System\Controller\GitHubWebhookController;
 use App\Modules\System\Controller\HealthController;
 
@@ -57,17 +50,6 @@ $router->group('', [CsrfMiddleware::class], function (Router $router) use ($logi
     $router->get('/reset-password/{token}', [PasswordResetController::class, 'showResetForm']);
     $router->post('/reset-password', [PasswordResetController::class, 'resetPassword'], [RateLimitMiddleware::class . ':password-reset']);
     $router->get('/verify-email/{token}', [AuthController::class, 'verifyEmail']);
-    $router->get('/register', [AuthController::class, 'showRegister']);
-    $router->post('/register', [AuthController::class, 'register'], [RateLimitMiddleware::class . ':register']);
-    $router->get('/auth/google/redirect', [GoogleAuthController::class, 'start']);
-    $router->get('/auth/google/callback', [GoogleAuthController::class, 'callback']);
-    $router->post('/logout', [AuthController::class, 'logout'], [AuthMiddleware::class]);
-
-    $router->get('/assistant', [AssistantController::class, 'index']);
-    $router->post('/assistant/start', [AssistantController::class, 'start'], [RateLimitMiddleware::class . ':assistant-start']);
-    $router->post('/assistant/message', [AssistantController::class, 'message'], [RateLimitMiddleware::class . ':assistant']);
-    $router->post('/analytics/collect', [IntelligenceController::class, 'collect'], [RateLimitMiddleware::class . ':analytics']);
-    $router->post('/analytics/event', [IntelligenceController::class, 'event'], [RateLimitMiddleware::class . ':analytics']);
 
     $router->group('/dashboard', [AuthMiddleware::class], function (Router $router) {
         $router->get('', [DashboardController::class, 'index']);
@@ -82,17 +64,6 @@ $router->group('', [CsrfMiddleware::class], function (Router $router) use ($logi
         $router->post('/resend-verification', [AuthController::class, 'resendVerification']);
     });
 
-    $router->group('/account', [CustomerMiddleware::class], function (Router $router) {
-        $router->get('', [CustomerController::class, 'dashboard']);
-        $router->get('/requests', [CustomerController::class, 'requests']);
-        $router->get('/requests/{id}', [CustomerController::class, 'requestShow']);
-        $router->get('/quotes', [CustomerController::class, 'quotes']);
-        $router->get('/quotes/{id}', [CustomerController::class, 'quoteShow']);
-        $router->get('/payments', [CustomerController::class, 'payments']);
-        $router->get('/profile', [CustomerController::class, 'profile']);
-        $router->post('/profile', [CustomerController::class, 'updateProfile']);
-    });
-
     $router->group($adminPath, [AuthMiddleware::class, AdminMiddleware::class], function (Router $router) {
         $router->get('/settings', [SettingsController::class, 'edit'], [RbacMiddleware::class . ':settings.manage']);
         $router->post('/settings', [SettingsController::class, 'update'], [RbacMiddleware::class . ':settings.manage']);
@@ -104,12 +75,6 @@ $router->group('', [CsrfMiddleware::class], function (Router $router) use ($logi
         $router->get('/roles/{id}/edit', [RoleController::class, 'edit'], [RbacMiddleware::class . ':roles.manage']);
         $router->post('/roles/{id}', [RoleController::class, 'update'], [RbacMiddleware::class . ':roles.manage']);
         $router->get('/audit', [AuditController::class, 'index'], [RbacMiddleware::class . ':audit.view']);
-        $router->get('/pages', [PageController::class, 'index'], [RbacMiddleware::class . ':pages.view']);
-        $router->get('/pages/create', [PageController::class, 'create'], [RbacMiddleware::class . ':pages.manage']);
-        $router->post('/pages', [PageController::class, 'store'], [RbacMiddleware::class . ':pages.manage']);
-        $router->get('/pages/{id}/edit', [PageController::class, 'edit'], [RbacMiddleware::class . ':pages.manage']);
-        $router->post('/pages/{id}', [PageController::class, 'update'], [RbacMiddleware::class . ':pages.manage']);
-        $router->post('/pages/{id}/delete', [PageController::class, 'destroy'], [RbacMiddleware::class . ':pages.manage']);
         $router->get('/blog', [BlogController::class, 'index'], [RbacMiddleware::class . ':blog.view']);
         $router->get('/blog/create', [BlogController::class, 'create'], [RbacMiddleware::class . ':blog.manage']);
         $router->post('/blog', [BlogController::class, 'store'], [RbacMiddleware::class . ':blog.manage']);
@@ -117,16 +82,6 @@ $router->group('', [CsrfMiddleware::class], function (Router $router) use ($logi
         $router->post('/blog/{id}', [BlogController::class, 'update'], [RbacMiddleware::class . ':blog.manage']);
         $router->post('/blog/{id}/delete', [BlogController::class, 'destroy'], [RbacMiddleware::class . ':blog.manage']);
         $router->post('/blog-categories', [BlogController::class, 'storeCategory'], [RbacMiddleware::class . ':blog.manage']);
-        $router->get('/menus/{slug}', [MenuController::class, 'edit'], [RbacMiddleware::class . ':menus.manage']);
-        $router->post('/menus/{slug}/items', [MenuController::class, 'storeItem'], [RbacMiddleware::class . ':menus.manage']);
-        $router->post('/menu-items/{id}', [MenuController::class, 'updateItem'], [RbacMiddleware::class . ':menus.manage']);
-        $router->post('/menu-items/{id}/delete', [MenuController::class, 'destroyItem'], [RbacMiddleware::class . ':menus.manage']);
-        $router->get('/banners', [BannerController::class, 'index'], [RbacMiddleware::class . ':banners.manage']);
-        $router->get('/banners/create', [BannerController::class, 'create'], [RbacMiddleware::class . ':banners.manage']);
-        $router->post('/banners', [BannerController::class, 'store'], [RbacMiddleware::class . ':banners.manage']);
-        $router->get('/banners/{id}/edit', [BannerController::class, 'edit'], [RbacMiddleware::class . ':banners.manage']);
-        $router->post('/banners/{id}', [BannerController::class, 'update'], [RbacMiddleware::class . ':banners.manage']);
-        $router->post('/banners/{id}/delete', [BannerController::class, 'destroy'], [RbacMiddleware::class . ':banners.manage']);
         $router->get('/faqs', [FaqController::class, 'index'], [RbacMiddleware::class . ':faqs.manage']);
         $router->post('/faqs', [FaqController::class, 'store'], [RbacMiddleware::class . ':faqs.manage']);
         $router->post('/faqs/{id}', [FaqController::class, 'update'], [RbacMiddleware::class . ':faqs.manage']);
@@ -149,17 +104,10 @@ $router->group('', [CsrfMiddleware::class], function (Router $router) use ($logi
         $router->post('/media/{id}/delete', [MediaController::class, 'destroy'], [RbacMiddleware::class . ':media.manage']);
         $router->get('/contact-messages', [ContactMessageController::class, 'index'], [RbacMiddleware::class . ':contact_messages.view']);
         $router->post('/contact-messages/{id}/read', [ContactMessageController::class, 'markRead'], [RbacMiddleware::class . ':contact_messages.view']);
-        $router->get('/growth/intelligence', [IntelligenceController::class, 'dashboard'], [RbacMiddleware::class . ':growth.intelligence.view']);
-        $router->post('/growth/intelligence/notes/{id}/dismiss', [IntelligenceController::class, 'dismiss'], [RbacMiddleware::class . ':growth.intelligence.manage']);
-        $router->get('/leads', [LeadController::class, 'index'], [RbacMiddleware::class . ':leads.view']);
-        $router->get('/leads/{id}', [LeadController::class, 'show'], [RbacMiddleware::class . ':leads.view']);
-        $router->post('/leads/{id}', [LeadController::class, 'update'], [RbacMiddleware::class . ':leads.manage']);
         $router->get('/assistance', [AssistanceController::class, 'index'], [RbacMiddleware::class . ':assistance.view']);
         $router->get('/assistance/payments', [AssistanceController::class, 'payments'], [RbacMiddleware::class . ':assistance.payments.manage']);
         $router->get('/assistance/reviews', [AssistanceController::class, 'reviews'], [RbacMiddleware::class . ':assistance.reviews.manage']);
         $router->get('/assistance/notifications', [AssistanceController::class, 'notifications'], [RbacMiddleware::class . ':assistance.notifications.view']);
-        $router->get('/assistant/sessions', [AssistantController::class, 'sessions'], [RbacMiddleware::class . ':assistant.sessions.view']);
-        $router->get('/assistant/sessions/{id}', [AssistantController::class, 'session'], [RbacMiddleware::class . ':assistant.sessions.view']);
         $router->post('/assistance/notifications/{id}/retry', [AssistanceController::class, 'notificationRetry'], [RbacMiddleware::class . ':assistance.notifications.manage']);
         $router->post('/assistance/reviews/{id}', [AssistanceController::class, 'reviewModerate'], [RbacMiddleware::class . ':assistance.reviews.manage']);
         $router->get('/assistance/{id}/work', [AssistanceController::class, 'work'], [RbacMiddleware::class . ':assistance.work.manage']);
@@ -175,12 +123,6 @@ $router->group('', [CsrfMiddleware::class], function (Router $router) use ($logi
         $router->get('/assistance/quote/{id}', [AssistanceController::class, 'quoteShow'], [RbacMiddleware::class . ':assistance.quotes.manage']);
         $router->post('/assistance/payments/{id}/verify', [AssistanceController::class, 'paymentVerify'], [RbacMiddleware::class . ':assistance.payments.manage']);
         $router->post('/assistance/payments/{id}/reject', [AssistanceController::class, 'paymentReject'], [RbacMiddleware::class . ':assistance.payments.manage']);
-        $router->get('/projects', [ProjectController::class, 'index'], [RbacMiddleware::class . ':projects.view']);
-        $router->get('/projects/create', [ProjectController::class, 'create'], [RbacMiddleware::class . ':projects.manage']);
-        $router->post('/projects', [ProjectController::class, 'store'], [RbacMiddleware::class . ':projects.manage']);
-        $router->get('/projects/{id}/edit', [ProjectController::class, 'edit'], [RbacMiddleware::class . ':projects.manage']);
-        $router->post('/projects/{id}', [ProjectController::class, 'update'], [RbacMiddleware::class . ':projects.manage']);
-        $router->post('/projects/{id}/delete', [ProjectController::class, 'destroy'], [RbacMiddleware::class . ':projects.manage']);
     });
 });
 
@@ -208,9 +150,6 @@ $router->post('/quote/{token}/accept', [AssistanceController::class, 'quoteAccep
 $router->post('/quote/{token}/payment', [AssistanceController::class, 'quotePayment'], [CsrfMiddleware::class, TokenRateLimitMiddleware::class . ':quote-payment']);
 $router->get('/about', [PublicSiteController::class, 'aboutPage']);
 $router->get('/contact', [PublicSiteController::class, 'contactPage']);
-$router->get('/projects', [PublicSiteController::class, 'projectsIndex']);
-$router->get('/projects/{slug}', [PublicSiteController::class, 'projectShow']);
 $router->post('/contact', [PublicSiteController::class, 'contactSubmit'], [CsrfMiddleware::class, RateLimitMiddleware::class . ':contact']);
 $router->get('/robots.txt', [PublicSiteController::class, 'robotsTxt']);
 $router->get('/sitemap.xml', [PublicSiteController::class, 'sitemapXml']);
-$router->get('/{slug}', [PublicSiteController::class, 'page']);
