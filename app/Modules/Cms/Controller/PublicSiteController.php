@@ -12,25 +12,21 @@ use App\Core\Session;
 use App\Modules\Cms\Repository\BlogCategoryRepository;
 use App\Modules\Cms\Repository\BlogPostRepository;
 use App\Modules\Cms\Repository\FaqRepository;
-use App\Modules\Cms\Repository\PageRepository;
 use App\Modules\Cms\Repository\ServiceCategoryRepository;
 use App\Modules\Cms\Repository\ServiceRepository;
 use App\Modules\Cms\Repository\TestimonialRepository;
 use App\Modules\Cms\Service\ContactService;
-use App\Modules\Growth\Repository\ProjectRepository;
 
 final class PublicSiteController extends BaseController
 {
     public function __construct(
-        private readonly PageRepository $pages,
         private readonly BlogPostRepository $posts,
         private readonly BlogCategoryRepository $categories,
         private readonly FaqRepository $faqs,
         private readonly TestimonialRepository $testimonials,
         private readonly ServiceRepository $services,
         private readonly ServiceCategoryRepository $serviceCategories,
-        private readonly ContactService $contactService,
-        private readonly ProjectRepository $projects
+        private readonly ContactService $contactService
     ) {
     }
 
@@ -41,22 +37,7 @@ final class PublicSiteController extends BaseController
             'faqs' => $this->faqs->allActive(),
             'recentPosts' => $this->posts->paginatePublished(1, 3),
             'featuredServices' => $this->services->forHomepage(6),
-            'featuredProjects' => $this->projects->featured(3),
-            'projectCount' => count($this->projects->allPublished()),
             'serviceCount' => count($this->services->allPublished()),
-        ]);
-    }
-
-    public function page(Request $request): Response
-    {
-        $page = $this->pages->findBySlug((string) $request->param('slug'));
-        if (!$page) return $this->view('public.404', [], 404);
-
-        return $this->view('public.page', [
-            'page' => $page,
-            'relatedServices' => array_slice($this->services->allPublished(), 0, 4),
-            'relatedProjects' => array_slice($this->projects->allPublished(), 0, 3),
-            'recentPosts' => $this->posts->paginatePublished(1, 3),
         ]);
     }
 
@@ -146,16 +127,8 @@ final class PublicSiteController extends BaseController
             ['loc' => $baseUrl . '/contact', 'priority' => '0.6'],
         ];
 
-        foreach ($this->pages->allForAdmin() as $page) {
-            if (($page['status'] ?? null) === 'published' && empty($page['noindex'])) {
-                $urls[] = ['loc' => $baseUrl . '/' . ltrim((string)$page['slug'], '/'), 'lastmod' => $page['updated_at'], 'priority' => '0.6'];
-            }
-        }
         foreach ($this->services->allPublished() as $service) {
             $urls[] = ['loc' => $baseUrl . '/services/' . ltrim((string)$service['slug'], '/'), 'lastmod' => $service['updated_at'], 'priority' => '0.8'];
-        }
-        foreach ($this->projects->allPublished() as $project) {
-            $urls[] = ['loc' => $baseUrl . '/projects/' . ltrim((string)$project['slug'], '/'), 'lastmod' => $project['updated_at'], 'priority' => '0.8'];
         }
         foreach ($this->posts->allForAdmin() as $post) {
             if (($post['status'] ?? null) === 'published') {
@@ -186,28 +159,11 @@ final class PublicSiteController extends BaseController
         return Response::html($xml, 200, ['Content-Type' => 'application/xml; charset=UTF-8']);
     }
 
-    public function projectsIndex(Request $request): Response
-    {
-        return $this->view('public.projects-index', ['projects' => $this->projects->allPublished()]);
-    }
-
-    public function projectShow(Request $request): Response
-    {
-        $project = $this->projects->findPublishedBySlug((string)$request->param('slug'));
-        if (!$project) return $this->view('public.404', [], 404);
-        return $this->view('public.project-show', [
-            'project' => $project,
-            'relatedProjects' => array_values(array_filter($this->projects->allPublished(), static fn (array $item): bool => $item['slug'] !== $project['slug'])),
-        ]);
-    }
-
     public function aboutPage(Request $request): Response
     {
         return $this->view('public.about', [
-            'projectCount' => count($this->projects->allPublished()),
             'serviceCount' => count($this->services->allPublished()),
             'testimonials' => array_slice($this->testimonials->allActive(), 0, 3),
-            'featuredProjects' => $this->projects->featured(3),
         ]);
     }
 
