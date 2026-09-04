@@ -28,6 +28,17 @@ final class ServiceRepository extends BaseRepository
         return $stmt->fetch() ?: null;
     }
 
+    public function canonicalSlugForAlias(string $legacySlug): ?string
+    {
+        $stmt = $this->db->prepare(
+            'SELECT s.slug FROM service_slug_aliases a INNER JOIN services s ON s.id = a.service_id
+             WHERE a.legacy_slug = :slug AND s.status = \'published\' AND s.deleted_at IS NULL LIMIT 1'
+        );
+        $stmt->execute(['slug' => $legacySlug]);
+        $slug = $stmt->fetchColumn();
+        return $slug === false ? null : (string) $slug;
+    }
+
     public function allPublished(): array
     {
         $stmt = $this->db->query(
