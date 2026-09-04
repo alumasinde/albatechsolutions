@@ -1,10 +1,36 @@
 # AlbaTech Solutions
 
-Kenya-focused human digital assistance platform.
+Kenya-focused digital assistance and technology services.
 
-AlbaTech helps individuals and businesses get practical digital tasks done, including KRA and eCitizen assistance, SHA registration support, online applications, business registration assistance, CVs and documents. Websites, software and other technology services are available as a second layer for businesses that need more.
+AlbaTech helps individuals and businesses get practical tasks done, including KRA returns support, eCitizen help, business registration assistance, CV writing, websites and practical IT services.
 
-AlbaTech is an independent business and is not a government agency.
+**Tell us the task. We'll help with the next step.**
+
+AlbaTech Solutions is an independent business and is **not a government agency**.
+
+## Phase 1 architecture
+
+The active application is focused on:
+
+- Public website and SEO service pages
+- Service catalogue
+- Guides/blog content
+- FAQs and contact messages
+- WhatsApp-first and form-based assistance requests
+- Admin management
+- Assistance requests, quotes, payment verification and work tracking
+
+Retired from the active route surface:
+
+- Customer self-registration/account portal
+- Legacy Orders checkout workflow
+- Legacy order payment workflow
+- Public digital assistant
+- Growth analytics collection
+- Public projects/portfolio
+- Generic public Pages CMS routing
+
+Historical migrations are retained for deployment safety. See `docs/PHASE_1_AUDIT.md`.
 
 ## Stack
 
@@ -18,17 +44,11 @@ AlbaTech is an independent business and is not a government agency.
 
 ```bash
 composer install
-php bin/preflight.php
+php bin/qa.php
 ```
 
-Configure the required environment values in a local `.env`. Never commit `.env`, credentials, API keys or deployment secrets.
+Configure required values in a local `.env`. Never commit credentials, API keys or deployment secrets.
 
-## Production notes
+## Next
 
-Production fail-closed checks require `APP_DEBUG=false`, a sufficiently long `APP_KEY`, and an HTTPS `APP_URL`.
-
-Optional GitHub deployment automation is server-side only. Configure `GIT_WEBHOOK_SECRET`, `GIT_GITHUB_REPO`, `GIT_DEPLOY_BRANCH`, and set `GIT_AUTO_PULL=true` only on a clean deployment checkout. The web application never accepts a PAT and never performs `git push`.
-
-## Tests
-
-Run the preflight checks before deployment and exercise authentication, 2FA, assistance requests, private quote links, payment verification, and webhook signature handling in a staging environment.
+Phase 2: database baseline and real AlbaTech seed data.
