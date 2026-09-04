@@ -14,7 +14,6 @@ use App\Modules\Cms\Repository\BlogPostRepository;
 use App\Modules\Cms\Repository\FaqRepository;
 use App\Modules\Cms\Repository\ServiceCategoryRepository;
 use App\Modules\Cms\Repository\ServiceRepository;
-use App\Modules\Cms\Repository\TestimonialRepository;
 use App\Modules\Cms\Service\ContactService;
 
 final class PublicSiteController extends BaseController
@@ -23,7 +22,6 @@ final class PublicSiteController extends BaseController
         private readonly BlogPostRepository $posts,
         private readonly BlogCategoryRepository $categories,
         private readonly FaqRepository $faqs,
-        private readonly TestimonialRepository $testimonials,
         private readonly ServiceRepository $services,
         private readonly ServiceCategoryRepository $serviceCategories,
         private readonly ContactService $contactService
@@ -33,7 +31,6 @@ final class PublicSiteController extends BaseController
     public function home(Request $request): Response
     {
         return $this->view('public.home', [
-            'testimonials' => $this->testimonials->allActive(),
             'faqs' => $this->faqs->allActive(),
             'recentPosts' => $this->posts->paginatePublished(1, 3),
             'featuredServices' => $this->services->forHomepage(6),
@@ -167,7 +164,6 @@ final class PublicSiteController extends BaseController
     {
         return $this->view('public.about', [
             'serviceCount' => count($this->services->allPublished()),
-            'testimonials' => array_slice($this->testimonials->allActive(), 0, 3),
         ]);
     }
 
