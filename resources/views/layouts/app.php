@@ -65,7 +65,7 @@
     </style>
     <?php if (isset($extraHead)) echo $extraHead; ?>
 </head>
-<body class="<?= e($pageScopeClass) ?> <?= setting('whatsapp_number') ? 'has-mobile-cta' : '' ?>" data-ga4="<?= e(setting('analytics_ga4_id', '')) ?>" data-business-name="<?= e(setting('site_name', 'AlbaTech Solutions')) ?>" data-analytics-page-type="<?= e($analyticsPageType ?? '') ?>" data-analytics-entity-id="<?= e((string)($analyticsEntityId ?? '')) ?>">
+<body class="<?= e($pageScopeClass) ?> <?= setting('whatsapp_number') ? 'has-mobile-cta' : '' ?>">
     <a class="skip-link" href="#main-content">Skip to content</a>
     <div id="toast-container" class="toast-container" aria-live="polite"></div>
 
@@ -75,9 +75,6 @@
 
     <script src="<?= asset('js/v4/app.js') ?>" defer></script>
     <script src="<?= asset('js/v4/theme.js') ?>" defer></script>
-    <?php if (isset($metaDescription)): ?>
-        <script src="<?= asset('js/v4/growth-analytics.js') ?>" defer></script>
-    <?php endif; ?>
 
     <?php if (setting('whatsapp_number')): ?>
         <div class="mobile-cta-bar" aria-label="Quick contact actions">
