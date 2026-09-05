@@ -31,9 +31,10 @@ final class PublicSiteController extends BaseController
     public function home(Request $request): Response
     {
         return $this->view('public.home', [
-            'faqs' => $this->faqs->allActive(),
+            'faqs' => array_slice($this->faqs->allActive(), 0, 6),
             'recentPosts' => $this->posts->paginatePublished(1, 3),
-            'featuredServices' => $this->services->forHomepage(6),
+            'featuredServices' => $this->services->forHomepage(8),
+            'serviceCategories' => $this->serviceCategories->withPublishedServices(),
             'serviceCount' => count($this->services->allPublished()),
         ]);
     }
