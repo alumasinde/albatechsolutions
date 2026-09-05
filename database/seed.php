@@ -8,7 +8,7 @@ $pdo = new PDO(sprintf('mysql:host=%s;port=%s;dbname=%s;charset=%s',$config['hos
 $pdo->beginTransaction();
 try {
 $settings=['site_name'=>'AlbaTech Solutions','site_tagline'=>'Tell us the task. We’ll help with the next step.','contact_phone'=>'+254 792 159 806','whatsapp_number'=>'254792159806','site_country'=>'Kenya','site_currency'=>'KES','government_services_disclaimer'=>'AlbaTech Solutions provides independent assistance and is not a government agency.'];
-$stmt=$pdo->prepare('INSERT INTO settings (key, value, type) VALUES (:key,:value,:type) ON DUPLICATE KEY UPDATE value=VALUES(value), type=VALUES(type)');
+$stmt=$pdo->prepare('INSERT INTO settings (`key`, `value`, `type`) VALUES (:key,:value,:type) ON DUPLICATE KEY UPDATE `value`=VALUES(`value`), `type`=VALUES(`type`)');
 foreach($settings as $key=>$value){$stmt->execute(['key'=>$key,'value'=>$value,'type'=>'string']);}
 $categories=[['Government & Digital Assistance','government-digital-assistance',1],['Business Services','business-services',2],['Career Services','career-services',3],['Online Presence','online-presence',4],['IT Support','it-support',5],['Web & Software','web-software',6],['Design & Marketing','design-marketing',7]];
 $stmt=$pdo->prepare('INSERT INTO service_categories (name,slug,sort_order) VALUES (:name,:slug,:sort_order) ON DUPLICATE KEY UPDATE name=VALUES(name),sort_order=VALUES(sort_order),deleted_at=NULL');
