@@ -23,6 +23,49 @@ final class AssistanceNotificationService extends BaseService
         private readonly AssistanceRequestRepository $requests
     ) {}
 
+    public function adminNewRequest(array $request): void
+    {
+        $recipients = [
+            'whatsapp' => trim((string)($_ENV['ADMIN_NOTIFICATION_WHATSAPP'] ?? '')),
+            'email' => trim((string)($_ENV['ADMIN_NOTIFICATION_EMAIL'] ?? '')),
+        ];
+        $data = [
+            'reference' => (string)$request['request_number'],
+            'name' => (string)$request['name'],
+            'phone' => (string)$request['phone'],
+            'email' => (string)($request['email'] ?? '—'),
+            'service' => (string)($request['service_name'] ?? 'General assistance'),
+            'category' => (string)($request['category'] ?? ''),
+            'message' => trim((string)($request['message'] ?? '')),
+            'url' => rtrim(Config::get('app.url', ''), '/') . '/admin/assistance/' . (int)$request['id'],
+        ];
+
+        foreach ($recipients as $channel => $recipient) {
+            if ($recipient === '') continue;
+            $event = 'admin_new_request';
+            if ($this->notificationRepository->notificationExists((int)$request['id'], $channel, $event, 'admin_alert', null)) continue;
+            $template = $this->notificationRepository->template($event, $channel);
+            if (!$template) continue;
+            $message = $this->buildMessageFromTemplate($channel, $template, $data);
+            $notificationId = $this->notificationRepository->createNotification([
+                'assistance_request_id' => (int)$request['id'],
+                'channel' => $channel,
+                'event' => $event,
+                'recipient' => $recipient,
+                'subject' => $message->subject,
+                'status' => 'queued',
+                'source_type' => 'admin_alert',
+                'source_id' => null,
+                'template_name' => $message->template,
+                'template_language' => $message->language,
+                'body' => $message->body,
+                'template_data' => json_encode(['whatsapp_parameters' => $message->data], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
+            ]);
+            $notification = $this->notificationRepository->find($notificationId);
+            if ($notification) $this->deliver($notification, new NotificationMessage($message->channel, $recipient, $message->subject, $message->body, $message->data, $message->template, $message->language));
+        }
+    }
+
     public function requestReceived(array $request): void
     {
         $this->dispatch((int)$request['id'], 'request_received', $request, [
