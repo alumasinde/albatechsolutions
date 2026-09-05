@@ -70,6 +70,10 @@ final class PublicSiteController extends BaseController
         ]);
     }
 
+    public function redirectServiceLegacyWebsiteDesign(Request $request): Response { return $this->redirect('/services/website-design-kenya', 301); }
+    public function redirectServiceLegacyCr12(Request $request): Response { return $this->redirect('/services/cr12-application', 301); }
+    public function redirectServiceLegacyNetworking(Request $request): Response { return $this->redirect('/services/wifi-networking', 301); }
+
     public function serviceShow(Request $request): Response
     {
         $slug = (string) $request->param('slug');
