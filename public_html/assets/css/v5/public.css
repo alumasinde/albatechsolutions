@@ -240,3 +240,71 @@
     inset: 64px 0 auto 0;
   }
 }
+
+
+/* Homepage — task-first public journey */
+.public-page .home-section { padding-block: clamp(56px, 8vw, 96px); }
+.public-page .home-hero { padding: clamp(56px, 9vw, 110px) 0; background: var(--alba-page); }
+.public-page .home-hero__grid { display:grid; grid-template-columns:minmax(0,1.45fr) minmax(280px,.7fr); gap:clamp(32px,6vw,84px); align-items:center; }
+.public-page .home-hero h1 { max-width:760px; margin:12px 0 18px; font-size:clamp(2.35rem,5vw,4.5rem); line-height:1.03; letter-spacing:-.045em; color:var(--alba-text-strong); }
+.public-page .home-hero__lead { max-width:680px; font-size:clamp(1.05rem,2vw,1.22rem); line-height:1.7; color:var(--alba-text-muted); }
+.public-page .home-actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:28px; }
+.public-page .home-hero__signals { display:flex; flex-wrap:wrap; gap:18px; padding:0; margin:24px 0 0; list-style:none; color:var(--alba-text-muted); font-size:.92rem; font-weight:700; }
+.public-page .home-hero__signals i { color:var(--alba-primary); margin-right:6px; }
+.public-page .home-hero__task-card { padding:clamp(24px,4vw,40px); display:grid; gap:14px; }
+.public-page .home-hero__task-card strong { font-size:clamp(1.5rem,3vw,2.15rem); line-height:1.15; color:var(--alba-text-strong); }
+.public-page .home-hero__task-card p { margin:0; color:var(--alba-text-muted); line-height:1.65; }
+.public-page .home-hero__task-link,.public-page .home-text-link,.public-page .home-card-link { color:var(--alba-primary); font-weight:800; text-decoration:none; }
+.public-page .home-section-head { display:flex; justify-content:space-between; align-items:end; gap:24px; margin-bottom:30px; }
+.public-page .home-section-head h2,.public-page .home-why h2,.public-page .home-final-cta h2 { margin:9px 0 8px; font-size:clamp(1.75rem,3vw,2.7rem); line-height:1.12; color:var(--alba-text-strong); letter-spacing:-.03em; }
+.public-page .home-section-head p,.public-page .home-why p,.public-page .home-final-cta p { margin:0; max-width:700px; color:var(--alba-text-muted); line-height:1.65; }
+.public-page .home-section-head--center { justify-content:center; text-align:center; }
+.public-page .home-task-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px; }
+.public-page .home-task-card,.public-page .home-service-card,.public-page .home-guide-card { display:flex; flex-direction:column; padding:22px; color:inherit; text-decoration:none; }
+.public-page .home-task-card h3,.public-page .home-service-card h3,.public-page .home-guide-card h3 { margin:14px 0 8px; color:var(--alba-text-strong); font-size:1.08rem; }
+.public-page .home-task-card p,.public-page .home-service-card p,.public-page .home-guide-card p { margin:0 0 16px; color:var(--alba-text-muted); line-height:1.55; font-size:.94rem; }
+.public-page .home-task-card > span:last-child,.public-page .home-card-link { margin-top:auto; font-size:.9rem; }
+.public-page .home-task-card__icon { width:42px; height:42px; display:inline-flex; align-items:center; justify-content:center; border-radius:var(--alba-radius-md); background:var(--alba-surface-muted); color:var(--alba-primary); }
+.public-page .home-task-card--help { border-style:dashed; }
+.public-page .home-steps { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
+.public-page .home-step { padding:28px; }
+.public-page .home-step > span { display:inline-flex; width:34px; height:34px; align-items:center; justify-content:center; border-radius:50%; background:var(--alba-primary); color:var(--alba-on-primary); font-weight:850; }
+.public-page .home-step h3 { margin:18px 0 8px; color:var(--alba-text-strong); }
+.public-page .home-step p { margin:0; color:var(--alba-text-muted); line-height:1.6; }
+.public-page .home-service-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:18px; }
+.public-page .home-guide-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
+.public-page .home-why { display:grid; grid-template-columns:minmax(0,1fr) minmax(300px,.9fr); gap:clamp(32px,7vw,96px); align-items:start; }
+.public-page .home-why__points { display:grid; gap:22px; }
+.public-page .home-why__points article { display:flex; gap:14px; }
+.public-page .home-why__points > article > i { width:40px; height:40px; flex:0 0 40px; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; background:var(--alba-surface-muted); color:var(--alba-primary); }
+.public-page .home-why__points h3 { margin:2px 0 4px; color:var(--alba-text-strong); }
+.public-page .home-why__points p { font-size:.94rem; }
+.public-page .home-faq-list { display:grid; gap:10px; max-width:900px; }
+.public-page .home-faq { padding:0 20px; }
+.public-page .home-faq summary { display:flex; justify-content:space-between; align-items:center; gap:18px; padding:19px 0; cursor:pointer; color:var(--alba-text-strong); font-weight:800; list-style:none; }
+.public-page .home-faq summary::-webkit-details-marker { display:none; }
+.public-page .home-faq[open] summary i { transform:rotate(45deg); }
+.public-page .home-faq p { margin:0; padding:0 0 20px; color:var(--alba-text-muted); line-height:1.65; }
+.public-page .home-disclaimer { max-width:900px; padding:18px 0 28px; }
+.public-page .home-disclaimer strong { color:var(--alba-text-strong); }
+.public-page .home-disclaimer p { margin:7px 0 0; color:var(--alba-text-muted); line-height:1.6; }
+.public-page .home-final-cta { display:flex; align-items:center; justify-content:space-between; gap:32px; padding:clamp(28px,5vw,52px); }
+
+@media (max-width: 1050px) {
+  .public-page .home-task-grid,.public-page .home-service-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+}
+@media (max-width: 780px) {
+  .public-page .home-hero__grid,.public-page .home-why { grid-template-columns:1fr; }
+  .public-page .home-hero__task-card { max-width:none; }
+  .public-page .home-section-head,.public-page .home-final-cta { align-items:flex-start; flex-direction:column; }
+  .public-page .home-steps { grid-template-columns:1fr; }
+  .public-page .home-task-grid,.public-page .home-service-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .public-page .home-guide-grid { grid-template-columns:1fr; }
+}
+@media (max-width: 520px) {
+  .public-page .home-hero { padding-top:44px; }
+  .public-page .home-task-grid,.public-page .home-service-grid { grid-template-columns:1fr; }
+  .public-page .home-actions { width:100%; }
+  .public-page .home-actions .btn { width:100%; justify-content:center; }
+  .public-page .home-hero__signals { display:grid; gap:9px; }
+}
