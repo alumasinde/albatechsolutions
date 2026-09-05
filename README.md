@@ -52,3 +52,23 @@ Configure required values in a local `.env`. Never commit credentials, API keys 
 ## Next
 
 Phase 2: database baseline and real AlbaTech seed data.
+
+
+## Fresh database setup
+
+For a new AlbaTech database, use the current migrations and seed instead of copying old data.
+
+Configure DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS and DB_CHARSET in your local .env, then run:
+
+    composer install
+    php bin/install-fresh.php
+
+The installer creates the configured empty database, runs every migration in order, then loads the current AlbaTech seed.
+
+To deliberately discard the configured database and rebuild it:
+
+    php bin/install-fresh.php --reset
+
+Warning: --reset drops the configured database.
+
+The baseline includes dynamic content for KRA Returns Filing, eCitizen Services, Business Registration, CV Writing, Website Design, Computer Repair, IT Support and Google Business Profile Setup. All use the shared dynamic service renderer and database content; no separate hardcoded public PHP pages are needed.
