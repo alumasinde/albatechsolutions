@@ -134,7 +134,6 @@
                 const source = window.location.pathname;
                 if (source && source !== '/') message += `\n\n(Source: ${source})`;
                 const url = `https://wa.me/${cleanNumber}?text=${encodeURIComponent(message.slice(0, 1800))}`;
-                if (typeof window.gtag === 'function') window.gtag('event', 'whatsapp_start', { intent, context: context || undefined, page_path: source });
                 window.open(url, '_blank', 'noopener,noreferrer');
             }
         });
@@ -169,21 +168,6 @@
         });
     });
 
-    // --- Optional Google Analytics 4 bootstrap -----------------------------
-    // The measurement ID is read from the database-backed page attribute so
-    // no tracking identifier is hardcoded into the application source.
-    const ga4Id = document.body ? document.body.dataset.ga4 : '';
-    if (ga4Id) {
-        window.dataLayer = window.dataLayer || [];
-        window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
-        window.gtag('js', new Date());
-        window.gtag('config', ga4Id);
-        const gaScript = document.createElement('script');
-        gaScript.async = true;
-        gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(ga4Id);
-        document.head.appendChild(gaScript);
-    }
-
     // --- Loading button state ------------------------------------------------
     document.addEventListener('submit', function (e) {
         const form = e.target;
@@ -194,19 +178,6 @@
             submitBtn.dataset.originalLabel = submitBtn.innerHTML;
             submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Please wait...';
         }
-    });
-
-    // Lightweight analytics hooks. gtag is only used when GA4 is configured.
-    document.addEventListener('click', function (e) {
-        const link = e.target.closest('a');
-        if (!link || typeof window.gtag !== 'function') return;
-        const href = link.getAttribute('href') || '';
-        let eventName = null;
-        if (href.startsWith('https://wa.me/')) eventName = 'whatsapp_click';
-        else if (href === '/contact' || href.startsWith('/contact?')) eventName = 'contact_cta_click';
-        else if (href === '/services' || href.startsWith('/services/')) eventName = 'service_click';
-        else if (link.target === '_blank' && /^https?:\/\//i.test(href)) eventName = 'outbound_click';
-        if (eventName) window.gtag('event', eventName, { link_url: href, link_text: (link.textContent || '').trim().slice(0, 80) });
     });
 
     window.Toast = { show: toast };
@@ -277,39 +248,6 @@
         document.querySelectorAll('.phase7-reveal, .phase7-stagger').forEach(function (el) { observer.observe(el); });
     })();
 
-
-    // --- Core Web Vitals ---------------------------------------------------
-    (function setupWebVitals() {
-        if (typeof window.gtag !== 'function' || !('PerformanceObserver' in window)) return;
-        var sent = {};
-        function send(name, value) {
-            if (sent[name]) return;
-            sent[name] = true;
-            window.gtag('event', name, { value: Math.round(value), metric_value: value });
-        }
-        try {
-            var lcp = new PerformanceObserver(function (list) {
-                var entries = list.getEntries(); var last = entries[entries.length - 1];
-                if (last) send('web_vital_lcp', last.startTime);
-            });
-            lcp.observe({ type: 'largest-contentful-paint', buffered: true });
-        } catch (_) {}
-        try {
-            var clsValue = 0;
-            var cls = new PerformanceObserver(function (list) {
-                list.getEntries().forEach(function (entry) { if (!entry.hadRecentInput) clsValue += entry.value; });
-            });
-            cls.observe({ type: 'layout-shift', buffered: true });
-            window.addEventListener('pagehide', function () { send('web_vital_cls', clsValue); }, { once: true });
-        } catch (_) {}
-        try {
-            var inp = new PerformanceObserver(function (list) {
-                var worst = list.getEntries().reduce(function (max, entry) { return Math.max(max, entry.duration || 0); }, 0);
-                if (worst) send('web_vital_inp', worst);
-            });
-            inp.observe({ type: 'event', buffered: true, durationThreshold: 40 });
-        } catch (_) {}
-    })();
 
     // --- Public homepage counters ----------------------------------------
     (function setupHomepageCounters() {
