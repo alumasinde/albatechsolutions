@@ -27,7 +27,6 @@ use App\Modules\Cms\Controller\PublicSiteController;
 use App\Modules\Cms\Controller\ServiceController;
 use App\Modules\System\Controller\GitHubWebhookController;
 use App\Modules\System\Controller\HealthController;
-use App\Modules\Growth\Controller\IntelligenceController;
 
 /** @var Router $router */
 
@@ -121,10 +120,6 @@ $router->group('', [CsrfMiddleware::class], function (Router $router) use ($logi
 
 // GitHub-signed deployment endpoint; deliberately outside browser CSRF.
 $router->post('/webhooks/github', [GitHubWebhookController::class, '__invoke']);
-
-// Public analytics endpoints. JSON beacon/fetch requests do not rely on browser form CSRF.
-$router->post('/analytics/collect', [IntelligenceController::class, 'collect']);
-$router->post('/analytics/event', [IntelligenceController::class, 'event']);
 
 // --- Public-facing site -------------------------------------------------
 $router->get('/', [PublicSiteController::class, 'home']);
