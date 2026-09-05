@@ -1,0 +1,13 @@
+/* Temporary bridge while public templates are migrated from historical class names.
+   New shared components must use .ui-* primitives instead of phase/version classes. */
+.public-page .public-kicker {
+  font-weight: 800;
+}
+
+.public-page .site-nav a:not(.site-nav-cta) {
+  color: var(--alba-text-muted);
+}
+
+.public-page .site-nav a:not(.site-nav-cta):hover {
+  color: var(--alba-text-strong);
+}
