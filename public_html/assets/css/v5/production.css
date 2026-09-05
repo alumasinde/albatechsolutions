@@ -1,0 +1,9 @@
+/* Generated placeholder.
+ * Run php bin/build-css.php to write the compiled v5 stylesheet.
+ */
+@import url("../v4/production.css");
+@import url("tokens.css");
+@import url("shared.css");
+@import url("public.css");
+@import url("admin.css");
+@import url("compatibility.css");
