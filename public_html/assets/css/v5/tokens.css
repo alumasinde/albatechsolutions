@@ -1,0 +1,34 @@
+/* AlbaTech v5 — one semantic token layer. */
+:root {
+  --alba-primary: var(--color-primary);
+  --alba-primary-hover: var(--color-primary-hover);
+  --alba-secondary: var(--color-secondary);
+  --alba-accent: var(--color-accent);
+  --alba-page: var(--color-surface-page);
+  --alba-surface: var(--color-surface);
+  --alba-surface-muted: var(--color-surface-muted);
+  --alba-text: var(--color-text);
+  --alba-text-strong: var(--color-text-strong);
+  --alba-text-muted: var(--color-text-muted);
+  --alba-border: var(--color-border);
+  --alba-on-primary: var(--color-on-primary);
+  --alba-radius-sm: var(--radius-sm);
+  --alba-radius-md: var(--radius-md);
+  --alba-radius-lg: var(--radius-lg);
+  --alba-radius-xl: var(--radius-xl);
+  --alba-shadow-sm: var(--shadow-sm);
+  --alba-shadow-md: var(--shadow-md);
+  --alba-shadow-lg: var(--shadow-lg);
+  --alba-container: min(100% - 32px, 1160px);
+}
+
+/* Public brand aliases resolve through the same configurable primary color. */
+.public-page {
+  --brand-primary: var(--alba-primary);
+  --brand-primary-dark: var(--alba-primary-hover);
+  --brand-ink: var(--alba-text-strong);
+  --brand-muted: var(--alba-text-muted);
+  --brand-paper: var(--alba-page);
+  --brand-line: var(--alba-border);
+  --brand-container: 1160px;
+}
