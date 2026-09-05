@@ -24,6 +24,9 @@ if (!empty($service['turnaround_min_days']) || !empty($service['turnaround_max_d
 }
 $analyticsPageType = 'service';
 $analyticsEntityId = (int)$service['id'];
+$requirementsList = $service['requirements_list'] ?? $commerceRequirements;
+$faqItems = is_array($service['faq_items'] ?? null) ? $service['faq_items'] : [];
+$isGovernmentRelated = in_array((string) $service['slug'], ['kra-returns-filing', 'ecitizen-services', 'business-registration', 'cr12-application', 'sha-registration', 'nssf-registration', 'ntsa-services'], true);
 ob_start();
 ?>
 <section class="detail-hero">
@@ -64,7 +67,7 @@ ob_start();
                 <?php if ($turnaround): ?><div class="detail-meta"><div><strong>Typical turnaround</strong><span><?= e($turnaround) ?></span></div></div><?php endif; ?>
                 <?php if (!empty($service['government_fee_note'])): ?><p class="detail-note"><strong>Official fees:</strong> <?= e($service['government_fee_note']) ?></p><?php endif; ?>
                 <?php if (!empty($service['fee_disclaimer'])): ?><p class="detail-note"><?= e($service['fee_disclaimer']) ?></p><?php endif; ?>
-                <?php if (is_array($commerceRequirements) && $commerceRequirements): ?><h3>What we may need</h3><ul class="detail-list"><?php foreach ($commerceRequirements as $req): ?><li><?= e((string)$req) ?></li><?php endforeach; ?></ul><?php endif; ?>
+                <?php if (is_array($requirementsList) && $requirementsList): ?><h3>What we may need</h3><ul class="detail-list"><?php foreach ($requirementsList as $req): ?><li><?= e((string)$req) ?></li><?php endforeach; ?></ul><?php endif; ?>
             </div>
         </aside>
         <aside class="detail-sidebar">
@@ -85,6 +88,22 @@ ob_start();
       <div class="v3-disclaimer"><strong>Independent assistance:</strong> AlbaTech is not a government agency. Official fees, eligibility, requirements and processing times are determined by the relevant authority.</div>
     </div>
 </section>
+
+<?php if ($faqItems): ?>
+<section class="public-section public-section--muted">
+ <div class="public-container"><div class="public-section__head-copy"><span class="public-kicker">Common questions</span><h2>Questions about <?= e($service['name']) ?></h2></div>
+ <?php foreach ($faqItems as $faq): ?><details class="service-faq"><summary><?= e((string)($faq['question'] ?? '')) ?></summary><p><?= e((string)($faq['answer'] ?? '')) ?></p></details><?php endforeach; ?>
+ </div>
+</section>
+<?php endif; ?>
+
+<?php if (!empty($relatedPosts)): ?>
+<section class="public-section">
+ <div class="public-container"><div class="public-section__head-copy"><span class="public-kicker">Helpful guides</span><h2>Understand the next step</h2></div><div class="catalogue-grid">
+ <?php foreach ($relatedPosts as $post): ?><a class="catalogue-card" href="/blog/<?= e($post['slug']) ?>"><h3><?= e($post['title']) ?></h3><p><?= e($post['excerpt'] ?? $post['meta_description'] ?? '') ?></p><span class="catalogue-card__link">Read guide <i class="fa-solid fa-arrow-right"></i></span></a><?php endforeach; ?>
+ </div></div>
+</section>
+<?php endif; ?>
 
 <?php if (!empty($relatedServices)): ?>
 <section class="public-section">
