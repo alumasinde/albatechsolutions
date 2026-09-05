@@ -25,7 +25,7 @@ final class SettingsService extends BaseService
         'homepage_primary_cta_label', 'homepage_primary_cta_url',
         'homepage_secondary_cta_label', 'homepage_secondary_cta_url',
         'homepage_services_heading', 'homepage_industries_heading', 'homepage_process_heading',
-        'analytics_ga4_id', 'analytics_google_site_verification',
+        'analytics_google_site_verification',
         'site_logo_media_id',
     ];
 
