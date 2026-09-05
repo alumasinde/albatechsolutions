@@ -1,0 +1,28 @@
+/* Public site ownership. Public marketing styles must not bleed into admin. */
+.public-page .btn-primary {
+  background: var(--alba-primary);
+  color: var(--alba-on-primary);
+  border-color: var(--alba-primary);
+}
+
+.public-page .btn-primary:hover {
+  background: var(--alba-primary-hover);
+  border-color: var(--alba-primary-hover);
+}
+
+.public-page .btn-secondary {
+  background: var(--alba-surface-muted);
+  color: var(--alba-text-strong);
+  border-color: var(--alba-border);
+}
+
+.public-page .site-header,
+.public-page .site-footer {
+  color: var(--alba-text);
+}
+
+.public-page .site-nav-cta {
+  background: var(--alba-primary);
+  border-color: var(--alba-primary);
+  color: var(--alba-on-primary);
+}
