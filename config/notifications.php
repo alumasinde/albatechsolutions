@@ -8,6 +8,7 @@ return [
     'channels' => [
         'email' => filter_var($_ENV['MAIL_HOST'] ?? '', FILTER_VALIDATE_BOOL) || !empty($_ENV['MAIL_HOST'] ?? null),
         'sms' => filter_var($_ENV['SMS_ENABLED'] ?? false, FILTER_VALIDATE_BOOL),
-        'whatsapp' => filter_var($_ENV['WHATSAPP_ENABLED'] ?? false, FILTER_VALIDATE_BOOL),
+        'whatsapp' => filter_var($_ENV['WHATSAPP_ENABLED'] ?? false, FILTER_VALIDATE_BOOL)
+            && in_array(strtolower((string)($_ENV['WHATSAPP_PROVIDER'] ?? 'meta')), ['meta', 'callmebot'], true),
     ],
 ];
