@@ -224,7 +224,7 @@
         function close() {
             var wasOpen = target.classList.contains('is-open');
             target.classList.remove('is-open');
-            if (toggleId === 'site-nav-toggle') target.setAttribute('aria-hidden', 'true');
+            if (toggleId === 'site-nav-toggle') { target.setAttribute('aria-hidden', 'true'); document.body.classList.remove('site-nav-open'); }
             if (overlay) overlay.classList.remove('is-open');
             toggle.setAttribute('aria-expanded', 'false');
             if (icon && toggleId === 'site-nav-toggle') icon.className = 'fa-solid fa-bars';
@@ -234,18 +234,18 @@
         function open() {
             previousFocus = document.activeElement;
             target.classList.add('is-open');
-            if (toggleId === 'site-nav-toggle') target.setAttribute('aria-hidden', 'false');
+            if (toggleId === 'site-nav-toggle') { target.setAttribute('aria-hidden', 'false'); document.body.classList.add('site-nav-open'); }
             if (overlay) overlay.classList.add('is-open');
             toggle.setAttribute('aria-expanded', 'true');
             if (icon && toggleId === 'site-nav-toggle') icon.className = 'fa-solid fa-xmark';
-            var firstLink = target.querySelector('a');
-            if (firstLink && window.innerWidth <= 768) setTimeout(function () { firstLink.focus(); }, 0);
+            var firstLink = target.querySelector('.site-nav__links a, a');
+            if (firstLink && window.innerWidth <= 980) setTimeout(function () { firstLink.focus(); }, 0);
         }
         toggle.addEventListener('click', function () { target.classList.contains('is-open') ? close() : open(); });
         if (overlay) overlay.addEventListener('click', close);
         target.querySelectorAll('a').forEach(function (link) { link.addEventListener('click', close); });
         document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && target.classList.contains('is-open')) { e.preventDefault(); close(); } });
-        window.addEventListener('resize', function () { if (window.innerWidth > 768 && target.classList.contains('is-open')) close(); });
+        window.addEventListener('resize', function () { if (window.innerWidth > 980 && target.classList.contains('is-open')) close(); });
     }
     setupToggle('admin-nav-toggle', 'admin-sidebar', 'admin-sidebar-overlay');
     setupToggle('site-nav-toggle', 'site-nav', null);
