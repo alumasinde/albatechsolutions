@@ -1,0 +1,14 @@
+/* Admin ownership. Keep operational UI independent from public marketing skin. */
+.admin-page .btn-primary {
+  background: var(--alba-primary);
+  color: var(--alba-on-primary);
+}
+
+.admin-page .btn-secondary {
+  background: var(--alba-surface-muted);
+  color: var(--alba-text-secondary);
+}
+
+.admin-page .card {
+  border-color: var(--alba-border);
+}
