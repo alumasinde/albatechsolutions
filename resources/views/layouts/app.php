@@ -24,6 +24,7 @@
         || str_starts_with($requestPath, '/review/')
         || str_starts_with($requestPath, '/receipt/');
     $resolvedRobots = $privatePath ? 'noindex, nofollow' : ($robots ?? 'index, follow');
+    $pageScopeClass = str_starts_with($requestPath, '/admin') || $requestPath === '/dashboard' ? 'admin-page' : 'public-page';
     ?>
 
     <?php if (isset($metaDescription) || isset($jsonLd) || $privatePath): ?>
@@ -64,7 +65,7 @@
     </style>
     <?php if (isset($extraHead)) echo $extraHead; ?>
 </head>
-<body class="public-page <?= setting('whatsapp_number') ? 'has-mobile-cta' : '' ?>" data-ga4="<?= e(setting('analytics_ga4_id', '')) ?>" data-business-name="<?= e(setting('site_name', 'AlbaTech Solutions')) ?>" data-analytics-page-type="<?= e($analyticsPageType ?? '') ?>" data-analytics-entity-id="<?= e((string)($analyticsEntityId ?? '')) ?>">
+<body class="<?= e($pageScopeClass) ?> <?= setting('whatsapp_number') ? 'has-mobile-cta' : '' ?>" data-ga4="<?= e(setting('analytics_ga4_id', '')) ?>" data-business-name="<?= e(setting('site_name', 'AlbaTech Solutions')) ?>" data-analytics-page-type="<?= e($analyticsPageType ?? '') ?>" data-analytics-entity-id="<?= e((string)($analyticsEntityId ?? '')) ?>">
     <a class="skip-link" href="#main-content">Skip to content</a>
     <div id="toast-container" class="toast-container" aria-live="polite"></div>
 
