@@ -34,6 +34,49 @@ final class AssistanceRequestRepository extends BaseRepository
         return $stmt->fetchAll();
     }
 
+    public function paginate(int $page = 1, int $perPage = 20, ?string $status = null): array
+    {
+        $page = max(1, $page);
+        $perPage = max(1, min(100, $perPage));
+        $offset = ($page - 1) * $perPage;
+        $params = [];
+
+        $where = '';
+        $allowed = ['new','contacted','in_progress','waiting_customer','completed','cancelled','spam'];
+        if ($status !== null && in_array($status, $allowed, true)) {
+            $where = ' WHERE ar.status = :status';
+            $params['status'] = $status;
+        }
+
+        $count = $this->db->prepare('SELECT COUNT(*) FROM assistance_requests ar' . $where);
+        $count->execute($params);
+        $total = (int) $count->fetchColumn();
+
+        $sql = 'SELECT ar.*, s.name AS service_name, u.name AS assignee_name
+                FROM assistance_requests ar
+                LEFT JOIN services s ON s.id = ar.service_id
+                LEFT JOIN users u ON u.id = ar.assigned_to'
+                . $where . ' ORDER BY ar.created_at DESC LIMIT :limit OFFSET :offset';
+
+        $stmt = $this->db->prepare($sql);
+        foreach ($params as $key => $value) {
+            $stmt->bindValue(':' . $key, $value);
+        }
+        $stmt->bindValue(':limit', $perPage, \PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
+        $stmt->execute();
+
+        return [
+            'items' => $stmt->fetchAll(),
+            'pagination' => [
+                'page' => $page,
+                'per_page' => $perPage,
+                'total' => $total,
+                'total_pages' => (int) max(1, ceil($total / $perPage)),
+            ],
+        ];
+    }
+
     public function findWithDetails(int $id): ?array
     {
         $stmt = $this->db->prepare(
