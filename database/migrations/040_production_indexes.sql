@@ -7,9 +7,3 @@ ALTER TABLE users
 
 ALTER TABLE assistance_notifications
     ADD INDEX idx_assistance_notifications_retry (status, next_attempt_at);
-
-ALTER TABLE growth_events
-    ADD INDEX idx_growth_events_visitor_time (visitor_hash, occurred_at);
-
-ALTER TABLE assistant_messages
-    ADD INDEX idx_assistant_messages_direction_time (direction, created_at);
