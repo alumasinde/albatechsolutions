@@ -6,6 +6,36 @@ $menuRepo = new MenuRepository();
 
 $footerItems = $menuRepo->itemsForSlug('footer');
 
+$primaryItems = [
+    ['label' => 'Services', 'url' => '/services'],
+    ['label' => 'How It Works', 'url' => '/#how-it-works'],
+    ['label' => 'Guides', 'url' => '/blog'],
+    ['label' => 'About', 'url' => '/about'],
+    ['label' => 'Contact', 'url' => '/contact'],
+];
+
+$databasePrimaryItems = $menuRepo->itemsForSlug('primary');
+if ($databasePrimaryItems !== []) {
+    $allowedPrimaryUrls = array_column($primaryItems, 'url');
+    $configured = array_values(array_filter($databasePrimaryItems, static function (array $item) use ($allowedPrimaryUrls): bool {
+        return in_array((string) ($item['url'] ?? ''), $allowedPrimaryUrls, true);
+    }));
+
+    if ($configured !== []) {
+        $configuredByUrl = [];
+        foreach ($configured as $item) {
+            $configuredByUrl[(string) $item['url']] = $item;
+        }
+
+        foreach ($primaryItems as &$item) {
+            if (isset($configuredByUrl[$item['url']])) {
+                $item['label'] = (string) ($configuredByUrl[$item['url']]['label'] ?? $item['label']);
+            }
+        }
+        unset($item);
+    }
+}
+
 ob_start();
 ?>
 
@@ -25,11 +55,18 @@ ob_start();
                 <span>Tell us the task and we’ll help with the next step.</span>
             </div>
             <div class="site-nav__links">
-                <a href="/services" <?= str_starts_with((parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/'), '/services') ? 'aria-current="page"' : '' ?>>Services</a>
-                <a href="/#how-it-works">How It Works</a>
-                <a href="/blog" <?= str_starts_with((parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/'), '/blog') ? 'aria-current="page"' : '' ?>>Guides</a>
-                <a href="/about" <?= (parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/') === '/about' ? 'aria-current="page"' : '' ?>>About</a>
-                <a href="/contact" <?= (parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/') === '/contact' ? 'aria-current="page"' : '' ?>>Contact</a>
+                <?php $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/'; ?>
+                <?php foreach ($primaryItems as $item): ?>
+                    <?php
+                    $itemUrl = (string) $item['url'];
+                    $isCurrent = $itemUrl === '/services'
+                        ? str_starts_with($currentPath, '/services')
+                        : ($itemUrl === '/blog'
+                            ? str_starts_with($currentPath, '/blog')
+                            : ($itemUrl !== '/#how-it-works' && $currentPath === $itemUrl));
+                    ?>
+                    <a href="<?= e($itemUrl) ?>" <?= $isCurrent ? 'aria-current="page"' : '' ?>><?= e((string) $item['label']) ?></a>
+                <?php endforeach; ?>
             </div>
             <div class="site-nav__actions">
                 <a href="/get-help" class="site-nav-cta"><i class="fa-solid fa-hand-holding-heart" aria-hidden="true"></i> Get Assistance</a>
