@@ -91,6 +91,11 @@ final class PublicSiteController extends BaseController
         $service['requirements_list'] = is_array($requirements) ? array_values(array_filter(array_map('strval', $requirements))) : [];
         $intakeQuestions = json_decode((string) ($service['intake_questions'] ?? '[]'), true);
         $service['intake_questions_list'] = is_array($intakeQuestions) ? $intakeQuestions : [];
+        $faqs = json_decode((string) ($service['faqs'] ?? '[]'), true);
+        $service['faq_items'] = is_array($faqs) ? array_values(array_filter(array_map(static function ($faq): array {
+            if (!is_array($faq)) return [];
+            return ['question' => (string) ($faq['question'] ?? $faq['q'] ?? ''), 'answer' => (string) ($faq['answer'] ?? $faq['a'] ?? '')];
+        }, $faqs), static fn (array $faq): bool => $faq['question'] !== '' && $faq['answer'] !== '')) : [];
 
         $all = $this->services->allPublished();
         $relatedIds = json_decode((string)($service['related_service_ids'] ?? '[]'), true);
