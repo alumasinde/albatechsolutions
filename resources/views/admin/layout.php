@@ -36,17 +36,8 @@ ob_start();
             <?php if (Auth::can('assistance.notifications.view')): ?>
                 <a href="<?= e($adminPath) ?>/assistance/notifications"><i class="fa-solid fa-paper-plane"></i> Notifications</a>
             <?php endif; ?>
-            <?php if (Auth::can('assistant.sessions.view')): ?>
-                <a href="<?= e($adminPath) ?>/assistant/sessions"><i class="fa-solid fa-wand-magic-sparkles"></i> Digital Assistant</a>
-            <?php endif; ?>
-            <?php if (Auth::can('growth.intelligence.view')): ?>
-                <a href="<?= e($adminPath) ?>/growth/intelligence"><i class="fa-solid fa-chart-line"></i> Growth Intelligence</a>
-            <?php endif; ?>
             <?php if (Auth::can('leads.view')): ?>
                 <a href="<?= e($adminPath) ?>/leads"><i class="fa-solid fa-filter-circle-dollar"></i> Leads</a>
-            <?php endif; ?>
-            <?php if (Auth::can('projects.view')): ?>
-                <a href="<?= e($adminPath) ?>/projects"><i class="fa-solid fa-briefcase"></i> Portfolio</a>
             <?php endif; ?>
             <?php if (Auth::can('pages.view')): ?>
                 <a href="<?= e($adminPath) ?>/pages"><i class="fa-solid fa-file-lines"></i> Pages</a>
