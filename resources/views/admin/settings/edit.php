@@ -41,8 +41,7 @@ $fields = [
         'homepage_industries_heading' => 'Industries Section Heading',
         'homepage_process_heading' => 'Process Section Heading',
     ],
-    'Analytics' => [
-        'analytics_ga4_id' => 'Google Analytics 4 Measurement ID (optional)',
+    'Search Visibility' => [
         'analytics_google_site_verification' => 'Google Search Console Verification (optional)',
     ],
 ];
