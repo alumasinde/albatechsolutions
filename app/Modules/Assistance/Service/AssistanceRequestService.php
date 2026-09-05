@@ -7,18 +7,13 @@ namespace App\Modules\Assistance\Service;
 use App\Core\AuditLog;
 use App\Core\Auth;
 use App\Core\BaseService;
-use App\Core\Config;
-use App\Core\Logger;
-use App\Core\Settings;
 use App\Core\Helpers\Validator;
 use App\Modules\Assistance\Repository\AssistanceRequestRepository;
 use App\Modules\Cms\Repository\ServiceRepository;
-use App\Modules\Growth\Service\GrowthAnalyticsService;
-use PHPMailer\PHPMailer\PHPMailer;
 
 final class AssistanceRequestService extends BaseService
 {
-    public function __construct(private readonly AssistanceRequestRepository $requests, private readonly AssistanceNotificationService $notifications, private readonly ServiceRepository $services, private readonly GrowthAnalyticsService $growth) {}
+    public function __construct(private readonly AssistanceRequestRepository $requests, private readonly AssistanceNotificationService $notifications, private readonly ServiceRepository $services) {}
 
     public function submit(array $data, string $ip, string $userAgent): array
     {
@@ -66,7 +61,6 @@ final class AssistanceRequestService extends BaseService
             'intake_answers' => $intakeAnswers ? json_encode($intakeAnswers, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR) : null,
             'preferred_contact' => trim((string)$data['preferred_contact']),
             'status' => 'new',
-            'customer_user_id' => (Auth::check() && Auth::hasRole('customer') && !Auth::can('users.view')) ? Auth::id() : null,
             'ip_address' => $ip,
             'user_agent' => substr($userAgent, 0, 255),
             'consent_at' => date('Y-m-d H:i:s'),
@@ -76,8 +70,7 @@ final class AssistanceRequestService extends BaseService
         AuditLog::record('assistance_request.received', 'assistance_request', $id);
         $request = $this->requests->findWithDetails($id) ?? ['id'=>$id,'request_number'=>$reference,'name'=>$data['name'],'email'=>$data['email'] ?? '','phone'=>$data['phone']];
         $this->notifications->requestReceived($request);
-        $this->notifyAdmin($data, $reference);
-        $this->growth->event('assistance_request_created', '/get-help', $service ? (int)$service['id'] : null, $id, ['category' => (string)$data['category']]);
+        $this->notifications->adminNewRequest($request);
 
         return ['success' => true, 'id' => $id, 'reference' => $reference];
     }
@@ -87,27 +80,4 @@ final class AssistanceRequestService extends BaseService
         return 'AT-HLP-' . date('Y') . '-' . strtoupper(bin2hex(random_bytes(3)));
     }
 
-    private function notifyAdmin(array $data, string $reference): void
-    {
-        $recipient = Settings::get('contact_email');
-        if (!$recipient || empty($_ENV['MAIL_HOST'] ?? null)) return;
-        try {
-            $mail = new PHPMailer(true);
-            $mail->isSMTP();
-            $mail->Host = $_ENV['MAIL_HOST'];
-            $mail->Port = (int)($_ENV['MAIL_PORT'] ?? 587);
-            $mail->SMTPAuth = true;
-            $mail->Username = $_ENV['MAIL_USER'] ?? '';
-            $mail->Password = $_ENV['MAIL_PASS'] ?? '';
-            $mail->SMTPSecure = $_ENV['MAIL_ENCRYPTION'] ?? 'tls';
-            $mail->setFrom($_ENV['MAIL_FROM_ADDRESS'] ?? 'noreply@' . parse_url(Config::get('app.url'), PHP_URL_HOST), $_ENV['MAIL_FROM_NAME'] ?? Settings::get('site_name', 'AlbaTech Solutions'));
-            $mail->addAddress($recipient);
-            if (!empty($data['email'])) $mail->addReplyTo((string)$data['email'], (string)$data['name']);
-            $mail->Subject = 'New assistance request — ' . $reference;
-            $mail->Body = sprintf("New AlbaTech assistance request\n\nReference: %s\nName: %s\nPhone: %s\nEmail: %s\nCategory: %s\nPreferred contact: %s\n\n%s", $reference, $data['name'], $data['phone'], $data['email'] ?? '—', $data['category'], $data['preferred_contact'], $data['message']);
-            $mail->send();
-        } catch (\Throwable $e) {
-            Logger::warning('Assistance request email notification failed: ' . $e->getMessage());
-        }
-    }
-}
+
