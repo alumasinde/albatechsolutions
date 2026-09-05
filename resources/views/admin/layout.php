@@ -36,9 +36,6 @@ ob_start();
             <?php if (Auth::can('assistance.notifications.view')): ?>
                 <a href="<?= e($adminPath) ?>/assistance/notifications"><i class="fa-solid fa-paper-plane"></i> Notifications</a>
             <?php endif; ?>
-            <?php if (Auth::can('leads.view')): ?>
-                <a href="<?= e($adminPath) ?>/leads"><i class="fa-solid fa-filter-circle-dollar"></i> Leads</a>
-            <?php endif; ?>
             <?php if (Auth::can('pages.view')): ?>
                 <a href="<?= e($adminPath) ?>/pages"><i class="fa-solid fa-file-lines"></i> Pages</a>
             <?php endif; ?>
