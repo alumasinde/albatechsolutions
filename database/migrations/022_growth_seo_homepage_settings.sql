@@ -10,7 +10,6 @@ INSERT INTO settings (`key`, `value`, `type`) VALUES
     ('homepage_services_heading', 'Solutions built around your business', 'string'),
     ('homepage_industries_heading', 'Digital solutions for different industries', 'string'),
     ('homepage_process_heading', 'From idea to launch', 'string'),
-    ('analytics_ga4_id', '', 'string'),
     ('analytics_google_site_verification', '', 'string'),
     ('seo_default_title', 'Web Development, Software & Digital Services in Kenya | AlbaTech Solutions', 'string'),
     ('seo_default_description', 'AlbaTech Solutions builds professional websites, custom software and digital solutions for businesses and organisations across Kenya, with support for local digital services and integrations.', 'string')
