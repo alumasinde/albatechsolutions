@@ -27,9 +27,7 @@ ob_start();
             <div><?= $page['content'] ?? '' ?></div>
         </article>
         <aside class="seo-sidebar">
-            <div class="seo-sidebar-card"><span class="eyebrow">Explore</span><h2>Related services</h2><ul><?php foreach ($relatedServices as $service): ?><li><a href="/services/<?= e($service['slug']) ?>"><?= e($service['name']) ?></a></li><?php endforeach; ?></ul><a href="/services" class="text-link">View all services <i class="fa-solid fa-arrow-right"></i></a></div>
-            <div class="seo-sidebar-card"><span class="eyebrow">Proof</span><h2>Recent work</h2><?php foreach ($relatedProjects as $project): ?><a class="seo-project-link" href="/projects/<?= e($project['slug']) ?>"><strong><?= e($project['title']) ?></strong><span><?= e($project['industry'] ?: 'Digital project') ?></span></a><?php endforeach; ?></div>
-        </aside>
+            <div class="seo-sidebar-card"><span class="eyebrow">Explore</span><h2>Related services</h2><ul><?php foreach ($relatedServices as $service): ?><li><a href="/services/<?= e($service['slug']) ?>"><?= e($service['name']) ?></a></li><?php endforeach; ?></ul><a href="/services" class="text-link">View all services <i class="fa-solid fa-arrow-right"></i></a></div>        </aside>
     </div>
 </section>
 <section class="section section-muted seo-related-content"><div class="seo-container"><div class="section-heading"><span class="eyebrow">Learn more</span><h2>Latest insights</h2></div><div class="seo-post-grid"><?php foreach ($recentPosts as $post): ?><a href="/blog/<?= e($post['slug']) ?>" class="seo-post-card"><span><?= e($post['category_name'] ?: 'Insights') ?></span><h3><?= e($post['title']) ?></h3><p><?= e($post['excerpt'] ?: '') ?></p></a><?php endforeach; ?></div><a href="/get-help" class="btn btn-primary"><i class="fa-solid fa-hand-holding-heart"></i> Get Assistance</a></div></section>
