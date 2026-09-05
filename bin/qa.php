@@ -196,6 +196,14 @@ result(
     $pdoFailures === 0 ? 'no duplicate named placeholders found' : $pdoFailures . ' issue(s)'
 );
 
+$cssSmoke = $root . '/bin/css-smoke.php';
+if (is_file($cssSmoke)) {
+    exec(PHP_BINARY . ' ' . escapeshellarg($cssSmoke), $cssOutput, $cssExit);
+    result('CSS build smoke test', $cssExit === 0, $cssExit === 0 ? 'generated and verified' : 'build or foundation check failed');
+} else {
+    result('CSS build smoke test', false, 'bin/css-smoke.php missing');
+}
+
 $autoload = $root . '/vendor/autoload.php';
 if (is_file($autoload)) {
     try {
