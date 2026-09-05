@@ -9,47 +9,43 @@ $footerItems = $menuRepo->itemsForSlug('footer');
 ob_start();
 ?>
 
-<header class="site-header">
+<header class="site-header" data-site-header>
     <div class="site-header-inner">
-
         <a href="/" class="site-logo" aria-label="<?= e(setting('site_name', 'AlbaTech Solutions')) ?> Home">
             <?php if ($logoPath = setting('site_logo_path')): ?>
-                <img
-                    src="<?= e(url($logoPath)) ?>"
-                    alt="<?= e(setting('site_name', 'AlbaTech Solutions')) ?> logo"
-                    width="180"
-                    height="38"
-                    decoding="async">
+                <img src="<?= e(url($logoPath)) ?>" alt="<?= e(setting('site_name', 'AlbaTech Solutions')) ?> logo" width="180" height="38" decoding="async">
             <?php else: ?>
-                <?= e(setting('site_name', 'AlbaTech Solutions')) ?>
+                <span class="site-logo__name"><?= e(setting('site_name', 'AlbaTech Solutions')) ?></span>
             <?php endif; ?>
         </a>
 
-        <nav class="site-nav" id="site-nav" aria-label="Primary Navigation">
-            <a href="/" <?= (parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/') === '/' ? 'aria-current="page"' : '' ?>>Home</a>
-            <a href="/services" <?= str_starts_with((parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/'), '/services') ? 'aria-current="page"' : '' ?>>Services</a>
-            <a href="/blog" <?= str_starts_with((parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/'), '/blog') ? 'aria-current="page"' : '' ?>>Guides</a>
-            <a href="/faqs" <?= (parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/') === '/faqs' ? 'aria-current="page"' : '' ?>>FAQs</a>
-            <a href="/about" <?= (parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/') === '/about' ? 'aria-current="page"' : '' ?>>About</a>
-            <a href="/contact" <?= (parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/') === '/contact' ? 'aria-current="page"' : '' ?>>Contact</a>
-<a href="/get-help" class="site-nav-cta"><i class="fa-solid fa-hand-holding-heart" aria-hidden="true"></i> Get Assistance</a>
+        <nav class="site-nav" id="site-nav" aria-label="Primary Navigation" data-site-nav>
+            <div class="site-nav__mobile-intro">
+                <strong>Need help?</strong>
+                <span>Tell us the task and we’ll help with the next step.</span>
+            </div>
+            <div class="site-nav__links">
+                <a href="/services" <?= str_starts_with((parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/'), '/services') ? 'aria-current="page"' : '' ?>>Services</a>
+                <a href="/#how-it-works">How It Works</a>
+                <a href="/blog" <?= str_starts_with((parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/'), '/blog') ? 'aria-current="page"' : '' ?>>Guides</a>
+                <a href="/about" <?= (parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/') === '/about' ? 'aria-current="page"' : '' ?>>About</a>
+                <a href="/contact" <?= (parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/') === '/contact' ? 'aria-current="page"' : '' ?>>Contact</a>
+            </div>
+            <div class="site-nav__actions">
+                <a href="/get-help" class="site-nav-cta"><i class="fa-solid fa-hand-holding-heart" aria-hidden="true"></i> Get Assistance</a>
+                <?php if (setting('whatsapp_number')): ?>
+                    <a href="<?= e(whatsapp_url('Hi AlbaTech Solutions, I need help with a task.')) ?>" target="_blank" rel="noopener noreferrer" class="site-nav-whatsapp js-whatsapp" data-whatsapp-number="<?= e(preg_replace('/\D+/', '', (string) setting('whatsapp_number'))) ?>">
+                        <i class="fa-brands fa-whatsapp" aria-hidden="true"></i> WhatsApp
+                    </a>
+                <?php endif; ?>
+            </div>
         </nav>
 
-        <button
-            type="button"
-            id="site-nav-toggle"
-            class="nav-toggle"
-            aria-label="Toggle navigation menu"
-            aria-expanded="false"
-            aria-controls="site-nav">
-
+        <button type="button" id="site-nav-toggle" class="nav-toggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="site-nav">
             <i class="fa-solid fa-bars" aria-hidden="true"></i>
-
         </button>
-
     </div>
 </header>
-
 <main>
     <?= $pageContent ?? '' ?>
 </main>
