@@ -10,15 +10,13 @@ use App\Core\Config;
 use App\Modules\Assistance\Repository\AssistanceRequestRepository;
 use App\Modules\Assistance\Repository\AssistanceWorkRepository;
 use App\Modules\Assistance\Service\AssistanceNotificationService;
-use App\Modules\Growth\Service\GrowthAnalyticsService;
 
 final class AssistanceWorkService extends BaseService
 {
     public function __construct(
         private readonly AssistanceWorkRepository $work,
         private readonly AssistanceRequestRepository $requests,
-        private readonly AssistanceNotificationService $notifications,
-        private readonly GrowthAnalyticsService $growth
+        private readonly AssistanceNotificationService $notifications
     ) {}
 
     public function portalTokenForRequest(array $request): string
@@ -131,9 +129,7 @@ final class AssistanceWorkService extends BaseService
         $token = $this->reviewToken($requestId, $item);
         $fresh = $this->requests->findWithDetails($requestId) ?? $item;
         $this->notifications->workCompleted($fresh, $note, rtrim(Config::get('app.url', ''), '/') . '/review/' . rawurlencode($token));
-        AuditLog::record('assistance_work.completed', 'assistance_request', $requestId);
-        $this->growth->event('assistance_completed', null, !empty($item['service_id']) ? (int) $item['service_id'] : null, $requestId);
-        return ['success' => true, 'review_token' => $token];
+        AuditLog::record('assistance_work.completed', 'assistance_request', $requestId);        return ['success' => true, 'review_token' => $token];
     }
 
     public function reviewPublicUrl(int $requestId, array $request): string
@@ -164,9 +160,7 @@ final class AssistanceWorkService extends BaseService
         if ($review['request_status'] !== 'completed') return ['success' => false, 'message' => 'Reviews are available after the work is completed.'];
         if ($rating < 1 || $rating > 5) return ['success' => false, 'message' => 'Choose a rating from 1 to 5.'];
         if ($review['status'] !== 'pending') return ['success' => false, 'message' => 'This review has already been submitted.'];
-        $this->work->updateReview((int) $review['id'], ['rating' => $rating, 'comment' => trim($comment) ?: null, 'status' => 'pending', 'reviewed_at' => date('Y-m-d H:i:s')]);
-        $this->growth->event('review_submitted', null, !empty($review['service_id']) ? (int) $review['service_id'] : null, (int) $review['assistance_request_id'], ['rating' => $rating]);
-        AuditLog::record('assistance_review.submitted', 'assistance_review', (int) $review['id']);
+        $this->work->updateReview((int) $review['id'], ['rating' => $rating, 'comment' => trim($comment) ?: null, 'status' => 'pending', 'reviewed_at' => date('Y-m-d H:i:s')]);        AuditLog::record('assistance_review.submitted', 'assistance_review', (int) $review['id']);
         return ['success' => true];
     }
 
