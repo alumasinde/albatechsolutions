@@ -31,7 +31,7 @@ foreach ($tests as $label => $test) {
         echo "[PASS] {$label}\n";
     } catch (Throwable $e) {
         $failures++;
-        echo "[FAIL] {$label}\n       {$e::class}: {$e->getMessage()}\n";
+        echo "[FAIL] {$label}\n       " . $e::class . ": " . $e->getMessage() . "\n";
     }
 }
 exit($failures === 0 ? 0 : 1);
