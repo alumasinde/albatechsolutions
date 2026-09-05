@@ -34,6 +34,7 @@ final class PublicSiteController extends BaseController
             'faqs' => array_slice($this->faqs->allActive(), 0, 6),
             'recentPosts' => $this->posts->paginatePublished(1, 3),
             'featuredServices' => $this->services->forHomepage(8),
+            'homepageServices' => $this->services->allPublished(),
             'serviceCategories' => $this->serviceCategories->withPublishedServices(),
             'serviceCount' => count($this->services->allPublished()),
         ]);
