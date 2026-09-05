@@ -14,14 +14,14 @@ $analyticsPageType = 'blog';
 $analyticsEntityId = (int)$post['id'];
 ob_start();
 ?>
-<article class="article-content">
+<article class="guide-article"><a href="/blog" class="guide-article__back">← Back to guides</a>
     <h1><?= e($post['title']) ?></h1>
     <div class="article-meta">
         <?php if ($post['author_name']): ?>By <?= e($post['author_name']) ?> · <?php endif; ?>
         <?= e(date('F j, Y', strtotime($post['published_at'] ?? $post['created_at']))) ?>
         <?php if ($post['category_name']): ?> · <?= e($post['category_name']) ?><?php endif; ?>
     </div>
-    <div><?= $post['content'] ?? '' ?></div>
+    <div class="guide-article__body"><?= $post['content'] ?? '' ?></div>
 </article>
 <?php
 $pageContent = ob_get_clean();
