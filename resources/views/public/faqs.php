@@ -11,16 +11,16 @@ $jsonLd = array_filter([
 ]);
 ob_start();
 ?>
-<section class="section">
-    <h2>Frequently Asked Questions</h2>
+<section class="faq-page">
+    <div class="faq-page__head"><span class="section-kicker">Questions</span><h1>Frequently Asked Questions</h1><p>Clear answers about getting help from AlbaTech Solutions. If your question is not here, you can ask us directly.</p></div>
     <?php foreach ($faqs as $faq): ?>
-        <details class="faq-item">
+        <details class="v5-faq-item">
             <summary><?= e($faq['question']) ?></summary>
             <p><?= e($faq['answer']) ?></p>
         </details>
     <?php endforeach; ?>
     <?php if (empty($faqs)): ?>
-        <p class="public-empty-copy">No FAQs published yet.</p>
+        <p class="public-empty-copy">No FAQs published yet. <a href="/get-help">Tell us what you need help with.</a></p>
     <?php endif; ?>
 </section>
 <?php
