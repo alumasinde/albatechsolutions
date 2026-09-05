@@ -1,0 +1,32 @@
+/* Shared primitives. These names describe responsibility, not redesign history. */
+.public-container,
+.site-header-inner,
+.site-footer-inner {
+  width: var(--alba-container);
+  max-width: none;
+  margin-inline: auto;
+}
+
+.ui-card {
+  background: var(--alba-surface);
+  border: 1px solid var(--alba-border);
+  border-radius: var(--alba-radius-lg);
+  box-shadow: var(--alba-shadow-sm);
+}
+
+.ui-card--interactive {
+  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+}
+
+.ui-card--interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--alba-shadow-md);
+}
+
+.ui-kicker {
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--alba-primary);
+}
