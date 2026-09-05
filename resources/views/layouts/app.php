@@ -74,7 +74,6 @@
     </div>
 
     <script src="<?= asset('js/v4/app.js') ?>" defer></script>
-    <script src="<?= asset('js/v4/theme.js') ?>" defer></script>
 
     <?php if (setting('whatsapp_number')): ?>
         <div class="mobile-cta-bar" aria-label="Quick contact actions">
