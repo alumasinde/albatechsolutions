@@ -19,11 +19,6 @@ JOIN menus m ON m.id = mi.menu_id
 SET mi.label = 'Guides', mi.url = '/blog', mi.sort_order = 3
 WHERE m.slug = 'header' AND mi.url = '/blog';
 
-UPDATE menu_items mi
-JOIN menus m ON m.id = mi.menu_id
-SET mi.label = 'Business Solutions', mi.url = '/projects', mi.sort_order = 4
-WHERE m.slug = 'header' AND mi.url = '/projects';
-
 INSERT INTO service_categories (name, slug, sort_order) VALUES
 ('Digital & Government Assistance', 'digital-assistance', 1),
 ('Business & Online Presence', 'business-digital', 2),
