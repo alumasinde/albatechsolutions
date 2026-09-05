@@ -51,7 +51,7 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="<?= asset('css/v4/production.css') ?>">
+    <link rel="stylesheet" href="<?= asset('css/v5/production.css') ?>">
     <style>
         :root {
             --color-primary: <?= e(setting('theme_color_primary', '#078a9a')) ?>;
@@ -64,7 +64,7 @@
     </style>
     <?php if (isset($extraHead)) echo $extraHead; ?>
 </head>
-<body class="<?= setting('whatsapp_number') ? 'has-mobile-cta' : '' ?>" data-ga4="<?= e(setting('analytics_ga4_id', '')) ?>" data-business-name="<?= e(setting('site_name', 'AlbaTech Solutions')) ?>" data-analytics-page-type="<?= e($analyticsPageType ?? '') ?>" data-analytics-entity-id="<?= e((string)($analyticsEntityId ?? '')) ?>">
+<body class="public-page <?= setting('whatsapp_number') ? 'has-mobile-cta' : '' ?>" data-ga4="<?= e(setting('analytics_ga4_id', '')) ?>" data-business-name="<?= e(setting('site_name', 'AlbaTech Solutions')) ?>" data-analytics-page-type="<?= e($analyticsPageType ?? '') ?>" data-analytics-entity-id="<?= e((string)($analyticsEntityId ?? '')) ?>">
     <a class="skip-link" href="#main-content">Skip to content</a>
     <div id="toast-container" class="toast-container" aria-live="polite"></div>
 
