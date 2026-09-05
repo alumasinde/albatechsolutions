@@ -79,5 +79,4 @@ final class AssistanceRequestService extends BaseService
     {
         return 'AT-HLP-' . date('Y') . '-' . strtoupper(bin2hex(random_bytes(3)));
     }
-
-
+}
