@@ -87,15 +87,22 @@ final class PublicSiteController extends BaseController
             return $this->view('public.404', [], 404);
         }
 
+        $requirements = json_decode((string) ($service['commerce_requirements'] ?? '[]'), true);
+        $service['requirements_list'] = is_array($requirements) ? array_values(array_filter(array_map('strval', $requirements))) : [];
+        $intakeQuestions = json_decode((string) ($service['intake_questions'] ?? '[]'), true);
+        $service['intake_questions_list'] = is_array($intakeQuestions) ? $intakeQuestions : [];
+
         $all = $this->services->allPublished();
         $relatedIds = json_decode((string)($service['related_service_ids'] ?? '[]'), true);
         $relatedIds = is_array($relatedIds) ? array_values(array_filter(array_map('intval', $relatedIds))) : [];
         $related = $relatedIds
             ? array_values(array_filter($all, static fn(array $item): bool => in_array((int)$item['id'], $relatedIds, true) && $item['slug'] !== $service['slug']))
             : array_values(array_filter($all, static fn(array $item): bool => $item['slug'] !== $service['slug']));
+        $relatedPosts = $this->posts->paginatePublished(1, 3);
         return $this->view('public.service-show', [
             'service' => $service,
             'relatedServices' => array_slice($related, 0, 3),
+            'relatedPosts' => $relatedPosts,
         ]);
     }
 
