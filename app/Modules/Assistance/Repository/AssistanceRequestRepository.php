@@ -56,14 +56,12 @@ final class AssistanceRequestRepository extends BaseRepository
                 FROM assistance_requests ar
                 LEFT JOIN services s ON s.id = ar.service_id
                 LEFT JOIN users u ON u.id = ar.assigned_to'
-                . $where . ' ORDER BY ar.created_at DESC LIMIT :limit OFFSET :offset';
+                . $where . ' ORDER BY ar.created_at DESC LIMIT ' . $perPage . ' OFFSET ' . $offset;
 
         $stmt = $this->db->prepare($sql);
         foreach ($params as $key => $value) {
             $stmt->bindValue(':' . $key, $value);
         }
-        $stmt->bindValue(':limit', $perPage, \PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
         $stmt->execute();
 
         return [
