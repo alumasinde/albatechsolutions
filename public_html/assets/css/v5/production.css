@@ -14,9 +14,9 @@
 
 /* ==========================================================================
    AlbaTech Solutions — legacy compatibility rules
-   Single deployed stylesheet, built from the component files in
-   v5 legacy source rules/. Edit a component file, not this one
-   directly — see CSS_NOTES.md for the rebuild note.
+   Compatibility layer retained from earlier markup. New work belongs in
+   tokens.css, shared.css, public.css, admin.css or compatibility.css.
+   This bridge should only shrink over time.
    ========================================================================== */
 
 /* AlbaTech Solutions — v2 compiled stylesheet */
