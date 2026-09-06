@@ -1,15 +1,15 @@
 -- Migration 037: multi-channel notification delivery, preferences, templates and retries.
--- Re-runnable by the migration runner.
+-- Fresh installs run migrations exactly once; ALTER statements use broadly compatible MySQL/MariaDB syntax.
 
 ALTER TABLE assistance_notifications
-    ADD COLUMN IF NOT EXISTS attempt_count SMALLINT UNSIGNED NOT NULL DEFAULT 0,
-    ADD COLUMN IF NOT EXISTS next_attempt_at DATETIME NULL,
-    ADD COLUMN IF NOT EXISTS last_attempt_at DATETIME NULL,
-    ADD COLUMN IF NOT EXISTS channel_message_id VARCHAR(255) NULL,
-    ADD COLUMN IF NOT EXISTS template_name VARCHAR(120) NULL,
-    ADD COLUMN IF NOT EXISTS template_language VARCHAR(20) NULL,
-    ADD COLUMN IF NOT EXISTS body TEXT NULL,
-    ADD COLUMN IF NOT EXISTS template_data JSON NULL;
+    ADD COLUMN attempt_count SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+    ADD COLUMN next_attempt_at DATETIME NULL,
+    ADD COLUMN last_attempt_at DATETIME NULL,
+    ADD COLUMN channel_message_id VARCHAR(255) NULL,
+    ADD COLUMN template_name VARCHAR(120) NULL,
+    ADD COLUMN template_language VARCHAR(20) NULL,
+    ADD COLUMN body TEXT NULL,
+    ADD COLUMN template_data JSON NULL;
 
 CREATE INDEX idx_assistance_notification_retry
     ON assistance_notifications(status, next_attempt_at, attempt_count);
