@@ -47,7 +47,7 @@
         <meta name="robots" content="noindex, nofollow">
     <?php endif; ?>
 
-    <link rel="icon" href="<?= asset('favicon.ico') ?>">
+    <link rel="icon" type="image/svg+xml" href="<?= asset('favicon.svg') ?>">
     <meta name="color-scheme" content="light">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
