@@ -1,5 +1,5 @@
 <?php
-$title = 'Guides — ' . setting('site_name', 'AlbaTech Solutions');
+$title = 'Guides | ' . setting('site_name', 'AlbaTech Solutions');
 $metaDescription = 'Practical guides and helpful information from ' . setting('site_name', 'AlbaTech Solutions') . '.';
 $robots = ($page > 1) ? 'noindex, follow' : null;
 $canonicalUrl = rtrim(config('app.url'), '/') . '/blog';

@@ -1,5 +1,5 @@
 <?php
-$title = 'About — ' . setting('site_name', 'AlbaTech Solutions');
+$title = 'About Us | ' . setting('site_name', 'AlbaTech Solutions');
 $metaDescription = 'Learn how ' . setting('site_name', 'AlbaTech Solutions') . ' approaches websites, custom software and practical digital solutions for businesses.';
 $canonicalUrl = rtrim(config('app.url'), '/') . '/about';
 $jsonLd = [

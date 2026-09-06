@@ -1,5 +1,5 @@
 <?php
-$title = 'Contact — ' . setting('site_name', 'AlbaTech Solutions');
+$title = 'Contact Us | ' . setting('site_name', 'AlbaTech Solutions');
 $metaDescription = 'Talk to ' . setting('site_name', 'AlbaTech Solutions') . ' about digital assistance, business services, websites or software.';
 $canonicalUrl = rtrim(config('app.url'), '/') . '/contact';
 $jsonLd = [\App\Core\Seo::breadcrumbs([
@@ -27,7 +27,7 @@ ob_start();
 
 <section class="public-section">
     <div class="public-container conversion-contact-form-grid">
-        <div><span class="public-kicker">Alternative contact</span><h2>Send a message</h2><p>If you prefer email-style communication, use the form. Your message is saved securely so it can be followed up.</p><div class="conversion-contact-trust"><span><i class="fa-solid fa-lock"></i> Your message is protected</span><span><i class="fa-solid fa-bolt"></i> No account required</span></div></div>
+        <div><span class="public-kicker">Alternative contact</span><h2>Send a message</h2><p>If you prefer email-style communication, use the form. Your message is saved securely so it can be followed up.</p><div class="conversion-contact-trust"><span><i class="fa-solid fa-lock"></i> Your message is protected.</span> No account required</div></div>
         <div>
             <?php $success = \App\Core\Session::getFlash('_success'); ?>
             <?php if ($success): ?><div class="alert alert-success" role="status"><?= e($success) ?></div><?php endif; ?>
