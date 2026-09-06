@@ -21,6 +21,7 @@ $required = [
     '.public-page .btn-primary',
     '.admin-page .btn-primary',
     '.public-container',
+    'legacy.css',
 ];
 
 foreach ($required as $needle) {
@@ -30,4 +31,9 @@ foreach ($required as $needle) {
     }
 }
 
-echo "[PASS] CSS build and foundation smoke test\n";
+if (str_contains($css, '../v4/') || str_contains($css, 'assets/css/v4/') || preg_match('/@import\\s+url\\(["\\\']?\\.\\.\\/v4\\//', $css)) {
+    fwrite(STDERR, "[FAIL] Generated v5 stylesheet still depends on v4 CSS.\\n");
+    exit(1);
+}
+
+echo "[PASS] CSS build and standalone v5 foundation smoke test\\n";
