@@ -3,7 +3,7 @@
 -- Assistance requests remain usable without an account, but can be linked securely.
 
 ALTER TABLE assistance_requests
-    ADD COLUMN IF NOT EXISTS customer_user_id BIGINT UNSIGNED NULL;
+    ADD COLUMN customer_user_id BIGINT UNSIGNED NULL;
 
 CREATE INDEX idx_assistance_customer_user ON assistance_requests(customer_user_id, created_at);
 
