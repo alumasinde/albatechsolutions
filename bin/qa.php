@@ -239,6 +239,25 @@ result(
     $retiredFailures === 0 ? 'no retired runtime dependencies found' : $retiredFailures . ' issue(s)'
 );
 
+
+// Public route asset sanity checks.
+$publicRequired = [
+    'resources/views/public/privacy-policy.php' => 'privacy policy view',
+    'public_html/assets/favicon.svg' => 'favicon asset',
+];
+$publicFailures = 0;
+foreach ($publicRequired as $path => $label) {
+    if (!is_file($root . '/' . $path)) {
+        $publicFailures++;
+        line('[FAIL] Missing public asset: ' . $label . ' (' . $path . ')');
+    }
+}
+result(
+    'Public route and asset sanity',
+    $publicFailures === 0,
+    $publicFailures === 0 ? 'privacy policy and favicon present' : $publicFailures . ' issue(s)'
+);
+
 $cssSmoke = $root . '/bin/css-smoke.php';
 if (is_file($cssSmoke)) {
     exec(PHP_BINARY . ' ' . escapeshellarg($cssSmoke), $cssOutput, $cssExit);
