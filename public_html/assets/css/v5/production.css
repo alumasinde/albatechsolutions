@@ -6,16 +6,16 @@
 
 /* ===== legacy.css ===== */
 /* AlbaTech Solutions — v5 legacy bridge
- * Consolidated from the former v4 compiled stylesheet during Phase 3.6B.
+ * Consolidated from the previous compiled stylesheet during Phase 3.6B.
  * This file is now owned by v5 and contains only compatibility rules that
  * still support active public/admin markup while selectors are progressively
  * absorbed into tokens, shared, public and admin layers.
  */
 
 /* ==========================================================================
-   AlbaTech Solutions — production.css (v4)
+   AlbaTech Solutions — legacy compatibility rules
    Single deployed stylesheet, built from the component files in
-   assets/css/v4/components/. Edit a component file, not this one
+   v5 legacy source rules/. Edit a component file, not this one
    directly — see CSS_NOTES.md for the rebuild note.
    ========================================================================== */
 
@@ -504,7 +504,6 @@ body.is-modal-open {
         flex: 1 1 140px;
     }
 }
-
 @media (prefers-reduced-motion: reduce) {
     .modal-backdrop,
     .ui-modal-backdrop,
