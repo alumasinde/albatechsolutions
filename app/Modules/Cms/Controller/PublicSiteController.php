@@ -143,6 +143,7 @@ final class PublicSiteController extends BaseController
             ['loc' => $baseUrl . '/blog', 'priority' => '0.7'],
             ['loc' => $baseUrl . '/faqs', 'priority' => '0.5'],
             ['loc' => $baseUrl . '/about', 'priority' => '0.7'],
+            ['loc' => $baseUrl . '/privacy-policy', 'priority' => '0.3'],
             ['loc' => $baseUrl . '/contact', 'priority' => '0.6'],
         ];
 
@@ -183,6 +184,11 @@ final class PublicSiteController extends BaseController
         return $this->view('public.about', [
             'serviceCount' => count($this->services->allPublished()),
         ]);
+    }
+
+    public function privacyPolicyPage(Request $request): Response
+    {
+        return $this->view('public.privacy-policy');
     }
 
     public function contactPage(Request $request): Response
