@@ -86,8 +86,8 @@ function findPreparedStatements(string $file): array
 
     $results = [];
 
-    $pattern = '/(?:(\\$[A-Za-z_][A-Za-z0-9_]*)\\s*=\\s*)?'
-        . '->prepare\\(\\s*([\'"])(.*?)\\2\\s*\\)/s';
+    $pattern = '/(?:(\$[A-Za-z_][A-Za-z0-9_]*)\s*=\s*)?'
+        . '->prepare\(\s*([\'"])(.*?)\2\s*\)/s';
 
     if (!preg_match_all($pattern, $source, $matches, PREG_OFFSET_CAPTURE)) {
         return [];
@@ -196,10 +196,8 @@ result(
     $pdoFailures === 0 ? 'no duplicate named placeholders found' : $pdoFailures . ' issue(s)'
 );
 
-
-// Retired runtime dependency audit. Historical documentation and generated caches
-// are excluded; this check protects active source and public assets from being
-// reconnected to modules intentionally removed from the clean baseline.
+// Retired runtime dependency audit. Do not scan this runner itself because it
+// necessarily contains the retired path/name strings being checked.
 $retiredNeedles = [
     'app/Modules/Assistant/' => 'retired Assistant module',
     'app/Modules/Growth/Controller/LeadController.php' => 'retired Growth Lead controller',
@@ -216,8 +214,15 @@ $retiredNeedles = [
 ];
 $retiredFailures = 0;
 $retiredFiles = array_filter(
-    array_merge($phpFiles, glob($root . '/resources/views/**/*.php') ?: [], glob($root . '/routes/*.php') ?: []),
-    static fn (string $path): bool => !str_contains(str_replace('\\\\', '/', $path), '/storage/')
+    array_merge(
+        $phpFiles,
+        glob($root . '/resources/views/**/*.php') ?: [],
+        glob($root . '/routes/*.php') ?: []
+    ),
+    static function (string $path): bool use ($root): bool {
+        $normalized = str_replace('\\', '/', $path);
+        return !str_ends_with($normalized, '/bin/qa.php') && !str_contains($normalized, '/storage/');
+    }
 );
 foreach ($retiredNeedles as $needle => $label) {
     if (is_file($root . '/' . $needle)) {
@@ -238,7 +243,6 @@ result(
     $retiredFailures === 0,
     $retiredFailures === 0 ? 'no retired runtime dependencies found' : $retiredFailures . ' issue(s)'
 );
-
 
 // Public route asset sanity checks.
 $publicRequired = [
