@@ -6,12 +6,10 @@ $jsonLd = [
     \App\Core\Seo::article($post),
     \App\Core\Seo::breadcrumbs([
         ['name' => 'Home', 'url' => rtrim(config('app.url'), '/') . '/'],
-        ['name' => 'Blog', 'url' => rtrim(config('app.url'), '/') . '/blog'],
+        ['name' => 'Guides', 'url' => rtrim(config('app.url'), '/') . '/blog'],
         ['name' => $post['title'], 'url' => $canonicalUrl],
     ]),
 ];
-$analyticsPageType = 'blog';
-$analyticsEntityId = (int)$post['id'];
 ob_start();
 ?>
 <article class="guide-article"><a href="/blog" class="guide-article__back">← Back to guides</a>
@@ -22,6 +20,7 @@ ob_start();
         <?php if ($post['category_name']): ?> · <?= e($post['category_name']) ?><?php endif; ?>
     </div>
     <div class="guide-article__body"><?= $post['content'] ?? '' ?></div>
+    <aside class="guide-article__next"><strong>Need help with this task?</strong><p>Tell us what you are trying to do and we will help with the next step.</p><div><a class="btn btn-primary" href="/get-help">Get Assistance</a><?php if (setting('whatsapp_number')): ?> <a class="btn btn-secondary js-whatsapp" href="<?= e(whatsapp_url('Hi AlbaTech Solutions, I need help with this task.')) ?>" target="_blank" rel="noopener noreferrer">WhatsApp</a><?php endif; ?></div></aside>
 </article>
 <?php
 $pageContent = ob_get_clean();
