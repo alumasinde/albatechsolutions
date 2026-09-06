@@ -144,6 +144,7 @@ $router->post('/review/{token}', [AssistanceController::class, 'reviewStore'], [
 $router->post('/quote/{token}/accept', [AssistanceController::class, 'quoteAccept'], [CsrfMiddleware::class, TokenRateLimitMiddleware::class . ':quote-accept']);
 $router->post('/quote/{token}/payment', [AssistanceController::class, 'quotePayment'], [CsrfMiddleware::class, TokenRateLimitMiddleware::class . ':quote-payment']);
 $router->get('/about', [PublicSiteController::class, 'aboutPage']);
+$router->get('/privacy-policy', [PublicSiteController::class, 'privacyPolicyPage']);
 $router->get('/contact', [PublicSiteController::class, 'contactPage']);
 $router->post('/contact', [PublicSiteController::class, 'contactSubmit'], [CsrfMiddleware::class, RateLimitMiddleware::class . ':contact']);
 $router->get('/robots.txt', [PublicSiteController::class, 'robotsTxt']);
