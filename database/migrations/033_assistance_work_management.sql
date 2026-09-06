@@ -1,14 +1,14 @@
 -- Migration 033: customer portal, work management, updates and reviews.
--- Re-runnable by the project's migration runner.
+-- Fresh installs run migrations exactly once; ALTER statements use broadly compatible MySQL/MariaDB syntax.
 
 ALTER TABLE assistance_requests
-    ADD COLUMN IF NOT EXISTS customer_token_hash CHAR(64) NULL,
-    ADD COLUMN IF NOT EXISTS customer_token_encrypted TEXT NULL,
-    ADD COLUMN IF NOT EXISTS assigned_at DATETIME NULL,
-    ADD COLUMN IF NOT EXISTS due_at DATETIME NULL,
-    ADD COLUMN IF NOT EXISTS started_at DATETIME NULL,
-    ADD COLUMN IF NOT EXISTS completed_at DATETIME NULL,
-    ADD COLUMN IF NOT EXISTS completion_note TEXT NULL;
+    ADD COLUMN customer_token_hash CHAR(64) NULL,
+    ADD COLUMN customer_token_encrypted TEXT NULL,
+    ADD COLUMN assigned_at DATETIME NULL,
+    ADD COLUMN due_at DATETIME NULL,
+    ADD COLUMN started_at DATETIME NULL,
+    ADD COLUMN completed_at DATETIME NULL,
+    ADD COLUMN completion_note TEXT NULL;
 
 CREATE INDEX idx_assistance_customer_token ON assistance_requests(customer_token_hash);
 
