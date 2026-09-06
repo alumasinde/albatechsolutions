@@ -1,10 +1,10 @@
 -- Migration 034: assistance notifications, receipt links and delivery history.
--- Re-runnable by the project's migration runner.
+-- Fresh installs run migrations exactly once; ALTER statements use broadly compatible MySQL/MariaDB syntax.
 
 ALTER TABLE assistance_payments
-    ADD COLUMN IF NOT EXISTS receipt_token_hash CHAR(64) NULL,
-    ADD COLUMN IF NOT EXISTS receipt_token_encrypted TEXT NULL,
-    ADD COLUMN IF NOT EXISTS receipt_issued_at DATETIME NULL;
+    ADD COLUMN receipt_token_hash CHAR(64) NULL,
+    ADD COLUMN receipt_token_encrypted TEXT NULL,
+    ADD COLUMN receipt_issued_at DATETIME NULL;
 
 CREATE UNIQUE INDEX uq_assistance_payment_receipt_token
     ON assistance_payments(receipt_token_hash);
