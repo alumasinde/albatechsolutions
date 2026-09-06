@@ -6,7 +6,7 @@ $sourceDir = $root . '/public_html/assets/css/v5';
 $output = $sourceDir . '/production.css';
 
 $sources = [
-    $root . '/public_html/assets/css/v4/production.css',
+    $sourceDir . '/legacy.css',
     $sourceDir . '/tokens.css',
     $sourceDir . '/shared.css',
     $sourceDir . '/public.css',
