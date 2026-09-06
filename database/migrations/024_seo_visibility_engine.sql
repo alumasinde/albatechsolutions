@@ -1,9 +1,12 @@
 -- Phase 3: SEO landing pages and visibility controls.
+-- Fresh installs run migrations exactly once. Do not use ADD COLUMN IF NOT EXISTS here:
+-- older MySQL/MariaDB versions used by local XAMPP and shared hosting do not support
+-- that syntax consistently.
 ALTER TABLE pages
-    ADD COLUMN IF NOT EXISTS page_type VARCHAR(30) NOT NULL DEFAULT 'general' AFTER slug,
-    ADD COLUMN IF NOT EXISTS focus_keyword VARCHAR(180) NULL AFTER excerpt,
-    ADD COLUMN IF NOT EXISTS seo_intro VARCHAR(700) NULL AFTER focus_keyword,
-    ADD COLUMN IF NOT EXISTS noindex TINYINT(1) NOT NULL DEFAULT 0 AFTER canonical_url;
+    ADD COLUMN page_type VARCHAR(30) NOT NULL DEFAULT 'general' AFTER slug,
+    ADD COLUMN focus_keyword VARCHAR(180) NULL AFTER excerpt,
+    ADD COLUMN seo_intro VARCHAR(700) NULL AFTER focus_keyword,
+    ADD COLUMN noindex TINYINT(1) NOT NULL DEFAULT 0 AFTER canonical_url;
 
 INSERT INTO settings (`key`, `value`, `type`) VALUES
     ('seo_organization_description', 'AlbaTech Solutions builds websites, custom software and digital solutions for businesses and organisations in Kenya.', 'string'),
