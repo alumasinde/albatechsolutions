@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS service_commerce (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 ALTER TABLE assistance_requests
-    ADD COLUMN IF NOT EXISTS intake_answers JSON NULL AFTER message;
+    ADD COLUMN intake_answers JSON NULL AFTER message;
 
 INSERT INTO permissions (name, slug, module, description) VALUES
 ('Manage Service Commerce', 'services.commerce.manage', 'services', 'Manage service pricing, requirements, intake questions and operational rules')
