@@ -219,7 +219,7 @@ $retiredFiles = array_filter(
         glob($root . '/resources/views/**/*.php') ?: [],
         glob($root . '/routes/*.php') ?: []
     ),
-    static function (string $path): bool use ($root): bool {
+    static function (string $path) use ($root): bool {
         $normalized = str_replace('\\', '/', $path);
         return !str_ends_with($normalized, '/bin/qa.php') && !str_contains($normalized, '/storage/');
     }
