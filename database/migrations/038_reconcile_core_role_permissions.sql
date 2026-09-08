@@ -10,6 +10,17 @@ ON DUPLICATE KEY UPDATE
     module = VALUES(module),
     description = VALUES(description);
 
+-- Reconcile every existing permission to the built-in admin role.
+-- The Admin role is intentionally broad, while role management remains
+-- restricted to Super Admin.
+INSERT INTO role_permissions (role_id, permission_id)
+SELECT r.id, p.id
+FROM roles r
+CROSS JOIN permissions p
+WHERE r.slug = 'admin'
+  AND p.slug <> 'roles.manage'
+ON DUPLICATE KEY UPDATE role_id = role_id;
+
 -- Super Admin retains unrestricted role access.
 INSERT INTO role_permissions (role_id, permission_id)
 SELECT r.id, p.id
