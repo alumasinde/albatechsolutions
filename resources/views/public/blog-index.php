@@ -33,10 +33,7 @@ ob_start();
         <?php endif; ?>
 
         <div class="guides-page__intro">
-            <div>
-                <span class="public-kicker">Choose a guide</span>
-                <h2>Start with the information you need.</h2>
-            </div>
+            <div><span class="public-kicker">Choose a guide</span><h2>Start with the information you need.</h2></div>
             <p>Read the practical steps first. If you still need help with the task, you can <a href="/get-help">get assistance</a> or continue on WhatsApp.</p>
         </div>
 
@@ -44,6 +41,11 @@ ob_start();
         <div class="guides-grid">
             <?php foreach ($posts as $post): ?>
                 <article class="post-card">
+                    <?php if (!empty($post['featured_media_path'])): ?>
+                        <a href="/blog/<?= e($post['slug']) ?>" class="post-card__image" aria-label="Read <?= e($post['title']) ?>">
+                            <img src="<?= e(url('/' . ltrim($post['featured_media_path'], '/'))) ?>" alt="<?= e($post['featured_media_name'] ?: $post['title']) ?>" loading="lazy">
+                        </a>
+                    <?php endif; ?>
                     <?php if (!empty($post['category_name'])): ?><span class="public-kicker"><?= e($post['category_name']) ?></span><?php endif; ?>
                     <h2><a href="/blog/<?= e($post['slug']) ?>"><?= e($post['title']) ?></a></h2>
                     <p><?= e($post['excerpt'] ?? '') ?></p>
