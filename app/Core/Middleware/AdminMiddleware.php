@@ -14,7 +14,13 @@ final class AdminMiddleware implements MiddlewareInterface
     {
         $user = Auth::user();
 
-        if ($user === null || empty($user['email_verified_at']) || !Auth::hasStaffRole()) {
+        // Super Admin is the system owner and must not be locked out by a
+        // missing email verification timestamp or incomplete role_permissions.
+        // The account still has to be authenticated and assigned the
+        // super-admin role through user_roles.
+        $isSuperAdmin = $user !== null && Auth::isSuperAdmin();
+
+        if ($user === null || (!$isSuperAdmin && (empty($user['email_verified_at']) || !Auth::hasStaffRole()))) {
             if ($request->isAjax()) {
                 return Response::json(['message' => 'Admin access requires a verified staff account.'], 403);
             }
