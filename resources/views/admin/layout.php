@@ -36,23 +36,11 @@ ob_start();
             <?php if (Auth::can('assistance.notifications.view')): ?>
                 <a href="<?= e($adminPath) ?>/assistance/notifications"><i class="fa-solid fa-paper-plane"></i> Notifications</a>
             <?php endif; ?>
-            <?php if (Auth::can('pages.view')): ?>
-                <a href="<?= e($adminPath) ?>/pages"><i class="fa-solid fa-file-lines"></i> Pages</a>
-            <?php endif; ?>
             <?php if (Auth::can('blog.view')): ?>
                 <a href="<?= e($adminPath) ?>/blog"><i class="fa-solid fa-newspaper"></i> Blog</a>
             <?php endif; ?>
-            <?php if (Auth::can('menus.manage')): ?>
-                <a href="<?= e($adminPath) ?>/menus/header"><i class="fa-solid fa-bars"></i> Menus</a>
-            <?php endif; ?>
-            <?php if (Auth::can('banners.manage')): ?>
-                <a href="<?= e($adminPath) ?>/banners"><i class="fa-solid fa-panorama"></i> Banners</a>
-            <?php endif; ?>
             <?php if (Auth::can('faqs.manage')): ?>
                 <a href="<?= e($adminPath) ?>/faqs"><i class="fa-solid fa-circle-question"></i> FAQs</a>
-            <?php endif; ?>
-            <?php if (Auth::can('testimonials.manage')): ?>
-                <a href="<?= e($adminPath) ?>/testimonials"><i class="fa-solid fa-quote-left"></i> Testimonials</a>
             <?php endif; ?>
             <?php if (Auth::can('media.manage')): ?>
                 <a href="<?= e($adminPath) ?>/media"><i class="fa-solid fa-photo-film"></i> Media Library</a>
