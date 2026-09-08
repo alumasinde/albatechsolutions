@@ -14,10 +14,7 @@ ob_start();
 <section class="guides-page">
     <div class="public-container">
         <header class="guides-page__hero">
-            <div>
-                <span class="public-kicker">Helpful information</span>
-                <h1>Guides for common tasks in Kenya</h1>
-            </div>
+            <div><span class="public-kicker">Helpful information</span><h1>Guides for common tasks in Kenya</h1></div>
             <p>Simple, practical information to help you understand what you may need and decide on the next step. Guides are for general information and do not replace official instructions.</p>
         </header>
 
@@ -25,9 +22,7 @@ ob_start();
         <nav class="guides-category-nav" aria-label="Guide categories">
             <a href="/blog" class="guides-category-link<?= !$currentCategory ? ' is-active' : '' ?>">All guides</a>
             <?php foreach ($categories as $c): ?>
-                <a href="/blog?category=<?= e($c['slug']) ?>" class="guides-category-link<?= $currentCategory === $c['slug'] ? ' is-active' : '' ?>">
-                    <?= e($c['name']) ?>
-                </a>
+                <a href="/blog?category=<?= e($c['slug']) ?>" class="guides-category-link<?= $currentCategory === $c['slug'] ? ' is-active' : '' ?>"><?= e($c['name']) ?></a>
             <?php endforeach; ?>
         </nav>
         <?php endif; ?>
@@ -42,8 +37,8 @@ ob_start();
             <?php foreach ($posts as $post): ?>
                 <article class="post-card">
                     <?php if (!empty($post['featured_media_path'])): ?>
-                        <a href="/blog/<?= e($post['slug']) ?>" class="post-card__image" aria-label="Read <?= e($post['title']) ?>">
-                            <img src="<?= e(url('/' . ltrim($post['featured_media_path'], '/'))) ?>" alt="<?= e($post['featured_media_name'] ?: $post['title']) ?>" loading="lazy">
+                        <a href="/blog/<?= e($post['slug']) ?>" class="post-card__image" aria-label="Read <?= e($post['title']) ?>" style="display:block;margin:-24px -24px 20px;overflow:hidden;border-radius:12px 12px 0 0;">
+                            <img src="<?= e(url('/' . ltrim($post['featured_media_path'], '/'))) ?>" alt="<?= e($post['featured_media_name'] ?: $post['title']) ?>" loading="lazy" style="display:block;width:100%;height:210px;object-fit:cover;">
                         </a>
                     <?php endif; ?>
                     <?php if (!empty($post['category_name'])): ?><span class="public-kicker"><?= e($post['category_name']) ?></span><?php endif; ?>
@@ -59,10 +54,7 @@ ob_start();
 
         <section class="guides-page__cta">
             <div><span class="public-kicker">Still unsure?</span><h2>Tell us what you are trying to do.</h2><p>We can help you understand whether one of our services fits your task and what happens next.</p></div>
-            <div class="guides-page__cta-actions">
-                <a class="btn btn-primary" href="/get-help">Get Assistance</a>
-                <?php if (setting('whatsapp_number')): ?><a class="btn btn-secondary" href="<?= e(whatsapp_url('Hi AlbaTech Solutions, I need help with a task.')) ?>" target="_blank" rel="noopener noreferrer">WhatsApp</a><?php endif; ?>
-            </div>
+            <div class="guides-page__cta-actions"><a class="btn btn-primary" href="/get-help">Get Assistance</a><?php if (setting('whatsapp_number')): ?><a class="btn btn-secondary" href="<?= e(whatsapp_url('Hi AlbaTech Solutions, I need help with a task.')) ?>" target="_blank" rel="noopener noreferrer">WhatsApp</a><?php endif; ?></div>
         </section>
     </div>
 </section>
