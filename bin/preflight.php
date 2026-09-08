@@ -76,6 +76,16 @@ try {
     $pdo->query('SELECT 1');
     $pass('Database', 'connection successful');
 
+    $migrationTableExists = (bool) $pdo->query(
+        "SELECT COUNT(*) FROM information_schema.tables
+         WHERE table_schema = DATABASE() AND table_name = 'migrations'"
+    )->fetchColumn();
+
+    if (!$migrationTableExists) {
+        $fail('Migrations', 'migration tracking is not initialized; run php database/migrate.php once to safely adopt this legacy database');
+        throw new RuntimeException('Migration tracking table is missing.');
+    }
+
     $migrationRows = $pdo->query('SELECT migration FROM migrations ORDER BY migration')->fetchAll(PDO::FETCH_COLUMN);
     $applied = array_fill_keys($migrationRows, true);
     $migrationFiles = glob($root . '/database/migrations/*.sql') ?: [];
