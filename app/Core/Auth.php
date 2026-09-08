@@ -79,6 +79,11 @@ final class Auth
 
     public static function can(string $permissionSlug): bool
     {
+        // Super Admin is the system owner. Its access must not depend on
+        // role_permissions rows, which can be temporarily incomplete while
+        // migrations or permission reconciliation are being deployed.
+        if (self::isSuperAdmin()) return true;
+
         $userId = self::id();
         if ($userId === null) return false;
 
@@ -108,8 +113,17 @@ final class Auth
         return (int) $stmt->fetchColumn() > 0;
     }
 
+    public static function isSuperAdmin(): bool
+    {
+        return self::hasRole('super-admin');
+    }
+
     public static function hasStaffRole(): bool
     {
+        // Keep the explicit Super Admin check as a safety guarantee for the
+        // built-in system owner account.
+        if (self::isSuperAdmin()) return true;
+
         $userId = self::id();
         if ($userId === null) return false;
 
