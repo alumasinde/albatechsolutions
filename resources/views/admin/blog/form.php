@@ -1,6 +1,14 @@
 <?php
 $adminPath = \App\Core\Config::get('admin.path', '/admin');
 $isEdit = $post !== null;
+$selectedMediaId = (int) ($post['featured_media_id'] ?? 0);
+$selectedMedia = null;
+foreach (($media ?? []) as $item) {
+    if ((int) $item['id'] === $selectedMediaId) {
+        $selectedMedia = $item;
+        break;
+    }
+}
 ob_start();
 ?>
 <h1><i class="fa-solid fa-newspaper"></i> <?= $isEdit ? 'Edit Post' : 'New Post' ?></h1>
@@ -14,7 +22,7 @@ ob_start();
     </div>
 <?php endif; ?>
 
-<form method="POST" action="<?= $isEdit ? e($adminPath . '/blog/' . $post['id']) : e($adminPath . '/blog') ?>" class="card">
+<form method="POST" action="<?= $isEdit ? e($adminPath . '/blog/' . $post['id']) : e($adminPath . '/blog') ?>" class="card" enctype="multipart/form-data" id="blog-post-form">
     <?= csrf_field() ?>
 
     <label for="title">Title</label>
@@ -32,6 +40,46 @@ ob_start();
             </option>
         <?php endforeach; ?>
     </select>
+
+    <section class="blog-media-field" aria-labelledby="featured-image-heading">
+        <div class="blog-media-field__header">
+            <div>
+                <label id="featured-image-heading" for="featured_image">Featured Image</label>
+                <p class="form-help">Used on the blog listing, article page and social sharing. JPG, PNG, WebP or SVG, up to 3MB.</p>
+            </div>
+            <?php if ($selectedMedia): ?>
+                <button type="button" class="btn btn-secondary btn-sm" id="remove-featured-image">Remove</button>
+            <?php endif; ?>
+        </div>
+
+        <input type="hidden" name="featured_media_id" id="featured_media_id" value="<?= $selectedMediaId ?: '' ?>">
+        <input type="file" id="featured_image" name="featured_image" accept="image/jpeg,image/png,image/webp,image/svg+xml">
+
+        <div id="featured-image-preview" class="blog-media-preview<?= $selectedMedia ? '' : ' is-empty' ?>">
+            <?php if ($selectedMedia): ?>
+                <img src="<?= e(url('/' . ltrim($selectedMedia['disk_path'], '/'))) ?>" alt="<?= e($selectedMedia['original_name']) ?>">
+                <span><?= e($selectedMedia['original_name']) ?></span>
+            <?php else: ?>
+                <span>No featured image selected</span>
+            <?php endif; ?>
+        </div>
+
+        <?php if (!empty($media)): ?>
+            <div class="blog-media-library">
+                <div class="blog-media-library__heading">
+                    <strong>Choose from Media Library</strong>
+                    <span><?= count($media) ?> images available</span>
+                </div>
+                <div class="blog-media-library__grid">
+                    <?php foreach ($media as $item): ?>
+                        <button type="button" class="blog-media-item<?= ((int) $item['id'] === $selectedMediaId) ? ' is-selected' : '' ?>" data-media-id="<?= e((string) $item['id']) ?>" data-media-url="<?= e(url('/' . ltrim($item['disk_path'], '/'))) ?>" data-media-name="<?= e($item['original_name']) ?>" aria-label="Use <?= e($item['original_name']) ?> as featured image">
+                            <img src="<?= e(url('/' . ltrim($item['disk_path'], '/'))) ?>" alt="" loading="lazy">
+                        </button>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        <?php endif; ?>
+    </section>
 
     <label for="excerpt">Excerpt</label>
     <input type="text" id="excerpt" name="excerpt" value="<?= e($post['excerpt'] ?? '') ?>">
