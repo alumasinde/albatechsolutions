@@ -26,6 +26,18 @@ $pdo = new PDO(
     ]
 );
 
+// Support legacy installations that predate migration tracking. We must not
+// blindly replay historical SQL against an already-populated database.
+$migrationTableExists = (bool) $pdo->query(
+    "SELECT COUNT(*) FROM information_schema.tables
+     WHERE table_schema = DATABASE() AND table_name = 'migrations'"
+)->fetchColumn();
+
+$existingTables = (int) $pdo->query(
+    "SELECT COUNT(*) FROM information_schema.tables
+     WHERE table_schema = DATABASE() AND table_type = 'BASE TABLE'"
+)->fetchColumn();
+
 $pdo->exec(
     'CREATE TABLE IF NOT EXISTS migrations (
         id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -34,10 +46,35 @@ $pdo->exec(
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4'
 );
 
-$applied = $pdo->query('SELECT migration FROM migrations')->fetchAll(PDO::FETCH_COLUMN);
+$files = glob(__DIR__ . '/migrations/*.sql') ?: [];
+sort($files, SORT_NATURAL);
 
-$files = glob(__DIR__ . '/migrations/*.sql');
-sort($files);
+if (!$migrationTableExists && $existingTables > 0) {
+    // This database existed before migration tracking was introduced. Adopt the
+    // historical schema instead of replaying old DDL. Reconciliation migrations
+    // remain pending so current authorization/data repairs are still executed.
+    $reconciliationFiles = [
+        '038_reconcile_core_role_permissions.sql',
+        '047_reconcile_super_admin_access.sql',
+    ];
+
+    $register = $pdo->prepare(
+        'INSERT IGNORE INTO migrations (migration) VALUES (:migration)'
+    );
+
+    foreach ($files as $file) {
+        $name = basename($file);
+        if (in_array($name, $reconciliationFiles, true)) {
+            continue;
+        }
+        $register->execute(['migration' => $name]);
+    }
+
+    fwrite(STDOUT, "Legacy database detected: historical migrations adopted safely.\n");
+    fwrite(STDOUT, "Applying current reconciliation migrations next.\n");
+}
+
+$applied = $pdo->query('SELECT migration FROM migrations')->fetchAll(PDO::FETCH_COLUMN);
 
 // Numeric prefixes are historical ordering hints, not migration identities.
 // Warn about duplicates so they can be cleaned up in a future safe release
