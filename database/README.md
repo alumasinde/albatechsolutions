@@ -4,6 +4,8 @@ Run migrations:
 
     php database/migrate.php
 
+Legacy installations created before migration tracking are adopted automatically on the first run. Historical migrations are recorded without replaying old DDL, while the current reconciliation migrations are applied normally.
+
 Seed the AlbaTech baseline:
 
     php database/seed.php
