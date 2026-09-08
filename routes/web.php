@@ -77,6 +77,7 @@ $router->group('', [CsrfMiddleware::class], function (Router $router) use ($logi
         $router->get('/blog/{id}/edit', [BlogController::class, 'edit'], [RbacMiddleware::class . ':blog.manage']);
         $router->post('/blog/{id}', [BlogController::class, 'update'], [RbacMiddleware::class . ':blog.manage']);
         $router->post('/blog/{id}/delete', [BlogController::class, 'destroy'], [RbacMiddleware::class . ':blog.manage']);
+        $router->post('/blog/media', [BlogController::class, 'uploadImage'], [RbacMiddleware::class . ':blog.manage', RateLimitMiddleware::class . ':blog-media']);
         $router->post('/blog-categories', [BlogController::class, 'storeCategory'], [RbacMiddleware::class . ':blog.manage']);
         $router->get('/faqs', [FaqController::class, 'index'], [RbacMiddleware::class . ':faqs.manage']);
         $router->post('/faqs', [FaqController::class, 'store'], [RbacMiddleware::class . ':faqs.manage']);
@@ -118,10 +119,8 @@ $router->group('', [CsrfMiddleware::class], function (Router $router) use ($logi
     });
 });
 
-// GitHub-signed deployment endpoint; deliberately outside browser CSRF.
 $router->post('/webhooks/github', [GitHubWebhookController::class, '__invoke']);
 
-// --- Public-facing site -------------------------------------------------
 $router->get('/', [PublicSiteController::class, 'home']);
 $router->get('/blog', [PublicSiteController::class, 'blogIndex']);
 $router->get('/blog/{slug}', [PublicSiteController::class, 'blogShow']);
