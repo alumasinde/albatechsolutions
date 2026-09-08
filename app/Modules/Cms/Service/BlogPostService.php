@@ -42,6 +42,7 @@ final class BlogPostService extends BaseService
             'slug'              => $slug,
             'content'           => Sanitizer::cleanRichText($data['content'] ?? ''),
             'excerpt'           => $data['excerpt'] ?? null,
+            'featured_media_id' => $this->nullableMediaId($data['featured_media_id'] ?? null),
             'status'            => $status,
             'meta_title'        => $data['meta_title'] ?? null,
             'meta_description'  => $data['meta_description'] ?? null,
@@ -68,6 +69,7 @@ final class BlogPostService extends BaseService
             'slug'             => $slug,
             'content'          => Sanitizer::cleanRichText($data['content'] ?? ''),
             'excerpt'          => $data['excerpt'] ?? null,
+            'featured_media_id' => $this->nullableMediaId($data['featured_media_id'] ?? null),
             'status'           => $status,
             'meta_title'       => $data['meta_title'] ?? null,
             'meta_description' => $data['meta_description'] ?? null,
@@ -75,6 +77,16 @@ final class BlogPostService extends BaseService
             'author_id'        => $authorId,
             'published_at'     => $status === 'published' ? date('Y-m-d H:i:s') : null,
         ];
+    }
+
+    private function nullableMediaId(mixed $value): ?int
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        $id = filter_var($value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        return $id === false ? null : (int) $id;
     }
 
     private function uniqueSlug(string $source, ?int $ignoreId = null): string
