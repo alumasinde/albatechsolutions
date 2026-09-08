@@ -97,6 +97,26 @@ final class AssistanceNotificationRepository extends BaseRepository
         return $stmt->fetch() ?: null;
     }
 
+    /**
+     * Delivery history for the internal assistance notifications screen.
+     * Joins the request so the UI can show the customer and reference without
+     * performing N+1 queries.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function allForAdmin(int $limit = 200): array
+    {
+        $limit = max(1, min($limit, 500));
+        $stmt = $this->db->query(
+            "SELECT n.*, ar.name, ar.phone, ar.email, ar.request_number
+             FROM assistance_notifications n
+             INNER JOIN assistance_requests ar ON ar.id = n.assistance_request_id
+             ORDER BY n.created_at DESC, n.id DESC
+             LIMIT {$limit}"
+        );
+        return $stmt->fetchAll();
+    }
+
     public function recentForRequest(int $requestId): array
     {
         $stmt = $this->db->prepare('SELECT * FROM assistance_notifications WHERE assistance_request_id=:request_id ORDER BY created_at DESC,id DESC LIMIT 100');
