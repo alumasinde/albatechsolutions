@@ -22,16 +22,23 @@ final class MediaService extends BaseService
             return ['success' => false, 'message' => 'Upload failed.'];
         }
 
-        if ($file['size'] > self::MAX_BYTES) {
+        if (empty($file['tmp_name']) || !is_string($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {
+            return ['success' => false, 'message' => 'Invalid upload.'];
+        }
+
+        $size = (int) ($file['size'] ?? 0);
+        if ($size <= 0) {
+            return ['success' => false, 'message' => 'The uploaded file is empty.'];
+        }
+
+        if ($size > self::MAX_BYTES) {
             return ['success' => false, 'message' => 'File exceeds the 3MB limit.'];
         }
 
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mime = finfo_file($finfo, $file['tmp_name']);
-        finfo_close($finfo);
+        $mime = $this->detectMimeType($file['tmp_name']);
 
-        if (!in_array($mime, self::ALLOWED_MIME, true)) {
-            return ['success' => false, 'message' => 'Unsupported file type.'];
+        if ($mime === null || !in_array($mime, self::ALLOWED_MIME, true)) {
+            return ['success' => false, 'message' => 'Unsupported or invalid image file.'];
         }
 
         $extension = match ($mime) {
@@ -45,8 +52,8 @@ final class MediaService extends BaseService
         $filename = bin2hex(random_bytes(16)) . '.' . $extension;
         $uploadDir = PUBLIC_PATH . '/assets/uploads/' . $purpose;
 
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0755, true);
+        if (!is_dir($uploadDir) && !mkdir($uploadDir, 0755, true) && !is_dir($uploadDir)) {
+            return ['success' => false, 'message' => 'Could not create the upload directory.'];
         }
 
         $destination = $uploadDir . '/' . $filename;
@@ -64,9 +71,9 @@ final class MediaService extends BaseService
         $stmt->execute([
             'uploaded_by'   => Auth::id(),
             'disk_path'     => $relativePath,
-            'original_name' => $file['name'],
+            'original_name' => (string) ($file['name'] ?? 'upload'),
             'mime_type'     => $mime,
-            'size_bytes'    => $file['size'],
+            'size_bytes'    => $size,
             'purpose'       => $purpose,
         ]);
 
@@ -75,5 +82,60 @@ final class MediaService extends BaseService
             'id' => (int) Database::connection()->lastInsertId(),
             'path' => $relativePath,
         ];
+    }
+
+    /**
+     * Detect the uploaded file MIME type without requiring the Fileinfo
+     * extension. Fileinfo is preferred when available, while getimagesize()
+     * provides a safe fallback for raster images. SVG is validated from its
+     * content rather than trusting the client-provided filename.
+     */
+    private function detectMimeType(string $path): ?string
+    {
+        if (function_exists('finfo_open')) {
+            $finfo = @finfo_open(FILEINFO_MIME_TYPE);
+            if ($finfo !== false) {
+                $mime = @finfo_file($finfo, $path);
+                @finfo_close($finfo);
+
+                if (is_string($mime) && $mime !== '') {
+                    return $mime;
+                }
+            }
+        }
+
+        if (function_exists('mime_content_type')) {
+            $mime = @mime_content_type($path);
+            if (is_string($mime) && $mime !== '') {
+                return $mime;
+            }
+        }
+
+        if (function_exists('getimagesize')) {
+            $imageInfo = @getimagesize($path);
+            if (is_array($imageInfo) && isset($imageInfo['mime']) && is_string($imageInfo['mime'])) {
+                return $imageInfo['mime'];
+            }
+        }
+
+        $contents = @file_get_contents($path);
+        if ($contents === false || strlen($contents) > 1024 * 1024) {
+            return null;
+        }
+
+        $trimmed = ltrim($contents);
+        if (!preg_match('/^<svg\b/i', $trimmed)) {
+            return null;
+        }
+
+        // Do not accept SVGs containing common active-content vectors.
+        if (preg_match('/<\s*(script|iframe|object|embed|foreignObject)\b/i', $contents)
+            || preg_match('/\bon[a-z]+\s*=\s*["\']/i', $contents)
+            || preg_match('/javascript\s*:/i', $contents)
+            || preg_match('/<!DOCTYPE|<!ENTITY/i', $contents)) {
+            return null;
+        }
+
+        return 'image/svg+xml';
     }
 }
