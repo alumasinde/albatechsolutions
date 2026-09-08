@@ -11,9 +11,7 @@
         var editorEl = document.getElementById('editor');
         var inputEl = document.getElementById('content-input');
 
-        if (!editorEl || !inputEl || typeof Quill === 'undefined') {
-            return;
-        }
+        if (!editorEl || !inputEl || typeof Quill === 'undefined') return;
 
         var quill = new Quill('#editor', {
             theme: 'snow',
@@ -28,18 +26,13 @@
                         [{ align: [] }],
                         ['clean']
                     ],
-                    handlers: { image: function () { uploadImage(quill); } }
+                    handlers: { image: function () { uploadImage(quill, editorEl); } }
                 }
             }
         });
 
         var form = editorEl.closest('form');
-        if (form) {
-            form.addEventListener('submit', function () {
-                inputEl.value = quill.root.innerHTML;
-            });
-        }
-
+        if (form) form.addEventListener('submit', function () { inputEl.value = quill.root.innerHTML; });
         initFeaturedImagePicker();
     });
 
@@ -48,21 +41,20 @@
         return token ? token.value : '';
     }
 
-    function uploadImage(quill) {
+    function uploadImage(quill, editorEl) {
         var input = document.createElement('input');
         input.type = 'file';
         input.accept = 'image/jpeg,image/png,image/webp,image/svg+xml';
         input.click();
-
         input.addEventListener('change', function () {
             if (!input.files || !input.files[0]) return;
-
             var formData = new FormData();
             formData.append('image', input.files[0]);
             formData.append('_token', csrfToken());
             var range = quill.getSelection(true);
+            var uploadUrl = editorEl.getAttribute('data-image-upload-url') || '/admin/blog/media';
 
-            fetch((window.AlbaTechBlog && window.AlbaTechBlog.uploadUrl) || '/admin/blog/media', {
+            fetch(uploadUrl, {
                 method: 'POST',
                 body: formData,
                 credentials: 'same-origin',
@@ -89,7 +81,6 @@
         var fileInput = document.getElementById('featured_image');
         var removeButton = document.getElementById('remove-featured-image');
         var items = document.querySelectorAll('.blog-media-item');
-
         if (!hidden || !preview) return;
 
         function setPreview(id, url, name) {
@@ -128,7 +119,6 @@
                 reader.readAsDataURL(file);
             });
         }
-
         if (removeButton) removeButton.addEventListener('click', clearPreview);
     }
 
