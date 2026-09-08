@@ -14,10 +14,13 @@ final class BlogPostRepository extends BaseRepository
     public function findBySlug(string $slug): ?array
     {
         $stmt = $this->db->prepare(
-            "SELECT bp.*, bc.name AS category_name, bc.slug AS category_slug, u.name AS author_name
+            "SELECT bp.*, bc.name AS category_name, bc.slug AS category_slug, u.name AS author_name,
+                    fm.disk_path AS featured_media_path, fm.original_name AS featured_media_name,
+                    fm.mime_type AS featured_media_mime
              FROM blog_posts bp
              LEFT JOIN blog_categories bc ON bc.id = bp.category_id
              LEFT JOIN users u ON u.id = bp.author_id
+             LEFT JOIN media fm ON fm.id = bp.featured_media_id AND fm.deleted_at IS NULL
              WHERE bp.slug = :slug AND bp.status = 'published' AND bp.deleted_at IS NULL
              LIMIT 1"
         );
@@ -30,9 +33,11 @@ final class BlogPostRepository extends BaseRepository
     {
         $offset = max(0, ($page - 1) * $perPage);
 
-        $sql = "SELECT bp.*, bc.name AS category_name, bc.slug AS category_slug
+        $sql = "SELECT bp.*, bc.name AS category_name, bc.slug AS category_slug,
+                       fm.disk_path AS featured_media_path, fm.original_name AS featured_media_name
                 FROM blog_posts bp
                 LEFT JOIN blog_categories bc ON bc.id = bp.category_id
+                LEFT JOIN media fm ON fm.id = bp.featured_media_id AND fm.deleted_at IS NULL
                 WHERE bp.status = 'published' AND bp.deleted_at IS NULL";
 
         $params = [];
@@ -57,9 +62,11 @@ final class BlogPostRepository extends BaseRepository
     public function allForAdmin(): array
     {
         $stmt = $this->db->query(
-            'SELECT bp.*, bc.name AS category_name
+            'SELECT bp.*, bc.name AS category_name,
+                    fm.disk_path AS featured_media_path, fm.original_name AS featured_media_name
              FROM blog_posts bp
              LEFT JOIN blog_categories bc ON bc.id = bp.category_id
+             LEFT JOIN media fm ON fm.id = bp.featured_media_id AND fm.deleted_at IS NULL
              WHERE bp.deleted_at IS NULL
              ORDER BY bp.updated_at DESC'
         );
