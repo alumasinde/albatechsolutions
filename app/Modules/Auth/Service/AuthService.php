@@ -9,6 +9,8 @@ use App\Core\AuditLog;
 use App\Core\BaseService;
 use App\Core\Config;
 use App\Core\Helpers\Totp;
+use App\Core\Logger;
+use App\Core\Notifications\NotificationMessage;
 use App\Core\Notifications\NotificationService;
 use App\Modules\Auth\Repository\UserRepository;
 use App\Modules\Auth\Repository\UserTokenRepository;
@@ -220,12 +222,33 @@ final class AuthService extends BaseService
     public function requestPasswordReset(string $email): array
     {
         $user = $this->users->findByEmail($email);
+
         if ($user && !empty($user['password'])) {
             $raw = $this->tokens->issue((int) $user['id'], 'password_reset', self::PASSWORD_RESET_TTL_MINUTES);
             $link = rtrim((string) Config::get('app.url'), '/') . '/reset-password/' . $raw;
-            $this->notifications->notify($user['email'], 'Reset your password', "Hi {$user['name']},\n\nA password reset was requested for your account. If this was you, use the link below within the next hour:\n\n{$link}\n\nIf you didn't request this, you can safely ignore this email.");
-            AuditLog::record('password_reset.requested', 'user', (int) $user['id']);
+
+            $result = $this->notifications->send(new NotificationMessage(
+                channel: 'email',
+                recipient: (string) $user['email'],
+                subject: 'Reset your password',
+                body: "Hi {$user['name']},\n\nA password reset was requested for your account. If this was you, use the link below within the next hour:\n\n{$link}\n\nIf you didn't request this, you can safely ignore this email."
+            ));
+
+            if ($result->accepted) {
+                AuditLog::record('password_reset.requested', 'user', (int) $user['id']);
+            } else {
+                $token = $this->tokens->findValid($raw, 'password_reset');
+                if ($token) $this->tokens->consume((int) $token['id']);
+
+                AuditLog::record('password_reset.notification_failed', 'user', (int) $user['id']);
+                Logger::warning('Password reset notification was not accepted.', [
+                    'user_id' => (int) $user['id'],
+                    'error' => $result->error,
+                ]);
+            }
         }
+
+        // Keep this response generic to avoid account enumeration.
         return ['success' => true];
     }
 
@@ -239,11 +262,33 @@ final class AuthService extends BaseService
         return ['success' => true];
     }
 
-    public function sendEmailVerification(int $userId, string $email, string $name): void
+    public function sendEmailVerification(int $userId, string $email, string $name): bool
     {
         $raw = $this->tokens->issue($userId, 'email_verification', self::EMAIL_VERIFICATION_TTL_MINUTES);
         $link = rtrim((string) Config::get('app.url'), '/') . '/verify-email/' . $raw;
-        $this->notifications->notify($email, 'Verify your email address', "Hi {$name},\n\nPlease confirm your email address by clicking the link below:\n\n{$link}\n\nThis link expires in 24 hours.");
+
+        $result = $this->notifications->send(new NotificationMessage(
+            channel: 'email',
+            recipient: $email,
+            subject: 'Verify your email address',
+            body: "Hi {$name},\n\nPlease confirm your email address by clicking the link below:\n\n{$link}\n\nThis link expires in 24 hours."
+        ));
+
+        if ($result->accepted) {
+            AuditLog::record('email_verification.sent', 'user', $userId);
+            return true;
+        }
+
+        $token = $this->tokens->findValid($raw, 'email_verification');
+        if ($token) $this->tokens->consume((int) $token['id']);
+
+        AuditLog::record('email_verification.notification_failed', 'user', $userId);
+        Logger::warning('Email verification notification was not accepted.', [
+            'user_id' => $userId,
+            'error' => $result->error,
+        ]);
+
+        return false;
     }
 
     public function resendEmailVerification(int $userId): array
@@ -251,7 +296,11 @@ final class AuthService extends BaseService
         $user = $this->users->find($userId);
         if (!$user) return ['success' => false, 'message' => 'Account not found.'];
         if (!empty($user['email_verified_at'])) return ['success' => true, 'message' => 'Your email is already verified.'];
-        $this->sendEmailVerification($userId, $user['email'], $user['name']);
+
+        if (!$this->sendEmailVerification($userId, (string) $user['email'], (string) $user['name'])) {
+            return ['success' => false, 'message' => 'We could not send the verification email right now. Please try again later.'];
+        }
+
         return ['success' => true, 'message' => 'Verification email sent.'];
     }
 
