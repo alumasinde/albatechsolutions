@@ -45,11 +45,16 @@ final class BlogController extends BaseController
     {
         if (trim((string) $request->input('title', '')) === '') {
             Session::flash('_errors', ['title' => ['Title is required.']]);
-
             return $this->back();
         }
 
-        $id = $this->postService->create($request->all(), (int) Auth::id());
+        $data = $request->all();
+        $featuredMediaId = $this->storeFeaturedUpload($request);
+        if ($featuredMediaId !== null) {
+            $data['featured_media_id'] = $featuredMediaId;
+        }
+
+        $id = $this->postService->create($data, (int) Auth::id());
         Session::flash('_success', 'Post created.');
 
         return $this->redirect(Config::get('admin.path', '/admin') . '/blog/' . $id . '/edit');
@@ -58,7 +63,6 @@ final class BlogController extends BaseController
     public function edit(Request $request): Response
     {
         $post = $this->posts->find((int) $request->param('id'));
-
         if (!$post) {
             return Response::text('Not found', 404);
         }
@@ -73,32 +77,33 @@ final class BlogController extends BaseController
     public function update(Request $request): Response
     {
         $id = (int) $request->param('id');
-
         if (trim((string) $request->input('title', '')) === '') {
             Session::flash('_errors', ['title' => ['Title is required.']]);
-
             return $this->back();
         }
 
-        $this->postService->update($id, $request->all());
+        $data = $request->all();
+        $featuredMediaId = $this->storeFeaturedUpload($request);
+        if ($featuredMediaId !== null) {
+            $data['featured_media_id'] = $featuredMediaId;
+        } elseif (array_key_exists('featured_media_id', $data) && $data['featured_media_id'] === '') {
+            $data['featured_media_id'] = null;
+        }
+
+        $this->postService->update($id, $data);
         Session::flash('_success', 'Post updated.');
 
         return $this->redirect(Config::get('admin.path', '/admin') . '/blog/' . $id . '/edit');
     }
 
-    /**
-     * Upload an image directly from the blog editor and return its media URL.
-     */
     public function uploadImage(Request $request): Response
     {
         $file = $request->file('image');
-
         if (!$file) {
             return $this->json(['success' => false, 'message' => 'Please choose an image.'], 422);
         }
 
         $result = $this->mediaService->storeUpload($file, 'blog');
-
         if (!$result['success']) {
             return $this->json(['success' => false, 'message' => $result['message'] ?? 'Image upload failed.'], 422);
         }
@@ -114,17 +119,14 @@ final class BlogController extends BaseController
     {
         $this->postService->delete((int) $request->param('id'));
         Session::flash('_success', 'Post deleted.');
-
         return $this->redirect(Config::get('admin.path', '/admin') . '/blog');
     }
 
     public function storeCategory(Request $request): Response
     {
         $name = trim((string) $request->input('name', ''));
-
         if ($name === '') {
             Session::flash('_errors', ['name' => ['Category name is required.']]);
-
             return $this->back();
         }
 
@@ -132,9 +134,23 @@ final class BlogController extends BaseController
             'name' => $name,
             'slug' => \App\Core\Helpers\Sanitizer::slug($name),
         ]);
-
         Session::flash('_success', 'Category added.');
-
         return $this->redirect(Config::get('admin.path', '/admin') . '/blog');
+    }
+
+    private function storeFeaturedUpload(Request $request): ?int
+    {
+        $file = $request->file('featured_image');
+        if (!$file) {
+            return null;
+        }
+
+        $result = $this->mediaService->storeUpload($file, 'blog');
+        if (!$result['success']) {
+            Session::flash('_errors', ['featured_image' => [$result['message'] ?? 'Featured image upload failed.']]);
+            return null;
+        }
+
+        return (int) $result['id'];
     }
 }
