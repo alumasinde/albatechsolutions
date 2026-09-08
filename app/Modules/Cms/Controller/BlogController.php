@@ -10,8 +10,10 @@ use App\Core\Config;
 use App\Core\Request;
 use App\Core\Response;
 use App\Core\Session;
+use App\Modules\Admin\Service\MediaService;
 use App\Modules\Cms\Repository\BlogCategoryRepository;
 use App\Modules\Cms\Repository\BlogPostRepository;
+use App\Modules\Cms\Repository\MediaRepository;
 use App\Modules\Cms\Service\BlogPostService;
 
 final class BlogController extends BaseController
@@ -19,7 +21,9 @@ final class BlogController extends BaseController
     public function __construct(
         private readonly BlogPostService $postService,
         private readonly BlogPostRepository $posts,
-        private readonly BlogCategoryRepository $categories
+        private readonly BlogCategoryRepository $categories,
+        private readonly MediaRepository $media,
+        private readonly MediaService $mediaService
     ) {
     }
 
@@ -33,6 +37,7 @@ final class BlogController extends BaseController
         return $this->view('admin.blog.form', [
             'post' => null,
             'categories' => $this->categories->allActive(),
+            'media' => $this->media->imageLibrary(),
         ]);
     }
 
@@ -61,6 +66,7 @@ final class BlogController extends BaseController
         return $this->view('admin.blog.form', [
             'post' => $post,
             'categories' => $this->categories->allActive(),
+            'media' => $this->media->imageLibrary(),
         ]);
     }
 
@@ -78,6 +84,30 @@ final class BlogController extends BaseController
         Session::flash('_success', 'Post updated.');
 
         return $this->redirect(Config::get('admin.path', '/admin') . '/blog/' . $id . '/edit');
+    }
+
+    /**
+     * Upload an image directly from the blog editor and return its media URL.
+     */
+    public function uploadImage(Request $request): Response
+    {
+        $file = $request->file('image');
+
+        if (!$file) {
+            return $this->json(['success' => false, 'message' => 'Please choose an image.'], 422);
+        }
+
+        $result = $this->mediaService->storeUpload($file, 'blog');
+
+        if (!$result['success']) {
+            return $this->json(['success' => false, 'message' => $result['message'] ?? 'Image upload failed.'], 422);
+        }
+
+        return $this->json([
+            'success' => true,
+            'id' => $result['id'],
+            'url' => url('/' . ltrim((string) $result['path'], '/')),
+        ]);
     }
 
     public function destroy(Request $request): Response
