@@ -22,8 +22,8 @@ ob_start();
         <?php if ($post['category_name']): ?> · <?= e($post['category_name']) ?><?php endif; ?>
     </div>
     <?php if ($featuredImage): ?>
-        <figure class="guide-article__featured-image">
-            <img src="<?= e($featuredImage) ?>" alt="<?= e($post['featured_media_name'] ?: $post['title']) ?>" fetchpriority="high">
+        <figure class="guide-article__featured-image" style="margin:28px 0 36px;overflow:hidden;border-radius:16px;">
+            <img src="<?= e($featuredImage) ?>" alt="<?= e($post['featured_media_name'] ?: $post['title']) ?>" fetchpriority="high" style="display:block;width:100%;max-height:560px;object-fit:cover;">
         </figure>
     <?php endif; ?>
     <div class="guide-article__body"><?= $post['content'] ?? '' ?></div>
