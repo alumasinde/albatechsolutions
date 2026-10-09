@@ -56,6 +56,7 @@ final class ServiceController
             'pageTitle' => ($service['meta_title'] ?: $service['name']) . ' | AlbaTech Solutions',
             'metaDescription' => $description,
             'canonicalUrl' => $baseUrl . '/services/' . rawurlencode($service['slug']),
+            'metaRobots' => 'index, follow, max-image-preview:large',
             'service' => $service,
         ]));
     }

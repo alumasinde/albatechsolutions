@@ -87,6 +87,19 @@ final class ServiceRepository
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /** @return list<array{slug:string}> */
+    public function publishedSlugs(): array
+    {
+        $statement = Database::connection()->prepare(
+            'SELECT s.slug FROM services s
+             INNER JOIN service_categories c ON c.id = s.category_id
+             WHERE s.status = :published AND c.status = :category_status
+             ORDER BY s.slug ASC'
+        );
+        $statement->execute(['published' => 'published', 'category_status' => 'active']);
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function findPublishedBySlug(string $slug): ?array
     {
         $statement = Database::connection()->prepare(

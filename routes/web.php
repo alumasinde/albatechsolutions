@@ -5,6 +5,7 @@ declare(strict_types=1);
 use AlbaTech\Controllers\AdminController;
 use AlbaTech\Controllers\HomeController;
 use AlbaTech\Controllers\ServiceController;
+use AlbaTech\Controllers\SeoController;
 use AlbaTech\Controllers\StaticPageController;
 use AlbaTech\Core\Response;
 
@@ -15,6 +16,10 @@ $app->router()->get('/services/{slug}', [new ServiceController(), 'show']);
 $app->router()->get('/about', [new StaticPageController(), 'about']);
 $app->router()->get('/guides', [new StaticPageController(), 'guides']);
 $app->router()->get('/get-help', [new StaticPageController(), 'getHelp']);
+$seo = new SeoController();
+$app->router()->get('/sitemap.xml', [$seo, 'sitemap']);
+$app->router()->get('/robots.txt', [$seo, 'robots']);
+$app->router()->get('/llms.txt', [$seo, 'llms']);
 $admin = new AdminController();
 $app->router()->get('/admin/login', [$admin, 'login']);
 $app->router()->post('/admin/login', [$admin, 'login']);
