@@ -180,15 +180,8 @@ $whatsAppUrl = $whatsAppNumber !== ''
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
 
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-        crossorigin="anonymous"
-        referrerpolicy="no-referrer"
-        media="print"
-        onload="this.media='all'"
-    >
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23155eef'/%3E%3Ctext x='16' y='23' font-family='Arial' font-size='20' font-weight='700' text-anchor='middle' fill='%23fff'%3EA%3C/text%3E%3C/svg%3E">
 
     <link rel="stylesheet" href="/assets/css/app.css">
 
@@ -243,9 +236,10 @@ $whatsAppUrl = $whatsAppNumber !== ''
 (function() {
     const menuToggle = document.getElementById('mobile-menu-toggle');
     const siteNav = document.getElementById('site-nav');
-    const menuIcon = menuToggle.querySelector('i');
 
     if (!menuToggle || !siteNav) return;
+
+    const menuIcon = menuToggle.querySelector('i') || document.createElement('i');
 
     menuToggle.addEventListener('click', function() {
         const isOpen = siteNav.classList.toggle('is-open');
