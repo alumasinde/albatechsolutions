@@ -1,0 +1,27 @@
+CREATE TABLE site_settings (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    setting_key VARCHAR(190) NOT NULL,
+    setting_value MEDIUMTEXT NULL,
+    value_type VARCHAR(40) NOT NULL DEFAULT 'string',
+    setting_group VARCHAR(100) NOT NULL DEFAULT 'general',
+    is_public TINYINT(1) NOT NULL DEFAULT 1,
+    updated_by BIGINT UNSIGNED NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY uq_site_settings_key (setting_key),
+    KEY idx_site_settings_group (setting_group),
+    CONSTRAINT fk_site_settings_updated_by FOREIGN KEY (updated_by) REFERENCES admin_users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO site_settings (setting_key, setting_value, value_type, setting_group, is_public) VALUES
+('site_name', 'AlbaTech Solutions', 'string', 'branding', 1),
+('site_url', 'https://albatechsolutions.co.ke', 'url', 'branding', 1),
+('founder_name', 'Albert Masinde', 'string', 'branding', 1),
+('default_author', 'Albert Masinde', 'string', 'seo', 1),
+('default_meta_description', 'Practical web design and digital assistance for individuals and businesses in Kenya.', 'string', 'seo', 1),
+('default_meta_keywords', 'web design Kenya, business registration assistance Kenya, digital assistance', 'string', 'seo', 1),
+('whatsapp_number', '', 'string', 'contact', 1),
+('contact_email', '', 'email', 'contact', 1),
+('business_phone', '', 'string', 'contact', 1),
+('business_address', 'Ruaka, Kenya', 'string', 'contact', 1);

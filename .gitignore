@@ -1,0 +1,12 @@
+/vendor/
+/.env
+/storage/logs/*
+!/storage/logs/.gitkeep
+/storage/cache/*
+!/storage/cache/.gitkeep
+/storage/uploads/*
+!/storage/uploads/.gitkeep
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

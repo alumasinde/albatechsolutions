@@ -1,74 +1,65 @@
 # AlbaTech Solutions
 
-Kenya-focused digital assistance and technology services.
+Custom PHP + MySQL website foundation for AlbaTech Solutions.
 
-AlbaTech helps individuals and businesses get practical tasks done, including KRA returns support, eCitizen help, business registration assistance, CV writing, websites and practical IT services.
+## Requirements
 
-**Tell us the task. We'll help with the next step.**
+- PHP 8.2+ with `pdo_mysql`, `mbstring`, and `openssl` enabled
+- MySQL 8+ or a compatible local MySQL server
+- Composer 2
+- Apache with `mod_rewrite` (recommended for clean URLs), or PHP's local development server
 
-AlbaTech Solutions is an independent business and is **not a government agency**.
+## Setup on Windows
 
-## Phase 1 architecture
+1. Create a local MySQL database:
 
-The active application is focused on:
+   ```sql
+   CREATE DATABASE albatechsolutions
+     CHARACTER SET utf8mb4
+     COLLATE utf8mb4_unicode_ci;
+   ```
 
-- Public website and SEO service pages
-- Service catalogue
-- Guides/blog content
-- FAQs and contact messages
-- WhatsApp-first and form-based assistance requests
-- Admin management
-- Assistance requests, quotes, payment verification and work tracking
+2. Copy `.env.example` to `.env` and set your local database credentials.
+3. Install Composer autoloading:
 
-Retired from the active route surface:
+   ```powershell
+   composer install
+   ```
+4. Run migrations:
 
-- Customer self-registration/account portal
-- Legacy Orders checkout workflow
-- Legacy order payment workflow
-- Public digital assistant
-- Growth analytics collection
-- Public projects/portfolio
-- Generic public Pages CMS routing
+   ```powershell
+   php bin/migrate.php
+   ```
+5. Start the local server. The hosts entry must exist first:
 
-Historical migrations are retained for deployment safety. See `docs/PHASE_1_AUDIT.md`.
+   ```powershell
+   composer serve
+   ```
 
-## Stack
+   Then open `http://albatechsolution.dev:8000`.
 
-- PHP 8.2+
-- Custom PHP framework
-- MySQL/MariaDB
-- Composer
-- Public document root: `public_html/`
+## Windows hosts file
 
-## Local setup
+Open Notepad as Administrator and edit:
 
-```bash
-composer install
-php bin/qa.php
+`C:\Windows\System32\drivers\etc\hosts`
+
+Add:
+
+```text
+127.0.0.1 albatechsolution.dev
 ```
 
-Configure required values in a local `.env`. Never commit credentials, API keys or deployment secrets.
+If you prefer the default port 80 with Apache, configure a VirtualHost with `DocumentRoot` pointing to this project's `public` directory and use the same hosts entry. Do not expose the project root as the web root.
 
-## Next
+## Migrations
 
-Phase 2: database baseline and real AlbaTech seed data.
+SQL files live in `database/migrations/` and use ordered, descriptive names such as `000_auth.sql`. The runner is `bin/migrate.php`. Successfully applied migrations are recorded in `schema_migrations`. Treat applied migrations as immutable; create a new numbered migration for changes.
 
+## CSS convention
 
-## Fresh database setup
+Styles are outside views in `public/assets/css/`. Design tokens are declared in `:root` in `tokens.css`; components consume those tokens. Avoid inline styles and page-specific CSS embedded in PHP views.
 
-For a new AlbaTech database, use the current migrations and seed instead of copying old data.
+## Current scope
 
-Configure DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS and DB_CHARSET in your local .env, then run:
-
-    composer install
-    php bin/install-fresh.php
-
-The installer creates the configured empty database, runs every migration in order, then loads the current AlbaTech seed.
-
-To deliberately discard the configured database and rebuild it:
-
-    php bin/install-fresh.php --reset
-
-Warning: --reset drops the configured database.
-
-The baseline includes dynamic content for KRA Returns Filing, eCitizen Services, Business Registration, CV Writing, Website Design, Computer Repair, IT Support and Google Business Profile Setup. All use the shared dynamic service renderer and database content; no separate hardcoded public PHP pages are needed.
+This is the foundation only: configuration, PDO, router, shared layout, a simple homepage, initial settings/auth schema, and migration runner. Admin CRUD, full authentication screens, service catalogue and SEO manager are subsequent build steps.

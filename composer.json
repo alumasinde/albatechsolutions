@@ -1,0 +1,23 @@
+{
+  "name": "albatech/albatechsolutions",
+  "description": "AlbaTech Solutions website and admin foundation",
+  "type": "project",
+  "require": {
+    "php": "^8.2",
+    "ext-pdo": "*",
+    "ext-pdo_mysql": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "AlbaTech\\": "app/"
+    }
+  },
+  "scripts": {
+    "migrate": "php bin/migrate.php",
+    "serve": "php -S albatechsolution.test:8000 -t public"
+  },
+  "config": {
+    "sort-packages": true,
+    "optimize-autoloader": true
+  }
+}
