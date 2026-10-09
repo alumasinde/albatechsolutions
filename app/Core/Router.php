@@ -47,6 +47,18 @@ final class Router
                 $params[$key] = $matches[$key] ?? '';
             }
 
+            // Central defense-in-depth: every admin POST must carry the session CSRF token.
+            // Controllers may also validate it; the duplicate check is intentional.
+            if ($method === 'POST' && ($path === '/admin' || str_starts_with($path, '/admin/'))) {
+                if (!AdminSecurity::verifyCsrf($request->input('_csrf'))) {
+                    Response::html(
+                        '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Request verification failed</title><body><main><h1>Request verification failed</h1><p>Your session token is missing or expired. Refresh the page and submit the form again.</p></main></body></html>',
+                        419
+                    );
+                    return;
+                }
+            }
+
             ($route['handler'])($request, $params);
             return;
         }

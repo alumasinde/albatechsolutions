@@ -18,6 +18,7 @@ final class View
             throw new RuntimeException('View template could not be found.');
         }
 
+        $data['cspNonce'] = $data['cspNonce'] ?? ($GLOBALS['albatech_csp_nonce'] ?? '');
         extract($data, EXTR_SKIP);
 
         ob_start();

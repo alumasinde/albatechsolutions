@@ -188,7 +188,7 @@ $whatsAppUrl = $whatsAppNumber !== ''
 
     <link rel="stylesheet" href="/assets/css/app.css">
 
-    <script type="application/ld+json"><?=
+    <script type="application/ld+json" nonce="<?= View::escape($cspNonce ?? '') ?>"><?=
         json_encode(
             $structuredData,
             JSON_UNESCAPED_SLASHES

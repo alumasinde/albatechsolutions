@@ -11,7 +11,15 @@ final class AdminSecurity
     public static function startSession(): void
     {
         if (session_status() === PHP_SESSION_ACTIVE) return;
-        session_name(Env::get('SESSION_NAME', 'albatech_admin') ?: 'albatech_admin');
+        $sessionName = Env::get('SESSION_NAME', 'albatech_admin') ?: 'albatech_admin';
+        if (!preg_match('/^[A-Za-z][A-Za-z0-9_-]{0,63}$/', $sessionName)) {
+            $sessionName = 'albatech_admin';
+        }
+        session_name($sessionName);
+        ini_set('session.use_trans_sid', '0');
+        ini_set('session.use_strict_mode', '1');
+        ini_set('session.sid_length', '48');
+        ini_set('session.sid_bits_per_character', '6');
         session_set_cookie_params([
             'lifetime' => 0,
             'path' => '/',
@@ -19,7 +27,6 @@ final class AdminSecurity
             'httponly' => true,
             'samesite' => 'Lax',
         ]);
-        ini_set('session.use_strict_mode', '1');
         ini_set('session.use_only_cookies', '1');
         ini_set('session.cookie_httponly', '1');
         session_start();
@@ -28,6 +35,7 @@ final class AdminSecurity
 
     public static function isHttps(): bool
     {
+        // Never trust forwarded headers here; TLS termination must be reflected by the web server.
         return (!empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) !== 'off')
             || (isset($_SERVER['SERVER_PORT']) && (int) $_SERVER['SERVER_PORT'] === 443);
     }
@@ -42,7 +50,7 @@ final class AdminSecurity
         $last = (int) ($_SESSION['_last_activity'] ?? $now);
         if (($now - $last) > $idle || ($now - $created) > $absolute) {
             $_SESSION = [];
-            if (session_status() === PHP_SESSION_ACTIVE) session_destroy();
+            self::destroySession();
             Response::redirect('/admin/login?expired=1');
         }
         $_SESSION['_last_activity'] = $now;
@@ -77,7 +85,7 @@ final class AdminSecurity
         $fresh = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$fresh) {
             $_SESSION = [];
-            session_destroy();
+            self::destroySession();
             Response::redirect('/admin/login');
         }
         $_SESSION['admin_user'] = $fresh;
@@ -95,6 +103,35 @@ final class AdminSecurity
             exit;
         }
         return $user;
+    }
+
+
+    public static function destroySession(): void
+    {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            return;
+        }
+
+        $_SESSION = [];
+        $params = session_get_cookie_params();
+        if (ini_get('session.use_cookies')) {
+            setcookie(session_name(), '', [
+                'expires' => time() - 42000,
+                'path' => $params['path'] ?: '/',
+                'domain' => $params['domain'] ?? '',
+                'secure' => (bool) ($params['secure'] ?? false),
+                'httponly' => true,
+                'samesite' => $params['samesite'] ?? 'Lax',
+            ]);
+        }
+        session_destroy();
+    }
+
+    public static function rotateCsrfToken(): string
+    {
+        self::startSession();
+        $_SESSION['_csrf'] = bin2hex(random_bytes(32));
+        return $_SESSION['_csrf'];
     }
 
     public static function flash(string $type, string $message): void

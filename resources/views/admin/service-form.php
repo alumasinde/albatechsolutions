@@ -62,7 +62,7 @@ $val = static fn(string $key, mixed $fallback = '') => View::escape($s[$key] ?? 
         <div class="editor-actions"><button class="btn btn-primary btn-full" type="submit"><i class="fa-solid fa-floppy-disk"></i> Save service</button><a class="btn btn-light btn-full" href="/admin/services">Cancel</a></div>
     </aside>
 </form>
-<script>
+<script nonce="<?= View::escape($cspNonce ?? '') ?>">
     (function() {
         var type = document.getElementById('pricingType'),
             amount = document.getElementById('pricingAmount'),

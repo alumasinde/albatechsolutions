@@ -61,15 +61,25 @@ final class RateLimiter
     private static function write(string $key, array $data): void
     {
         $directory = dirname(__DIR__, 2) . '/storage/cache/rate-limits';
-        if (!is_dir($directory) && !@mkdir($directory, 0700, true) && !is_dir($directory)) return;
+        if (!is_dir($directory) && !@mkdir($directory, 0700, true) && !is_dir($directory)) {
+            throw new \RuntimeException('Rate-limit storage is unavailable.');
+        }
         $path = $directory . '/' . $key . '.json';
         $handle = @fopen($path, 'c+b');
-        if (!$handle) return;
+        if (!$handle) {
+            throw new \RuntimeException('Rate-limit storage is unavailable.');
+        }
         flock($handle, LOCK_EX);
         ftruncate($handle, 0);
         rewind($handle);
-        fwrite($handle, json_encode($data, JSON_UNESCAPED_SLASHES) ?: '{}');
+        $encoded = json_encode($data, JSON_UNESCAPED_SLASHES) ?: '{}';
+        $written = fwrite($handle, $encoded);
         fflush($handle);
+        if ($written !== strlen($encoded)) {
+            flock($handle, LOCK_UN);
+            fclose($handle);
+            throw new \RuntimeException('Rate-limit state could not be persisted.');
+        }
         flock($handle, LOCK_UN);
         fclose($handle);
         @chmod($path, 0600);

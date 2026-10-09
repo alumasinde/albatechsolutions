@@ -1,27 +1,32 @@
-# Phase 1 Security Baseline
+# Phase 1 Security Correctness — implementation and verification
 
-## Implemented in this phase
+## Implemented controls
+- Router-level CSRF validation applies to every POST under `/admin`, before controller dispatch. Controllers retain their local checks as defense in depth. Missing/invalid tokens return HTTP 419 and do not invoke the handler.
+- Session cookies use HttpOnly, SameSite=Lax, strict session mode, cookie-only IDs, disabled URL session IDs, configurable idle/absolute expiry, and HTTPS-aware Secure cookies. Session destruction expires the cookie with matching attributes.
+- Successful authentication regenerates the session ID and rotates the CSRF token. Active account state is rechecked on protected requests.
+- Database calls in the admin controller/repositories use PDO prepared statements for values; fixed SQL fragments are used for query structure. Never bind identifiers; allowlist them if dynamic identifiers are introduced.
+- Rate-limit persistence errors now fail closed instead of silently disabling login throttling. Ensure `storage/cache/rate-limits` is writable by the PHP process and not web-accessible.
+- CSP uses a per-response nonce for required inline scripts and no longer permits `unsafe-inline` in `script-src`; inline event handlers were removed. Style policy no longer allows inline styles. Additional browser security headers are enabled.
+- Production startup checks reject debug mode, non-HTTPS APP_URL and the MySQL root account.
 
-- Admin route authorization now checks the database-backed `services.manage`, `categories.manage`, and `settings.manage` permissions.
-- Active admin account status is rechecked on protected requests so account deactivation takes effect without waiting for a new login.
-- Login throttling is applied by source IP and email/IP identity using files under `storage/cache/rate-limits`.
-- Login rotates the session ID and CSRF token; idle and absolute session expiry are enforced.
-- Session cookies use HttpOnly and SameSite=Lax, with Secure enabled for HTTPS and configurable with `SESSION_SECURE_COOKIE`.
-- Request input ignores array/object values rather than allowing them to be cast to strings.
-- Service and category fields have server-side length and format checks; site URL, contact email and WhatsApp number are validated before saving.
-- Baseline security headers include CSP, anti-framing, MIME sniffing protection, referrer policy and Permissions Policy. HSTS is sent only on HTTPS.
-- Production requests fail closed when APP_DEBUG is enabled, APP_URL is not HTTPS, or the configured database account is root.
-- Admin responses are marked no-store.
-- Admin creation requires a 12-character minimum password.
-- Added `tests/security_baseline.php` for quick local checks.
+## Regression commands
+```powershell
+php tests/security_baseline.php
+php tests/admin_workflows_baseline.php
+php tests/security_phase1_regression.php
+```
 
-## Required before launch
+## Required manual integration checks before production
+1. Sign in with valid credentials; verify session ID changes and CSRF token changes.
+2. Submit every admin POST form without a token and with a modified token; expect HTTP 419 and no database changes.
+3. Sign in as a user lacking `services.manage`, `categories.manage`, or `settings.manage`; verify direct GET and POST access returns 403.
+4. Deactivate a signed-in account in the database; its next protected request must invalidate the session.
+5. Trigger rate limits from a test IP/identity; expect HTTP 429 and a `Retry-After` header. Temporarily make limiter storage unwritable in staging and confirm authentication fails closed.
+6. Verify logout invalidates the session and expires the cookie; replay the old cookie and confirm it cannot access admin routes.
+7. Inspect response headers on HTTP and HTTPS. HSTS must only be present on HTTPS. Confirm all required CSS, JS and Font Awesome assets load under CSP without console violations.
+8. Audit every SQL query whenever a repository/controller changes; all user values must be bound parameters.
+9. Ensure `.env`, logs, rate-limit files and database backups are outside the public document root or explicitly denied by the web server.
+10. Run tests against a disposable MySQL database before deploying.
 
-- Configure `.env` with `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL=https://your-domain`, `SESSION_SECURE_COOKIE=true`, and a dedicated MySQL user.
-- Configure the web server document root to `public/`; keep `.env`, `storage`, database dumps and logs outside public access.
-- Run migrations and verify that every admin account has the appropriate role assignment.
-- Test all roles against a real database, including 403 responses for missing permissions.
-- Test login lockout and expiry behaviour in the actual hosting environment.
-- If behind a reverse proxy, configure trusted client IP handling explicitly before relying on IP-based throttling.
-- Current CSP permits `unsafe-inline` to preserve existing inline template code. Move inline scripts/styles to assets or use nonces before tightening this policy.
-- Complete live integration testing, dependency review, backup/restore verification and an external security assessment.
+## Important scope note
+The included automated regression tests cover framework-level behavior without requiring production credentials. They do not replace a live MySQL/browser test or an independent penetration test.
