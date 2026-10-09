@@ -292,14 +292,6 @@ $whatsAppUrl = $whatsAppNumber !== ''
                 Practical digital solutions for people and businesses in Kenya.
             </p>
         </div>
-
-        <div class="footer-links">
-            <a href="/services">Services</a>
-            <a href="/about">About</a>
-            <a href="/get-help">Contact</a>
-            <a href="/guides">Guides</a>
-        </div>
-
         <p>
             &copy; <?= date('Y') ?>
             <?= View::escape($siteName) ?>. All rights reserved.
