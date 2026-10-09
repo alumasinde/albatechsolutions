@@ -30,12 +30,12 @@ $whatsAppUrl = $whatsAppNumber !== ''
             <p class="contact-intro">You do not need to know exactly which service you need. Explain your goal in your own words and we can clarify the options together.</p>
 
             <article class="contact-method">
-                <span class="contact-method__icon contact-method__icon--whatsapp" aria-hidden="true">W</span>
+                <span class="contact-method__icon contact-method__icon--whatsapp" aria-hidden="true"><i class="fa-brands fa-whatsapp"></i></span>
                 <div>
                     <h3>WhatsApp</h3>
                     <p>Best for a quick question or to explain what you need.</p>
                     <?php if ($whatsAppUrl !== null): ?>
-                        <a class="contact-method__link" href="<?= View::escape($whatsAppUrl) ?>" target="_blank" rel="noopener noreferrer">Start a WhatsApp chat <span aria-hidden="true">↗</span></a>
+                        <a class="button button--whatsapp" href="<?= View::escape($whatsAppUrl) ?>" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Start a WhatsApp chat</a>
                     <?php else: ?>
                         <p class="contact-method__hint">WhatsApp contact is being configured. Please use the enquiry guidance on this page for now.</p>
                     <?php endif; ?>
@@ -43,16 +43,16 @@ $whatsAppUrl = $whatsAppNumber !== ''
             </article>
 
             <article class="contact-method">
-                <span class="contact-method__icon" aria-hidden="true">@</span>
+                <span class="contact-method__icon" aria-hidden="true"><i class="fa-solid fa-list-check"></i></span>
                 <div>
                     <h3>What can we help with?</h3>
                     <p>Website design, business online presence, selected government and business processes, and career documents.</p>
-                    <a class="contact-method__link" href="/services">Browse all services <span aria-hidden="true">→</span></a>
+                    <a class="button button--secondary" href="/services">Browse all services <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
                 </div>
             </article>
 
             <div class="contact-safety">
-                <strong>Keep your information safe</strong>
+                <strong><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Keep your information safe</strong>
                 <p>Do not send passwords, iTax login details, PINs, M-Pesa credentials or one-time verification codes in an enquiry.</p>
             </div>
         </div>

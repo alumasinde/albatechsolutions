@@ -178,13 +178,17 @@ $whatsAppUrl = $whatsAppNumber !== ''
     <?php endif; ?>
 
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
 
     <link
         rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
         crossorigin="anonymous"
         referrerpolicy="no-referrer"
+        media="print"
+        onload="this.media='all'"
     >
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
 
     <link rel="stylesheet" href="/assets/css/app.css">
 
@@ -214,7 +218,18 @@ $whatsAppUrl = $whatsAppNumber !== ''
             AlbaTech <span>Solutions</span>
         </a>
 
-        <nav class="site-nav" aria-label="Main navigation">
+        <button
+            class="mobile-menu-btn"
+            type="button"
+            aria-label="Toggle navigation menu"
+            aria-expanded="false"
+            aria-controls="site-nav"
+            id="mobile-menu-toggle"
+        >
+            <i class="fa-solid fa-bars" aria-hidden="true"></i>
+        </button>
+
+        <nav class="site-nav" id="site-nav" aria-label="Main navigation">
             <a href="/">Home</a>
             <a href="/services">Services</a>
             <a href="/guides">Guides</a>
@@ -223,6 +238,50 @@ $whatsAppUrl = $whatsAppNumber !== ''
         </nav>
     </div>
 </header>
+
+<script nonce="<?= View::escape($cspNonce ?? '') ?>">
+(function() {
+    const menuToggle = document.getElementById('mobile-menu-toggle');
+    const siteNav = document.getElementById('site-nav');
+    const menuIcon = menuToggle.querySelector('i');
+
+    if (!menuToggle || !siteNav) return;
+
+    menuToggle.addEventListener('click', function() {
+        const isOpen = siteNav.classList.toggle('is-open');
+        menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        menuIcon.className = isOpen ? 'fa-solid fa-xmark' : 'fa-solid fa-bars';
+    });
+
+    // Close menu when clicking a link
+    siteNav.querySelectorAll('a').forEach(function(link) {
+        link.addEventListener('click', function() {
+            siteNav.classList.remove('is-open');
+            menuToggle.setAttribute('aria-expanded', 'false');
+            menuIcon.className = 'fa-solid fa-bars';
+        });
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!siteNav.contains(e.target) && !menuToggle.contains(e.target)) {
+            siteNav.classList.remove('is-open');
+            menuToggle.setAttribute('aria-expanded', 'false');
+            menuIcon.className = 'fa-solid fa-bars';
+        }
+    });
+
+    // Close menu on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && siteNav.classList.contains('is-open')) {
+            siteNav.classList.remove('is-open');
+            menuToggle.setAttribute('aria-expanded', 'false');
+            menuIcon.className = 'fa-solid fa-bars';
+            menuToggle.focus();
+        }
+    });
+})();
+</script>
 
 <main id="main-content">
     <?= $content ?? '' ?>

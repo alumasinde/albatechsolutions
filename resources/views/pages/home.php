@@ -9,7 +9,11 @@
         <a class="button button--whatsapp" href="<?= View::escape($whatsAppUrl ?? '/get-help') ?>"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Talk to us</a>
         <a class="button button--secondary" href="/services">Explore services</a>
       </div>
-      <div class="home-hero__meta"><span>Based in Kenya</span><span>Clear scope and pricing</span><span>Support for real business needs</span></div>
+      <div class="home-hero__meta">
+        <span><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Based in Kenya</span>
+        <span><i class="fa-solid fa-receipt" aria-hidden="true"></i> Clear scope and pricing</span>
+        <span><i class="fa-solid fa-handshake" aria-hidden="true"></i> Support for real business needs</span>
+      </div>
     </div>
     <aside class="home-hero__visual" aria-label="AlbaTech service areas">
       <div class="home-hero__visual-head"><span>HOW WE CAN HELP</span><span class="home-hero__visual-rule"></span></div>

@@ -13,24 +13,17 @@ DirectoryIndex index.php
     RewriteRule ^ index.php [QSA,L]
 </IfModule>
 
+# CSP, COOP, CORP and HSTS are sent by public/index.php (nonce + HTTP/HTTPS detection).
+# Do not add a Content-Security-Policy here: browsers enforce every CSP they receive.
 <IfModule mod_headers.c>
     Header always set X-Content-Type-Options "nosniff"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
     Header always set X-Frame-Options "DENY"
+    Header always set X-Permitted-Cross-Domain-Policies "none"
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
 </IfModule>
 
 # Prevent direct access to sensitive files if the public directory is misconfigured.
 <FilesMatch "^(\.env|composer\.(json|lock)|README\.md)$">
     Require all denied
 </FilesMatch>
-
-<IfModule mod_headers.c>
-    Header always set X-Permitted-Cross-Domain-Policies "none"
-    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
-    Header always set Content-Security-Policy "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; img-src 'self' data: https:; font-src 'self' data: https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline'; connect-src 'self'"
-</IfModule>
-
-<IfModule mod_headers.c>
-    # Only send HSTS when HTTPS is active. Do not enable includeSubDomains unless every subdomain supports HTTPS.
-    Header always set Strict-Transport-Security "max-age=31536000" env=HTTPS
-</IfModule>
