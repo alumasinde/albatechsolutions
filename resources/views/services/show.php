@@ -1,52 +1,66 @@
 <?php use AlbaTech\Core\View; ?>
 
-<section class="page-intro">
+<section class="service-detail-hero">
     <div class="container">
         <a class="breadcrumb" href="/services">← All services</a>
-        <span class="eyebrow"><?= View::escape($service['category_name']) ?></span>
-        <h1><?= View::escape($service['name']) ?></h1>
-        <p><?= View::escape($service['short_description'] ?? '') ?></p>
-        <?php if (!empty($service['pricing_label'])): ?>
-            <p class="price-label"><?= View::escape($service['pricing_label']) ?></p>
-        <?php endif; ?>
-        <div class="hero-actions">
-            <a class="button button--whatsapp" href="/get-help?service=<?= rawurlencode($service['slug']) ?>">Enquire about this service</a>
-            <a class="button button--secondary" href="/services">Browse other services</a>
+        <div class="service-detail-hero__grid">
+            <div>
+                <span class="eyebrow"><?= View::escape($service['category_name']) ?></span>
+                <h1><?= View::escape($service['name']) ?></h1>
+                <p class="service-detail-hero__lead"><?= View::escape($service['short_description'] ?? '') ?></p>
+                <div class="hero-actions">
+                    <a class="button button--whatsapp" href="/get-help?service=<?= rawurlencode($service['slug']) ?>">Enquire about this service <span aria-hidden="true">↗</span></a>
+                    <a class="button button--secondary" href="/services">Explore other services</a>
+                </div>
+            </div>
+            <aside class="service-price-panel">
+                <span class="service-price-panel__label">Service pricing</span>
+                <?php if (in_array((string) ($service['pricing_type'] ?? 'quote'), ['fixed', 'starting_at'], true) && ($service['pricing_amount'] ?? null) !== null && $service['pricing_amount'] !== ''): ?>
+                    <strong class="service-price-panel__amount"><?= ($service['pricing_type'] ?? '') === 'starting_at' ? 'From ' : '' ?>KSh <?= View::escape(number_format((float) $service['pricing_amount'], ((float) $service['pricing_amount'] == (int) $service['pricing_amount']) ? 0 : 2)) ?></strong>
+                    <p><?= ($service['pricing_type'] ?? '') === 'starting_at' ? 'Final cost depends on the scope and options you choose.' : 'We will confirm what is included before work begins.' ?></p>
+                <?php else: ?>
+                    <strong class="service-price-panel__quote"><?= View::escape(($service['pricing_label'] ?? '') ?: 'Contact for price') ?></strong>
+                    <p>Tell us what you need and we will confirm the scope and price before you commit.</p>
+                <?php endif; ?>
+                <a class="text-link" href="/get-help?service=<?= rawurlencode($service['slug']) ?>">Ask a question about pricing <span aria-hidden="true">→</span></a>
+            </aside>
         </div>
     </div>
 </section>
 
 <section class="section">
-    <div class="container service-detail">
-        <article class="service-copy">
-            <h2>About this service</h2>
+    <div class="container service-detail-layout">
+        <article class="service-content">
+            <span class="section-kicker">Service overview</span>
+            <h2>What this service is about</h2>
             <div class="prose"><?= nl2br(View::escape($service['description'] ?? 'Contact us to discuss your requirements and confirm the scope of assistance.')) ?></div>
 
             <?php if (!empty($service['who_for'])): ?>
-                <h2>Who this is for</h2>
-                <div class="prose"><?= nl2br(View::escape($service['who_for'])) ?></div>
+                <div class="service-content__block"><h3>Who this is for</h3><div class="prose"><?= nl2br(View::escape($service['who_for'])) ?></div></div>
             <?php endif; ?>
 
             <?php if (!empty($service['what_included'])): ?>
-                <h2>How we can help</h2>
-                <div class="prose"><?= nl2br(View::escape($service['what_included'])) ?></div>
+                <div class="service-content__block"><h3>What we can help with</h3><div class="prose"><?= nl2br(View::escape($service['what_included'])) ?></div></div>
             <?php endif; ?>
 
             <?php if (!empty($service['what_needed'])): ?>
-                <h2>What you may need</h2>
-                <div class="prose"><?= nl2br(View::escape($service['what_needed'])) ?></div>
+                <div class="service-content__block"><h3>What you may need</h3><div class="prose"><?= nl2br(View::escape($service['what_needed'])) ?></div></div>
             <?php endif; ?>
         </article>
 
-        <aside class="service-aside">
-            <div class="card">
-                <h2>Let’s discuss your needs</h2>
-                <p>Tell us what you need. We will confirm requirements, scope and any charges before proceeding.</p>
-                <a class="button" href="/get-help?service=<?= rawurlencode($service['slug']) ?>">Request assistance</a>
+        <aside class="service-detail-sidebar">
+            <div class="service-next-card">
+                <span class="service-next-card__icon" aria-hidden="true">↗</span>
+                <h2>Ready to get started?</h2>
+                <p>Send us a short description of what you need. We will confirm any questions, the scope and the charges before starting.</p>
+                <a class="button button--whatsapp" href="/get-help?service=<?= rawurlencode($service['slug']) ?>">Discuss this service</a>
+                <div class="service-next-card__foot"><span aria-hidden="true">✓</span> No obligation to enquire</div>
             </div>
             <?php if ((string) $service['category_slug'] === 'government-business-assistance'): ?>
-                <p class="notice">AlbaTech Solutions is independent and is not affiliated with a government agency. Final decisions and processing times are determined by the relevant authority.</p>
+                <p class="notice">AlbaTech Solutions is independent and is not affiliated with a government agency. Final decisions, requirements and processing times are determined by the relevant authority.</p>
             <?php endif; ?>
         </aside>
     </div>
 </section>
+
+<section class="service-detail-bottom"><div class="container service-detail-bottom__inner"><div><h2>Need help choosing?</h2><p>Tell us what you are trying to achieve and we will help you identify the right next step.</p></div><a class="button button--secondary" href="/get-help">Contact AlbaTech <span aria-hidden="true">→</span></a></div></section>

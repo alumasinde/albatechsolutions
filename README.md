@@ -11,8 +11,7 @@ Requirements: PHP 8.2+, Composer 2, MySQL 8+, `pdo_mysql`, and `mbstring`.
 3. Run `composer install`.
 4. Run migrations: `php bin/migrate.php`.
 5. Add `127.0.0.1 albatechsolution.test` to the Windows hosts file.
-6. Run `composer serve` and open `http://albatechsolution.test:8000/`.
-php -S albatechsolution.test:8000 -t public
+6. Run `composer serve` and open `http://albatechsolution.test:8000/`. The serve script disables Composer's process timeout because the PHP development server is intended to run continuously. You can also run `php -S albatechsolution.test:8000 -t public` directly.
 
 ## Apache option
 
@@ -33,6 +32,28 @@ Migration files use a three-digit prefix and descriptive name, e.g. `000_auth.sq
 
 ## Phase 2 service catalogue
 
-The catalogue is read from MySQL through `ServiceRepository`. Categories and services are editable database records. Initial migration seed data creates a starter catalogue; the Admin Panel will be implemented separately. Only published services in active categories appear publicly.
+The catalogue and homepage featured-services section are read from MySQL through `ServiceRepository`. Categories and services are database records. Only published services in active categories appear publicly. The `is_featured` flag controls homepage promotion. Service pricing uses `pricing_type`, `pricing_amount`, and `pricing_label`: use `fixed` for a set price, `starting_at` for a starting price, or `quote` to display the contact-for-price label. Prices are rendered from database values; do not hardcode them in views. The current starter records use contact-for-price until you set real prices. The Admin Panel for managing these fields and service visibility is a separate next phase.
 
 Never collect customer passwords, PINs or M-Pesa credentials. Government services are independent assistance, not official government services.
+
+## Admin Panel
+
+After running `php bin/migrate.php`, create the first administrator from PowerShell in the project root:
+
+```powershell
+php bin/create-admin.php admin@yourdomain.co.ke
+```
+
+Enter the administrator's first name, last name and a unique password of at least 12 characters when prompted. Then visit `http://albatechsolution.test:8000/admin/login`.
+
+The Admin Panel includes:
+
+- Overview of service, publication, featured-service and category counts.
+- Service creation and editing, category assignment, descriptions, SEO title/description, ordering and publication status.
+- Separate homepage-feature toggle. A featured service is only displayed publicly while it is published and its category is active.
+- Database-driven pricing choices: fixed price, starting price, or contact for price.
+- Category creation and editing, including active/inactive state.
+- Website settings for business name, website URL, contact details, WhatsApp number and default SEO metadata.
+- CSRF checks on admin forms, password hashing, session regeneration on login, secure session cookie settings, and admin audit events.
+
+Admin routes are protected by the login session. Keep `.env`, database credentials and backups private; use HTTPS and a strong unique password in production. Font Awesome and Google Fonts are loaded from their public CDNs in the admin interface.

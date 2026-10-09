@@ -14,7 +14,10 @@
   },
   "scripts": {
     "migrate": "php bin/migrate.php",
-    "serve": "php -S albatechsolution.test:8000 -t public"
+    "serve": [
+      "Composer\\Config::disableProcessTimeout",
+      "php -S albatechsolution.test:8000 -t public"
+    ]
   },
   "config": {
     "sort-packages": true,

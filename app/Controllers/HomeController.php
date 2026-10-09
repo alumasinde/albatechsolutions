@@ -8,20 +8,33 @@ use AlbaTech\Core\Env;
 use AlbaTech\Core\Request;
 use AlbaTech\Core\Response;
 use AlbaTech\Core\View;
+use AlbaTech\Repositories\ServiceRepository;
+use AlbaTech\Repositories\SiteSettingsRepository;
 
 final class HomeController
 {
+    public function __construct(private readonly ServiceRepository $services = new ServiceRepository(), private readonly SiteSettingsRepository $settings = new SiteSettingsRepository())
+    {
+    }
+
     public function index(Request $request): void
     {
-        $appName = Env::get('APP_NAME', 'AlbaTech Solutions') ?? 'AlbaTech Solutions';
-        $baseUrl = rtrim(Env::get('APP_URL', 'http://albatechsolution.dev:8000') ?? '', '/');
+        $settings = $this->settings->publicValues();
+        $appName = $settings['site_name'] ?? (Env::get('APP_NAME', 'AlbaTech Solutions') ?? 'AlbaTech Solutions');
+        $baseUrl = rtrim($settings['site_url'] ?? (Env::get('APP_URL', 'http://albatechsolution.test:8000') ?? ''), '/');
+        $configuredNumber = $settings['whatsapp_number'] ?? (Env::get('WHATSAPP_NUMBER', '') ?? '');
+        $whatsAppNumber = preg_replace('/\D+/', '', $configuredNumber);
+        $whatsAppUrl = $whatsAppNumber !== ''
+            ? 'https://wa.me/' . $whatsAppNumber . '?text=' . rawurlencode('Hi AlbaTech Solutions, I would like to discuss a service.')
+            : '/get-help';
 
         Response::html(View::render('pages/home', [
-            'pageTitle' => $appName . ' | Web Design & Digital Assistance in Kenya',
-            'metaDescription' => 'Practical website design and digital assistance for individuals and businesses in Kenya. Tell us the task and we will help with the next step.',
+            'pageTitle' => $appName . ' | Practical Digital Solutions in Kenya',
+            'metaDescription' => 'Websites, IT support and practical digital services for people and businesses in Kenya. Explore services and get a clear next step from AlbaTech Solutions.',
             'canonicalUrl' => $baseUrl . '/',
             'appName' => $appName,
-            'founderName' => 'Albert Masinde',
+            'featuredServices' => $this->services->featuredServices(6),
+            'whatsAppUrl' => $whatsAppUrl,
         ]));
     }
 }

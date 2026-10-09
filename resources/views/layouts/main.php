@@ -1,13 +1,15 @@
 <?php
 use AlbaTech\Core\Env;
 use AlbaTech\Core\View;
+use AlbaTech\Repositories\SiteSettingsRepository;
 
-$siteName = $appName ?? Env::get('APP_NAME', 'AlbaTech Solutions');
+$siteSettings = (new SiteSettingsRepository())->publicValues();
+$siteName = $siteSettings['site_name'] ?? ($appName ?? Env::get('APP_NAME', 'AlbaTech Solutions'));
 $pageTitle = $pageTitle ?? $siteName;
-$metaDescription = $metaDescription ?? 'Web design and digital assistance for Kenyan businesses.';
-$canonicalUrl = $canonicalUrl ?? (Env::get('APP_URL', 'http://albatechsolution.test:8000') ?? '');
-$author = $author ?? 'Albert Masinde';
-$whatsAppNumber = preg_replace('/\D+/', '', Env::get('WHATSAPP_NUMBER', '') ?? '');
+$metaDescription = $metaDescription ?? ($siteSettings['default_meta_description'] ?? 'Web design and digital assistance for Kenyan businesses.');
+$canonicalUrl = $canonicalUrl ?? ($siteSettings['site_url'] ?? (Env::get('APP_URL', 'http://albatechsolution.test:8000') ?? ''));
+$author = $author ?? ($siteSettings['default_author'] ?? 'Albert Masinde');
+$whatsAppNumber = preg_replace('/\D+/', '', $siteSettings['whatsapp_number'] ?? (Env::get('WHATSAPP_NUMBER', '') ?? ''));
 $whatsAppUrl = $whatsAppNumber !== ''
     ? 'https://wa.me/' . $whatsAppNumber . '?text=' . rawurlencode('Hi AlbaTech Solutions, I would like to make an enquiry.')
     : '/get-help';
@@ -52,7 +54,7 @@ $whatsAppUrl = $whatsAppNumber !== ''
             <a href="/services">Services</a>
             <a href="/about">About</a>
             <a href="/get-help">Contact</a>
-            <a href="/privacy">Privacy</a>
+            <a href="/guides">Guides</a>
         </div>
         <p>&copy; <?= date('Y') ?> <?= View::escape($siteName) ?>. All rights reserved.</p>
     </div>

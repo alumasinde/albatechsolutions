@@ -6,6 +6,7 @@ namespace AlbaTech\Controllers;
 
 use AlbaTech\Core\Env;
 use AlbaTech\Core\Response;
+use AlbaTech\Core\Request;
 use AlbaTech\Core\View;
 use AlbaTech\Repositories\ServiceRepository;
 use Throwable;
@@ -33,7 +34,7 @@ final class ServiceController
         ]));
     }
 
-    public function show(array $params): void
+    public function show(Request $request, array $params): void
     {
         $slug = (string) ($params['slug'] ?? '');
         $service = $this->services->findPublishedBySlug($slug);

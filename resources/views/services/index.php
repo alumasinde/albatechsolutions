@@ -73,6 +73,13 @@
                                     </div>
                                     <h4><?= View::escape($service['name']) ?></h4>
                                     <p><?= View::escape($service['short_description'] ?? '') ?></p>
+                                    <div class="service-price">
+                                        <?php if (in_array((string) ($service['pricing_type'] ?? 'quote'), ['fixed', 'starting_at'], true) && ($service['pricing_amount'] ?? null) !== null && $service['pricing_amount'] !== ''): ?>
+                                            <span class="service-price__amount"><?= ($service['pricing_type'] ?? '') === 'starting_at' ? 'From ' : '' ?>KSh <?= View::escape(number_format((float) $service['pricing_amount'], ((float) $service['pricing_amount'] == (int) $service['pricing_amount']) ? 0 : 2)) ?></span>
+                                        <?php else: ?>
+                                            <span class="service-price__quote"><?= View::escape(($service['pricing_label'] ?? '') ?: 'Contact for price') ?></span>
+                                        <?php endif; ?>
+                                    </div>
                                     <a href="/services/<?= rawurlencode($service['slug']) ?>" class="service-tile__link" aria-label="View <?= View::escape($service['name']) ?>">View service <span aria-hidden="true">→</span></a>
                                 </article>
                             <?php endforeach; ?>

@@ -1,8 +1,10 @@
 <?php
 use AlbaTech\Core\Env;
 use AlbaTech\Core\View;
+use AlbaTech\Repositories\SiteSettingsRepository;
 
-$whatsAppNumber = preg_replace('/\D+/', '', Env::get('WHATSAPP_NUMBER', '') ?? '');
+$siteSettings = (new SiteSettingsRepository())->publicValues();
+$whatsAppNumber = preg_replace('/\D+/', '', $siteSettings['whatsapp_number'] ?? (Env::get('WHATSAPP_NUMBER', '') ?? ''));
 $serviceSlug = trim((string) ($_GET['service'] ?? ''));
 $whatsAppMessage = 'Hi AlbaTech Solutions, I would like to make an enquiry.';
 if ($serviceSlug !== '') {
