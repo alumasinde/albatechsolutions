@@ -2,14 +2,14 @@
 
 <section class="service-detail-hero">
     <div class="container">
-        <a class="breadcrumb" href="/services">← All services</a>
+        <a class="breadcrumb" href="/services"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> All services</a>
         <div class="service-detail-hero__grid">
             <div>
                 <span class="eyebrow"><?= View::escape($service['category_name']) ?></span>
                 <h1><?= View::escape($service['name']) ?></h1>
                 <p class="service-detail-hero__lead"><?= View::escape($service['short_description'] ?? '') ?></p>
                 <div class="hero-actions">
-                    <a class="button button--whatsapp" href="/get-help?service=<?= rawurlencode($service['slug']) ?>">Enquire about this service <span aria-hidden="true">↗</span></a>
+                    <a class="button button--whatsapp" href="/get-help?service=<?= rawurlencode($service['slug']) ?>">Enquire about this service <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
                     <a class="button button--secondary" href="/services">Explore other services</a>
                 </div>
             </div>
@@ -22,7 +22,7 @@
                     <strong class="service-price-panel__quote"><?= View::escape(($service['pricing_label'] ?? '') ?: 'Contact for price') ?></strong>
                     <p>Tell us what you need and we will confirm the scope and price before you commit.</p>
                 <?php endif; ?>
-                <a class="text-link" href="/get-help?service=<?= rawurlencode($service['slug']) ?>">Ask a question about pricing <span aria-hidden="true">→</span></a>
+                <a class="text-link" href="/get-help?service=<?= rawurlencode($service['slug']) ?>">Ask a question about pricing <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
             </aside>
         </div>
     </div>
@@ -50,11 +50,11 @@
 
         <aside class="service-detail-sidebar">
             <div class="service-next-card">
-                <span class="service-next-card__icon" aria-hidden="true">↗</span>
+                <span class="service-next-card__icon"><i class="fa-solid fa-comments" aria-hidden="true"></i></span>
                 <h2>Ready to get started?</h2>
                 <p>Send us a short description of what you need. We will confirm any questions, the scope and the charges before starting.</p>
                 <a class="button button--whatsapp" href="/get-help?service=<?= rawurlencode($service['slug']) ?>">Discuss this service</a>
-                <div class="service-next-card__foot"><span aria-hidden="true">✓</span> No obligation to enquire</div>
+                <div class="service-next-card__foot"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> No obligation to enquire</div>
             </div>
             <?php if ((string) $service['category_slug'] === 'government-business-assistance'): ?>
                 <p class="notice">AlbaTech Solutions is independent and is not affiliated with a government agency. Final decisions, requirements and processing times are determined by the relevant authority.</p>
@@ -63,4 +63,4 @@
     </div>
 </section>
 
-<section class="service-detail-bottom"><div class="container service-detail-bottom__inner"><div><h2>Need help choosing?</h2><p>Tell us what you are trying to achieve and we will help you identify the right next step.</p></div><a class="button button--secondary" href="/get-help">Contact AlbaTech <span aria-hidden="true">→</span></a></div></section>
+<section class="service-detail-bottom"><div class="container service-detail-bottom__inner"><div><h2>Need help choosing?</h2><p>Tell us what you are trying to achieve and we will help you identify the right next step.</p></div><a class="button button--secondary" href="/get-help">Contact AlbaTech <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a></div></section>

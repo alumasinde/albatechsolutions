@@ -23,6 +23,8 @@ $whatsAppUrl = $whatsAppNumber !== ''
     <meta name="author" content="<?= View::escape($author) ?>">
     <meta name="theme-color" content="#0F4C81">
     <link rel="canonical" href="<?= View::escape($canonicalUrl) ?>">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="/assets/css/app.css">
     <title><?= View::escape($pageTitle) ?></title>
 </head>

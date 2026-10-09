@@ -7,18 +7,14 @@
             <h1>Practical services.<br><span>Clear next steps.</span></h1>
             <p>From getting your business online to navigating selected digital processes, find practical support for the task in front of you.</p>
             <div class="hero-actions">
-                <a class="button" href="#service-catalogue">Explore services <span aria-hidden="true">↓</span></a>
+                <a class="button" href="#service-catalogue">Explore services <i class="fa-solid fa-arrow-down" aria-hidden="true"></i></a>
                 <a class="button button--secondary" href="/get-help">Not sure where to start?</a>
             </div>
-            <div class="services-trust-line">
-                <span aria-hidden="true">✓</span> Clear scope
-                <span aria-hidden="true">✓</span> Straightforward communication
-                <span aria-hidden="true">✓</span> Mobile-friendly solutions
-            </div>
+            <div class="services-trust-line"><span><i class="fa-solid fa-file-circle-check" aria-hidden="true"></i> Clear scope</span><span><i class="fa-regular fa-comments" aria-hidden="true"></i> Straightforward communication</span><span><i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i> Mobile-friendly solutions</span></div>
         </div>
         <div class="services-hero__visual" aria-hidden="true">
             <div class="service-visual-card service-visual-card--main">
-                <span class="service-visual-card__icon">↗</span>
+                <span class="service-visual-card__icon"><i class="fa-solid fa-laptop-code" aria-hidden="true"></i></span>
                 <span class="service-visual-card__label">Your next step</span>
                 <strong>From idea<br>to done.</strong>
                 <div class="service-visual-card__line"><span></span></div>
@@ -44,7 +40,7 @@
 
         <?php if ($categories === []): ?>
             <div class="empty-state">
-                <span class="empty-state__icon" aria-hidden="true">✦</span>
+                <span class="empty-state__icon"><i class="fa-solid fa-layer-group" aria-hidden="true"></i></span>
                 <h3>Our service catalogue is being updated.</h3>
                 <p>Contact us and tell us what you are looking to achieve.</p>
                 <a class="button" href="/get-help">Get in touch</a>
@@ -68,8 +64,8 @@
                             <?php foreach ($category['services'] as $service): ?>
                                 <article class="service-tile">
                                     <div class="service-tile__top">
-                                        <span class="service-tile__symbol" aria-hidden="true"><?= View::escape(strtoupper(substr($service['name'], 0, 1))) ?></span>
-                                        <span class="service-tile__arrow" aria-hidden="true">↗</span>
+                                        <span class="service-tile__symbol"><i class="fa-solid fa-briefcase" aria-hidden="true"></i></span>
+                                        <span class="service-tile__arrow"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></span>
                                     </div>
                                     <h4><?= View::escape($service['name']) ?></h4>
                                     <p><?= View::escape($service['short_description'] ?? '') ?></p>
@@ -80,7 +76,7 @@
                                             <span class="service-price__quote"><?= View::escape(($service['pricing_label'] ?? '') ?: 'Contact for price') ?></span>
                                         <?php endif; ?>
                                     </div>
-                                    <a href="/services/<?= rawurlencode($service['slug']) ?>" class="service-tile__link" aria-label="View <?= View::escape($service['name']) ?>">View service <span aria-hidden="true">→</span></a>
+                                    <a href="/services/<?= rawurlencode($service['slug']) ?>" class="service-tile__link" aria-label="View <?= View::escape($service['name']) ?>">View service <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
                                 </article>
                             <?php endforeach; ?>
                         </div>
@@ -95,7 +91,7 @@
 
 <section class="independent-note">
     <div class="container independent-note__inner">
-        <span class="independent-note__icon" aria-hidden="true">i</span>
+        <span class="independent-note__icon"><i class="fa-solid fa-circle-info" aria-hidden="true"></i></span>
         <p><strong>Important to know</strong> AlbaTech Solutions is an independent service provider, not a government agency. Government applications and registrations are subject to the relevant authority's requirements, processing times and decisions.</p>
     </div>
 </section>
@@ -107,6 +103,6 @@
             <h2>Let's talk about what you need.</h2>
             <p>Tell us what you're trying to achieve. We'll help you identify a sensible next step.</p>
         </div>
-        <a class="button button--accent" href="/get-help">Contact us <span aria-hidden="true">→</span></a>
+        <a class="button button--accent" href="/get-help">Contact us <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
     </div>
 </section>

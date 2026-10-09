@@ -8,6 +8,7 @@ use AlbaTech\Core\AdminSecurity;
 use AlbaTech\Core\Database;
 use AlbaTech\Core\Request;
 use AlbaTech\Core\Response;
+use AlbaTech\Core\RateLimiter;
 use AlbaTech\Core\View;
 use PDO;
 use Throwable;
@@ -25,17 +26,37 @@ final class AdminController
             } else {
                 $email = strtolower(trim((string) $request->input('email', '')));
                 $password = (string) $request->input('password', '');
+                $ipKey = RateLimiter::key('admin-login-ip', '*');
+                $identityKey = RateLimiter::key('admin-login-identity', substr($email, 0, 190));
+                if (RateLimiter::tooManyAttempts($ipKey, 20, 900) || RateLimiter::tooManyAttempts($identityKey, 6, 900)) {
+                    http_response_code(429);
+                    header('Retry-After: 900');
+                    $error = 'Too many sign-in attempts. Please wait 15 minutes before trying again.';
+                } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 190 || $password === '' || strlen($password) > 4096) {
+                    RateLimiter::hit($ipKey, 900);
+                    RateLimiter::hit($identityKey, 900);
+                    $error = 'Email or password is incorrect.';
+                } else {
                 $stmt = Database::connection()->prepare("SELECT id, first_name, last_name, email, password_hash FROM admin_users WHERE email = :email AND status = 'active' LIMIT 1");
                 $stmt->execute(['email' => $email]);
                 $user = $stmt->fetch(PDO::FETCH_ASSOC);
                 if ($user && password_verify($password, (string) $user['password_hash'])) {
+                    RateLimiter::clear($identityKey);
                     session_regenerate_id(true);
+                    $_SESSION['_created_at'] = time();
+                    $_SESSION['_last_activity'] = time();
+                    $_SESSION['_csrf'] = bin2hex(random_bytes(32));
                     $_SESSION['admin_user'] = ['id' => (int) $user['id'], 'first_name' => $user['first_name'], 'last_name' => $user['last_name'], 'email' => $user['email']];
                     Database::connection()->prepare('UPDATE admin_users SET last_login_at = NOW() WHERE id = :id')->execute(['id' => $user['id']]);
                     $this->audit('login', 'admin_user', (string) $user['id'], []);
                     Response::redirect('/admin');
                 }
-                $error = 'Email or password is incorrect.';
+                if ($error === null) {
+                    RateLimiter::hit($ipKey, 900);
+                    RateLimiter::hit($identityKey, 900);
+                    $error = 'Email or password is incorrect.';
+                }
+                }
             }
         }
         Response::html(View::render('admin/login', ['pageTitle' => 'Admin sign in', 'csrf' => AdminSecurity::csrfToken(), 'error' => $error], 'layouts/admin-guest'));
@@ -73,7 +94,7 @@ final class AdminController
 
     public function services(): void
     {
-        AdminSecurity::requireUser();
+        AdminSecurity::requirePermission('services.manage');
         $stmt = Database::connection()->query('SELECT s.*, c.name AS category_name FROM services s INNER JOIN service_categories c ON c.id = s.category_id ORDER BY s.sort_order, s.name');
         $categories = Database::connection()->query('SELECT id, name, status FROM service_categories ORDER BY sort_order, name')->fetchAll();
         $this->render('services', ['pageTitle' => 'Services', 'services' => $stmt->fetchAll(), 'categories' => $categories]);
@@ -81,14 +102,14 @@ final class AdminController
 
     public function serviceCreate(): void
     {
-        AdminSecurity::requireUser();
+        AdminSecurity::requirePermission('services.manage');
         $categories = Database::connection()->query('SELECT id, name FROM service_categories WHERE status = \'active\' ORDER BY sort_order, name')->fetchAll();
         $this->render('service-form', ['pageTitle' => 'Add service', 'service' => $this->emptyService(), 'categories' => $categories, 'formAction' => '/admin/services/create']);
     }
 
     public function serviceEdit(Request $request, array $params): void
     {
-        AdminSecurity::requireUser();
+        AdminSecurity::requirePermission('services.manage');
         $stmt = Database::connection()->prepare('SELECT * FROM services WHERE id = :id LIMIT 1');
         $stmt->execute(['id' => (int) ($params['id'] ?? 0)]);
         $service = $stmt->fetch();
@@ -99,7 +120,7 @@ final class AdminController
 
     public function serviceSave(Request $request, array $params = []): void
     {
-        $user = AdminSecurity::requireUser();
+        $user = AdminSecurity::requirePermission('services.manage');
         if (!AdminSecurity::verifyCsrf($request->input('_csrf'))) { AdminSecurity::flash('error', 'Your session expired. Please submit the form again.'); Response::redirect('/admin/services'); }
         $id = (int) ($params['id'] ?? 0);
         $name = trim((string) $request->input('name', ''));
@@ -112,8 +133,13 @@ final class AdminController
         $amount = $amountInput !== '' && is_numeric($amountInput) && (float) $amountInput >= 0 ? number_format((float) $amountInput, 2, '.', '') : null;
         $errors = [];
         if ($name === '' || mb_strlen($name) > 180) $errors[] = 'Enter a service name of up to 180 characters.';
+        foreach (['short_description' => 500, 'description' => 12000, 'who_for' => 5000, 'what_included' => 5000, 'what_needed' => 5000, 'meta_title' => 255, 'meta_description' => 320] as $field => $limit) {
+            if (mb_strlen(trim((string) $request->input($field, ''))) > $limit) $errors[] = ucfirst(str_replace('_', ' ', $field)) . ' is too long (maximum ' . $limit . ' characters).';
+        }
         if ($slug === '' || mb_strlen($slug) > 200) $errors[] = 'Enter a valid URL slug.';
         if ($categoryId < 1) $errors[] = 'Choose a category.';
+        else { $categoryCheck = Database::connection()->prepare("SELECT COUNT(*) FROM service_categories WHERE id = :id AND status = 'active'"); $categoryCheck->execute(['id' => $categoryId]); if (!(int) $categoryCheck->fetchColumn()) $errors[] = 'Choose an active category.'; }
+        if ($amountInput !== '' && ($amount === null || !preg_match('/^\d{1,10}(?:\.\d{1,2})?$/', $amountInput) || (float) $amount > 999999999.99)) $errors[] = 'Enter a valid price below KSh 1,000,000,000.';
         if (!in_array($pricingType, ['fixed', 'starting_at', 'quote'], true)) $errors[] = 'Choose a valid pricing option.';
         if (!in_array($status, ['published', 'draft', 'archived'], true)) $errors[] = 'Choose a valid publication status.';
         if ($pricingType !== 'quote' && $amount === null) $errors[] = 'Enter a valid price, or choose Contact for price.';
@@ -141,6 +167,12 @@ final class AdminController
         $pdo = Database::connection();
         try {
             if ($id > 0) {
+                $exists = $pdo->prepare('SELECT id FROM services WHERE id = :id LIMIT 1');
+                $exists->execute(['id' => $id]);
+                if (!$exists->fetchColumn()) {
+                    AdminSecurity::flash('error', 'Service not found.');
+                    Response::redirect('/admin/services');
+                }
                 $data['id'] = $id;
                 $sql = 'UPDATE services SET category_id=:category_id, name=:name, slug=:slug, short_description=:short_description, description=:description, who_for=:who_for, what_included=:what_included, what_needed=:what_needed, pricing_type=:pricing_type, pricing_amount=:pricing_amount, pricing_label=:pricing_label, meta_title=:meta_title, meta_description=:meta_description, status=:status, is_featured=:is_featured, sort_order=:sort_order WHERE id=:id';
                 $pdo->prepare($sql)->execute($data);
@@ -163,7 +195,7 @@ final class AdminController
 
     public function serviceToggle(Request $request, array $params): void
     {
-        $user = AdminSecurity::requireUser();
+        $user = AdminSecurity::requirePermission('services.manage');
         if (!AdminSecurity::verifyCsrf($request->input('_csrf'))) { AdminSecurity::flash('error', 'Your session expired. Try again.'); Response::redirect('/admin/services'); }
         $id = (int) ($params['id'] ?? 0);
         $pdo = Database::connection();
@@ -178,7 +210,7 @@ final class AdminController
 
     public function serviceFeature(Request $request, array $params): void
     {
-        AdminSecurity::requireUser();
+        AdminSecurity::requirePermission('services.manage');
         if (!AdminSecurity::verifyCsrf($request->input('_csrf'))) { AdminSecurity::flash('error', 'Your session expired. Try again.'); Response::redirect('/admin/services'); }
         $id = (int) ($params['id'] ?? 0); $pdo = Database::connection();
         $stmt = $pdo->prepare('SELECT name, is_featured FROM services WHERE id = :id'); $stmt->execute(['id' => $id]); $service = $stmt->fetch();
@@ -192,31 +224,46 @@ final class AdminController
 
     public function categories(): void
     {
-        AdminSecurity::requireUser();
+        AdminSecurity::requirePermission('categories.manage');
         $categories = Database::connection()->query('SELECT c.*, (SELECT COUNT(*) FROM services s WHERE s.category_id = c.id) AS service_count FROM service_categories c ORDER BY c.sort_order, c.name')->fetchAll();
         $this->render('categories', ['pageTitle' => 'Categories', 'categories' => $categories]);
     }
 
     public function categorySave(Request $request, array $params = []): void
     {
-        AdminSecurity::requireUser();
+        AdminSecurity::requirePermission('categories.manage');
         if (!AdminSecurity::verifyCsrf($request->input('_csrf'))) { AdminSecurity::flash('error', 'Your session expired. Try again.'); Response::redirect('/admin/categories'); }
         $id = (int) ($params['id'] ?? 0); $name = trim((string) $request->input('name', ''));
         $slug = strtolower(trim(preg_replace('/[^a-zA-Z0-9]+/', '-', (string) ($request->input('slug') ?: $name)) ?? '', '-'));
         $description = trim((string) $request->input('description', ''));
         $status = $request->input('status') === 'inactive' ? 'inactive' : 'active';
-        if ($name === '' || $slug === '') { AdminSecurity::flash('error', 'Category name and slug are required.'); Response::redirect('/admin/categories'); }
+        if ($name === '' || mb_strlen($name) > 160 || $slug === '' || mb_strlen($slug) > 180 || mb_strlen($description) > 2000 || !preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug)) { AdminSecurity::flash('error', 'Enter a valid category name, URL slug and description.'); Response::redirect('/admin/categories'); }
         try {
-            if ($id) Database::connection()->prepare('UPDATE service_categories SET name=:name, slug=:slug, description=:description, status=:status, sort_order=:sort_order WHERE id=:id')->execute(['name'=>$name,'slug'=>$slug,'description'=>$description,'status'=>$status,'sort_order'=>max(0,(int)$request->input('sort_order',0)),'id'=>$id]);
-            else Database::connection()->prepare('INSERT INTO service_categories (name,slug,description,status,sort_order) VALUES (:name,:slug,:description,:status,:sort_order)')->execute(['name'=>$name,'slug'=>$slug,'description'=>$description,'status'=>$status,'sort_order'=>max(0,(int)$request->input('sort_order',0))]);
+            $pdo = Database::connection();
+            if ($id) {
+                $exists = $pdo->prepare('SELECT id FROM service_categories WHERE id = :id LIMIT 1');
+                $exists->execute(['id' => $id]);
+                if (!$exists->fetchColumn()) {
+                    AdminSecurity::flash('error', 'Category not found.');
+                    Response::redirect('/admin/categories');
+                }
+                $pdo->prepare('UPDATE service_categories SET name=:name, slug=:slug, description=:description, status=:status, sort_order=:sort_order WHERE id=:id')->execute(['name'=>$name,'slug'=>$slug,'description'=>$description,'status'=>$status,'sort_order'=>max(0,(int)$request->input('sort_order',0)),'id'=>$id]);
+                $this->audit('category.updated', 'category', (string) $id, ['name' => $name, 'status' => $status]);
+            } else {
+                $pdo->prepare('INSERT INTO service_categories (name,slug,description,status,sort_order) VALUES (:name,:slug,:description,:status,:sort_order)')->execute(['name'=>$name,'slug'=>$slug,'description'=>$description,'status'=>$status,'sort_order'=>max(0,(int)$request->input('sort_order',0))]);
+                $this->audit('category.created', 'category', (string) $pdo->lastInsertId(), ['name' => $name, 'status' => $status]);
+            }
             AdminSecurity::flash('success', 'Category saved.');
-        } catch (Throwable $e) { AdminSecurity::flash('error', 'Could not save category. Check that its slug is unique.'); }
+        } catch (Throwable $e) {
+            error_log('[AlbaTech category] ' . $e->getMessage());
+            AdminSecurity::flash('error', 'Could not save category. Check that its slug is unique and try again.');
+        }
         Response::redirect('/admin/categories');
     }
 
     public function settings(): void
     {
-        AdminSecurity::requireUser();
+        AdminSecurity::requirePermission('settings.manage');
         $rows = Database::connection()->query('SELECT setting_key, setting_value, setting_group FROM site_settings ORDER BY setting_group, setting_key')->fetchAll();
         $settings = []; foreach ($rows as $row) $settings[$row['setting_key']] = $row;
         $this->render('settings', ['pageTitle' => 'Site settings', 'settings' => $settings]);
@@ -224,9 +271,30 @@ final class AdminController
 
     public function settingsSave(Request $request): void
     {
-        $user = AdminSecurity::requireUser();
+        $user = AdminSecurity::requirePermission('settings.manage');
         if (!AdminSecurity::verifyCsrf($request->input('_csrf'))) { AdminSecurity::flash('error', 'Your session expired. Try again.'); Response::redirect('/admin/settings'); }
         $allowed = ['site_name','site_url','default_author','default_meta_description','default_meta_keywords','whatsapp_number','contact_email','business_phone','business_address'];
+        $siteUrl = trim((string) $request->input('site_url', ''));
+        $contactEmail = trim((string) $request->input('contact_email', ''));
+        $whatsApp = trim((string) $request->input('whatsapp_number', ''));
+        if ($siteUrl !== '' && (!filter_var($siteUrl, FILTER_VALIDATE_URL) || !in_array(strtolower((string) parse_url($siteUrl, PHP_URL_SCHEME)), ['http', 'https'], true))) {
+            AdminSecurity::flash('error', 'Enter a valid website URL beginning with http:// or https://.');
+            Response::redirect('/admin/settings');
+        }
+        if ($contactEmail !== '' && !filter_var($contactEmail, FILTER_VALIDATE_EMAIL)) {
+            AdminSecurity::flash('error', 'Enter a valid contact email address.');
+            Response::redirect('/admin/settings');
+        }
+        if ($whatsApp !== '' && !preg_match('/^[+0-9() .-]{7,25}$/', $whatsApp)) {
+            AdminSecurity::flash('error', 'Enter a valid WhatsApp contact number.');
+            Response::redirect('/admin/settings');
+        }
+        foreach ($allowed as $key) {
+            if (mb_strlen(trim((string) $request->input($key, ''))) > 2000) {
+                AdminSecurity::flash('error', 'One or more settings are too long. Please shorten the values and try again.');
+                Response::redirect('/admin/settings');
+            }
+        }
         $pdo = Database::connection();
         $stmt = $pdo->prepare('INSERT INTO site_settings (setting_key, setting_value, value_type, setting_group, is_public, updated_by) VALUES (:key,:value,:type,:group_name,1,:user_id) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value), updated_by=VALUES(updated_by)');
         foreach ($allowed as $key) {

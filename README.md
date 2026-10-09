@@ -57,3 +57,35 @@ The Admin Panel includes:
 - CSRF checks on admin forms, password hashing, session regeneration on login, secure session cookie settings, and admin audit events.
 
 Admin routes are protected by the login session. Keep `.env`, database credentials and backups private; use HTTPS and a strong unique password in production. Font Awesome and Google Fonts are loaded from their public CDNs in the admin interface.
+
+
+## Security baseline and production checklist
+
+The application includes baseline admin security controls: CSRF validation on admin mutations, session ID regeneration after login, idle/absolute session expiry, secure/HttpOnly/SameSite session cookies, file-backed login throttling, role-permission checks on service/category/settings screens, scalar-only request inputs, server-side length and format validation, audit logging, browser security headers, and production configuration checks.
+
+### Local development
+
+- Keep `APP_ENV=local` and `APP_DEBUG=true` only on your local machine.
+- Use a unique, strong admin password (12+ characters). Create an admin account with `php bin/create-admin.php admin@example.com`.
+- Rate-limit state is stored under `storage/cache/rate-limits`; make this directory writable by PHP and keep it outside the public web root.
+- Login throttling uses `REMOTE_ADDR`; forwarded client-IP headers are intentionally not trusted by default. Configure a trusted-proxy strategy before placing the application behind a reverse proxy/load balancer.
+
+### Before production
+
+1. Set `APP_ENV=production`, `APP_DEBUG=false`, and `APP_URL=https://your-real-domain`. The application refuses requests if production debug is enabled, the configured URL is not HTTPS, or the database username is `root`.
+2. Set `SESSION_SECURE_COOKIE=true`; use HTTPS across the entire site. HSTS is emitted on HTTPS requests.
+3. Create a dedicated MySQL user with only the privileges this application requires; never use the database root account.
+4. Configure the web server document root to the `public/` directory. Do not expose the project root, `.env`, `storage/`, `vendor/`, database files, or logs.
+5. Keep `.env` out of version control and set restrictive file permissions on `.env`, logs, and storage directories.
+6. Test administrator login, failed-login throttling, role permissions, CSRF failures, session expiry, logout, service/category/settings validation and recovery from database errors against the actual production-like environment.
+7. Back up the database and verify that a restore works before launch. Keep PHP and Composer dependencies patched.
+
+The headers currently allow inline scripts/styles because the existing service editor uses inline JavaScript and the templates include inline styling. For stronger CSP, move inline code to local assets or adopt per-response nonces and then remove `unsafe-inline` after browser testing. This baseline is not a substitute for a live penetration test.
+
+### Run local security baseline checks
+
+```powershell
+php tests/security_baseline.php
+```
+
+These checks cover scalar request handling, path normalization, and login limiter thresholds. They do not replace integration tests against MySQL or a penetration test.

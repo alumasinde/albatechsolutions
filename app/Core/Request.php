@@ -26,6 +26,9 @@ final class Request
 
     public function input(string $key, mixed $default = null): mixed
     {
-        return $_POST[$key] ?? $_GET[$key] ?? $default;
+        
+        $value = $_POST[$key] ?? $_GET[$key] ?? $default;
+        // Form values must be scalar; reject arrays/objects rather than casting attacker input.
+        return is_scalar($value) || $value === null ? $value : $default;
     }
 }

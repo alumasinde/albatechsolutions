@@ -16,9 +16,9 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 }
 $firstName = trim((string) readline('First name: '));
 $lastName = trim((string) readline('Last name: '));
-$password = (string) readline('Password (minimum 8 characters): ');
-if ($firstName === '' || $lastName === '' || strlen($password) < 8) {
-    fwrite(STDERR, "First and last name are required, and the password must be at least 8 characters.\n");
+$password = (string) readline('Password (minimum 12 characters): ');
+if ($firstName === '' || $lastName === '' || strlen($password) < 12) {
+    fwrite(STDERR, "First and last name are required, and the password must be at least 12 characters.\n");
     exit(1);
 }
 $pdo = Database::connection();
