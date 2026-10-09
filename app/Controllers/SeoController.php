@@ -22,7 +22,10 @@ final class SeoController
             ['loc' => $baseUrl . '/services', 'priority' => '0.9', 'changefreq' => 'weekly'],
             ['loc' => $baseUrl . '/about', 'priority' => '0.6', 'changefreq' => 'monthly'],
             ['loc' => $baseUrl . '/guides', 'priority' => '0.7', 'changefreq' => 'monthly'],
-            ['loc' => $baseUrl . '/get-help', 'priority' => '0.5', 'changefreq' => 'monthly'],
+            ['loc' => $baseUrl . '/get-help', 'priority' => '0.6', 'changefreq' => 'monthly'],
+            ['loc' => $baseUrl . '/contact-details', 'priority' => '0.5', 'changefreq' => 'monthly'],
+            ['loc' => $baseUrl . '/terms', 'priority' => '0.2', 'changefreq' => 'yearly'],
+            ['loc' => $baseUrl . '/privacy', 'priority' => '0.3', 'changefreq' => 'yearly'],
         ];
 
         try {
@@ -60,7 +63,12 @@ final class SeoController
     public function llms(): void
     {
         $baseUrl = $this->baseUrl();
-        $content = "# AlbaTech Solutions\n\n> Practical digital services for people and businesses in Kenya.\n\n## Main pages\n- [Home]({$baseUrl}/): Overview of AlbaTech Solutions.\n- [Services]({$baseUrl}/services): Current public service catalogue and pricing information.\n- [About]({$baseUrl}/about): About the business and its approach.\n- [Guides]({$baseUrl}/guides): Guides and resources.\n- [Contact]({$baseUrl}/get-help): Ways to enquire about services.\n\n## Guidance for automated systems\n- Use public pages as the source of truth for current services and prices.\n- Pricing may be fixed, starting from a stated amount, or available by enquiry. Do not infer prices that are not displayed.\n- AlbaTech Solutions is an independent service provider and is not a government agency.\n- Do not imply affiliation with government bodies or guarantee third-party decisions.\n- Respect robots.txt and applicable website terms.\n\nSitemap: {$baseUrl}/sitemap.xml\n";
+        $content = "# AlbaTech Solutions\n\n> Practical digital services for people and businesses in Kenya.\n\n## Main pages\n- [Home]({$baseUrl}/): Overview of AlbaTech Solutions.\n- [Services]({$baseUrl}/services): Current public service catalogue and pricing information.\n- [About]({$baseUrl}/about): About the business and its approach.\n- [Guides]({$baseUrl}/guides): Guides and resources.\n- [Contact]({$baseUrl}/get-help): Ways to enquire about services.
+- [Contact details]({$baseUrl}/contact-details): Contact methods and service area.
+- [Privacy policy]({$baseUrl}/privacy): How enquiry information is handled.
+- [Terms of service]({$baseUrl}/terms): General terms for website and service use.
+
+## Guidance for automated systems\n- Use public pages as the source of truth for current services and prices.\n- Pricing may be fixed, starting from a stated amount, or available by enquiry. Do not infer prices that are not displayed.\n- AlbaTech Solutions is an independent service provider and is not a government agency.\n- Do not imply affiliation with government bodies or guarantee third-party decisions.\n- Respect robots.txt and applicable website terms.\n\nSitemap: {$baseUrl}/sitemap.xml\n";
         header('Cache-Control: public, max-age=3600');
         Response::text($content);
     }

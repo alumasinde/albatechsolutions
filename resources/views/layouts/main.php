@@ -281,21 +281,53 @@ $whatsAppUrl = $whatsAppNumber !== ''
     <?= $content ?? '' ?>
 </main>
 
+<?php
+$footerEmail = trim((string) ($siteSettings['contact_email'] ?? ''));
+$footerPhone = trim((string) ($siteSettings['business_phone'] ?? ''));
+$footerPhoneHref = preg_replace('/[^0-9+]/', '', $footerPhone);
+$footerAddress = trim((string) ($siteSettings['business_address'] ?? 'Ruaka, Kenya'));
+?>
 <footer class="site-footer">
-    <div class="container footer-inner">
-        <div>
-            <a class="brand" href="/">
-                AlbaTech <span>Solutions</span>
-            </a>
+    <div class="container">
+        <div class="footer-main">
+            <div class="footer-brand-block">
+                <a class="brand footer-brand" href="/" aria-label="<?= View::escape($siteName) ?> home">
+                    <span class="brand-mark" aria-hidden="true">A</span>
+                    <span class="brand-wordmark">AlbaTech <span>Solutions</span></span>
+                </a>
+                <p class="footer-description">Practical digital solutions, reliable IT support and web services for people and businesses in Kenya.</p>
+                <a class="footer-contact-cta" href="/get-help">Tell us what you need <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+            </div>
 
-            <p>
-                Practical digital solutions for people and businesses in Kenya.
-            </p>
+            <div class="footer-column">
+                <h2>Explore</h2>
+                <a href="/services">Our services</a>
+                <a href="/about">About AlbaTech</a>
+                <a href="/guides">Guides & resources</a>
+                <a href="/get-help">Contact us</a>
+            </div>
+
+            <div class="footer-column footer-contact-column">
+                <h2>Contact & location</h2>
+                <?php if ($footerEmail !== '' && filter_var($footerEmail, FILTER_VALIDATE_EMAIL)): ?>
+                    <a href="mailto:<?= View::escape($footerEmail) ?>"><i class="fa-regular fa-envelope" aria-hidden="true"></i><span><?= View::escape($footerEmail) ?></span></a>
+                <?php endif; ?>
+                <?php if ($footerPhone !== '' && $footerPhoneHref !== ''): ?>
+                    <a href="tel:<?= View::escape($footerPhoneHref) ?>"><i class="fa-solid fa-phone" aria-hidden="true"></i><span><?= View::escape($footerPhone) ?></span></a>
+                <?php endif; ?>
+                <p class="footer-location"><i class="fa-solid fa-location-dot" aria-hidden="true"></i><span><?= View::escape($footerAddress !== '' ? $footerAddress : 'Kenya') ?></span></p>
+                <a href="/contact-details">Contact details & directions</a>
+            </div>
         </div>
-        <p>
-            &copy; <?= date('Y') ?>
-            <?= View::escape($siteName) ?>. All rights reserved.
-        </p>
+
+        <div class="footer-bottom">
+            <p>&copy; <?= date('Y') ?> <?= View::escape($siteName) ?>. All rights reserved.</p>
+            <nav class="footer-legal" aria-label="Legal links">
+                <a href="/privacy">Privacy policy</a>
+                <a href="/terms">Terms of service</a>
+            </nav>
+            <p class="footer-independent-note">Independent digital assistance. Not a government agency.</p>
+        </div>
     </div>
 </footer>
 </body>

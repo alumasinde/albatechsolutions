@@ -89,3 +89,10 @@ php tests/security_baseline.php
 ```
 
 These checks cover scalar request handling, path normalization, and login limiter thresholds. They do not replace integration tests against MySQL or a penetration test.
+
+
+## Public information pages and footer
+
+The public website includes `/contact-details`, `/privacy`, and `/terms` in addition to `/get-help`. The footer pulls its public email, phone, WhatsApp number and location from `site_settings`, editable through **Admin → Settings**. `business_address` should contain an accurate public service area or office address; do not publish a private or unconfirmed street address. The contact details page explicitly warns visitors to contact the business before visiting when the configured location is a service area rather than a public office.
+
+The terms and privacy pages are starter templates and should be reviewed against the actual services, data flows, providers and applicable Kenyan law before production launch.

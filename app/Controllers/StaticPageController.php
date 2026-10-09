@@ -22,7 +22,22 @@ final class StaticPageController
 
     public function getHelp(): void
     {
-        $this->render('pages/get-help', 'Get Assistance', 'Tell AlbaTech Solutions what you need help with and explore available services.');
+        $this->render('pages/get-help', 'Contact AlbaTech Solutions', 'Contact AlbaTech Solutions for practical web design, IT support and digital assistance in Kenya.');
+    }
+
+    public function contactDetails(): void
+    {
+        $this->render('pages/contact-details', 'Contact & Location', 'Find AlbaTech Solutions contact information and service location details.');
+    }
+
+    public function terms(): void
+    {
+        $this->render('pages/terms', 'Terms of Service', 'Read the terms that apply when using AlbaTech Solutions services and website.');
+    }
+
+    public function privacy(): void
+    {
+        $this->render('pages/privacy', 'Privacy Policy', 'Learn how AlbaTech Solutions handles enquiries and personal information.');
     }
 
     private function render(string $view, string $title, string $description): void
@@ -31,10 +46,14 @@ final class StaticPageController
         Response::html(View::render($view, [
             'pageTitle' => $title . ' | AlbaTech Solutions',
             'metaDescription' => $description,
-            'canonicalUrl' => $baseUrl . '/' . match ($view) {
-                'pages/about' => 'about',
-                'pages/guides' => 'guides',
-                default => 'get-help',
+            'canonicalUrl' => $baseUrl . match ($view) {
+                'pages/about' => '/about',
+                'pages/guides' => '/guides',
+                'pages/get-help' => '/get-help',
+                'pages/contact-details' => '/contact-details',
+                'pages/terms' => '/terms',
+                'pages/privacy' => '/privacy',
+                default => '/',
             },
         ]));
     }
