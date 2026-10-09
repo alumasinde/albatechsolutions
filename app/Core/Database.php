@@ -28,12 +28,7 @@ final class Database
             throw new RuntimeException('Invalid database name in configuration.');
         }
 
-        $dsn = sprintf(
-            'mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4',
-            $host,
-            $port,
-            $name
-        );
+        $dsn = sprintf('mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4', $host, $port, $name);
 
         try {
             self::$connection = new PDO($dsn, (string) $user, (string) $password, [

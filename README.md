@@ -1,65 +1,38 @@
 # AlbaTech Solutions
 
-Custom PHP + MySQL website foundation for AlbaTech Solutions.
+Lightweight, database-driven PHP website for AlbaTech Solutions.
 
-## Requirements
+## Local development (Windows)
 
-- PHP 8.2+ with `pdo_mysql`, `mbstring`, and `openssl` enabled
-- MySQL 8+ or a compatible local MySQL server
-- Composer 2
-- Apache with `mod_rewrite` (recommended for clean URLs), or PHP's local development server
+Requirements: PHP 8.2+, Composer 2, MySQL 8+, `pdo_mysql`, and `mbstring`.
 
-## Setup on Windows
+1. Create database `albatechsolutions` using `utf8mb4`.
+2. Copy `.env.example` to `.env` and configure local DB credentials.
+3. Run `composer install`.
+4. Run migrations: `php bin/migrate.php`.
+5. Add `127.0.0.1 albatechsolution.test` to the Windows hosts file.
+6. Run `composer serve` and open `http://albatechsolution.test:8000/`.
+php -S albatechsolution.test:8000 -t public
 
-1. Create a local MySQL database:
+## Apache option
 
-   ```sql
-   CREATE DATABASE albatechsolutions
-     CHARACTER SET utf8mb4
-     COLLATE utf8mb4_unicode_ci;
-   ```
-
-2. Copy `.env.example` to `.env` and set your local database credentials.
-3. Install Composer autoloading:
-
-   ```powershell
-   composer install
-   ```
-4. Run migrations:
-
-   ```powershell
-   php bin/migrate.php
-   ```
-5. Start the local server. The hosts entry must exist first:
-
-   ```powershell
-   composer serve
-   ```
-
-   Then open `http://albatechsolution.dev:8000`.
-
-## Windows hosts file
-
-Open Notepad as Administrator and edit:
-
-`C:\Windows\System32\drivers\etc\hosts`
-
-Add:
-
-```text
-127.0.0.1 albatechsolution.dev
-```
-
-If you prefer the default port 80 with Apache, configure a VirtualHost with `DocumentRoot` pointing to this project's `public` directory and use the same hosts entry. Do not expose the project root as the web root.
+The document root must be the `public/` directory. Enable `mod_rewrite` and allow overrides for the `public/` directory. `.test` is the local development domain; use HTTPS on the real production domain.
 
 ## Migrations
 
-SQL files live in `database/migrations/` and use ordered, descriptive names such as `000_auth.sql`. The runner is `bin/migrate.php`. Successfully applied migrations are recorded in `schema_migrations`. Treat applied migrations as immutable; create a new numbered migration for changes.
+Migration files use a three-digit prefix and descriptive name, e.g. `000_auth.sql`, `002_service_categories.sql`. The runner is `bin/migrate.php`. It records successful migrations and checks checksums to detect edits to applied files. MySQL DDL can auto-commit, so failed migrations may partially apply; inspect the database before retrying. Treat applied migrations as immutable.
 
-## CSS convention
+## Architecture
 
-Styles are outside views in `public/assets/css/`. Design tokens are declared in `:root` in `tokens.css`; components consume those tokens. Avoid inline styles and page-specific CSS embedded in PHP views.
+- `app/Core`: environment loading, routing, PDO, request/response, view rendering.
+- `app/Controllers`: HTTP controllers.
+- `app/Repositories`: SQL queries.
+- `resources/views`: PHP templates only; CSS belongs in `public/assets/css/`.
+- `public/assets/css/tokens.css`: brand design tokens declared under `:root`.
+- `routes/web.php`: public route definitions.
 
-## Current scope
+## Phase 2 service catalogue
 
-This is the foundation only: configuration, PDO, router, shared layout, a simple homepage, initial settings/auth schema, and migration runner. Admin CRUD, full authentication screens, service catalogue and SEO manager are subsequent build steps.
+The catalogue is read from MySQL through `ServiceRepository`. Categories and services are editable database records. Initial migration seed data creates a starter catalogue; the Admin Panel will be implemented separately. Only published services in active categories appear publicly.
+
+Never collect customer passwords, PINs or M-Pesa credentials. Government services are independent assistance, not official government services.

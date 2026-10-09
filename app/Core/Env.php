@@ -51,11 +51,7 @@ final class Env
     public static function get(string $key, ?string $default = null): ?string
     {
         $value = getenv($key);
-        if ($value !== false) {
-            return $value;
-        }
-
-        return self::$values[$key] ?? $default;
+        return $value !== false ? $value : (self::$values[$key] ?? $default);
     }
 
     public static function bool(string $key, bool $default = false): bool

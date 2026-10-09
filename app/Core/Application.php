@@ -27,18 +27,19 @@ final class Application
         try {
             $this->router->dispatch($this->request);
         } catch (Throwable $exception) {
-            $debug = Env::bool('APP_DEBUG', false);
-
+            $requestId = bin2hex(random_bytes(6));
             error_log(sprintf(
-                '[AlbaTech] %s in %s:%d',
+                '[AlbaTech][%s] %s in %s:%d',
+                $requestId,
                 $exception->getMessage(),
                 $exception->getFile(),
                 $exception->getLine()
             ));
 
+            $debug = Env::bool('APP_DEBUG', false) && Env::get('APP_ENV', 'local') !== 'production';
             $message = $debug
-                ? View::escape($exception->getMessage())
-                : 'Something went wrong. Please try again later.';
+                ? View::escape($exception->getMessage()) . ' (Reference: ' . $requestId . ')'
+                : 'Something went wrong. Please try again later. Reference: ' . $requestId;
 
             Response::html(View::render('errors/500', [
                 'pageTitle' => 'Something went wrong',

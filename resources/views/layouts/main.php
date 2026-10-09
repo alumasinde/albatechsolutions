@@ -5,7 +5,8 @@ use AlbaTech\Core\View;
 $siteName = $appName ?? Env::get('APP_NAME', 'AlbaTech Solutions');
 $pageTitle = $pageTitle ?? $siteName;
 $metaDescription = $metaDescription ?? 'Web design and digital assistance for Kenyan businesses.';
-$canonicalUrl = $canonicalUrl ?? (Env::get('APP_URL', 'http://albatechsolution.dev:8000') ?? '');
+$canonicalUrl = $canonicalUrl ?? (Env::get('APP_URL', 'http://albatechsolution.test:8000') ?? '');
+$author = $author ?? 'Albert Masinde';
 $whatsAppNumber = preg_replace('/\D+/', '', Env::get('WHATSAPP_NUMBER', '') ?? '');
 $whatsAppUrl = $whatsAppNumber !== ''
     ? 'https://wa.me/' . $whatsAppNumber . '?text=' . rawurlencode('Hi AlbaTech Solutions, I would like to make an enquiry.')
@@ -17,7 +18,7 @@ $whatsAppUrl = $whatsAppNumber !== ''
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="<?= View::escape($metaDescription) ?>">
-    <meta name="author" content="<?= View::escape($founderName ?? 'Albert Masinde') ?>">
+    <meta name="author" content="<?= View::escape($author) ?>">
     <meta name="theme-color" content="#0F4C81">
     <link rel="canonical" href="<?= View::escape($canonicalUrl) ?>">
     <link rel="stylesheet" href="/assets/css/app.css">
@@ -32,7 +33,7 @@ $whatsAppUrl = $whatsAppNumber !== ''
             <a href="/services">Services</a>
             <a href="/guides">Guides</a>
             <a href="/about">About</a>
-            <a href="/get-help">Get help</a>
+            <a href="/get-help">Contact</a>
         </nav>
     </div>
 </header>
@@ -47,7 +48,13 @@ $whatsAppUrl = $whatsAppNumber !== ''
             <a class="brand" href="/">AlbaTech <span>Solutions</span></a>
             <p>Practical digital solutions for people and businesses in Kenya.</p>
         </div>
-        <p>&copy; <?= date('Y') ?> <?= View::escape($siteName) ?>. Founded by Albert Masinde.</p>
+        <div class="footer-links">
+            <a href="/services">Services</a>
+            <a href="/about">About</a>
+            <a href="/get-help">Contact</a>
+            <a href="/privacy">Privacy</a>
+        </div>
+        <p>&copy; <?= date('Y') ?> <?= View::escape($siteName) ?>. All rights reserved.</p>
     </div>
 </footer>
 </body>

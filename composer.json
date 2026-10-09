@@ -1,6 +1,6 @@
 {
   "name": "albatech/albatechsolutions",
-  "description": "AlbaTech Solutions website and admin foundation",
+  "description": "AlbaTech Solutions website",
   "type": "project",
   "require": {
     "php": "^8.2",

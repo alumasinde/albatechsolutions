@@ -5,7 +5,7 @@
             <h1>Tell us the task. We’ll help with the next step.</h1>
             <p>From a professional website for your business to practical government and business application assistance, AlbaTech Solutions helps you move forward with confidence.</p>
             <div class="hero-actions">
-                <a class="button button--whatsapp" href="/get-help">Talk to us about your task</a>
+                <a class="button button--whatsapp" href="/services">Explore services</a>
                 <a class="button button--secondary" href="/services">Explore our services</a>
             </div>
         </div>

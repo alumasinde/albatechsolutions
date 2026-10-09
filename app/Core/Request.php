@@ -20,7 +20,7 @@ final class Request
             return '/';
         }
 
-        $path = '/' . trim($path, '/');
+        $path = '/' . trim(rawurldecode($path), '/');
         return $path === '/' ? '/' : rtrim($path, '/');
     }
 
