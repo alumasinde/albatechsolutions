@@ -79,11 +79,11 @@ final class GuideAdminController
             return;
         }
         if ($id > 0) {
-            $stmt = $pdo->prepare("UPDATE guides SET title=:title,slug=:slug,category=:category,summary=:summary,intro=:intro,content_html=:content_html,meta_title=:meta_title,meta_description=:meta_description,status=:status,published_at=IF(:status='published',COALESCE(published_at,NOW()),published_at),updated_by=:user WHERE id=:id");
-            $stmt->execute(['title'=>$title,'slug'=>$slug,'category'=>$category,'summary'=>$summary,'intro'=>$intro,'content_html'=>$content,'meta_title'=>$metaTitle ?: null,'meta_description'=>$metaDescription ?: null,'status'=>$status,'user'=>$user['id'],'id'=>$id]);
+            $stmt = $pdo->prepare("UPDATE guides SET title=:title,slug=:slug,category=:category,summary=:summary,intro=:intro,content_html=:content_html,meta_title=:meta_title,meta_description=:meta_description,status=:status,published_at=IF(:published_status='published',COALESCE(published_at,NOW()),published_at),updated_by=:updated_by WHERE id=:id");
+            $stmt->execute(['title'=>$title,'slug'=>$slug,'category'=>$category,'summary'=>$summary,'intro'=>$intro,'content_html'=>$content,'meta_title'=>$metaTitle ?: null,'meta_description'=>$metaDescription ?: null,'status'=>$status,'published_status'=>$status,'updated_by'=>$user['id'],'id'=>$id]);
         } else {
-            $stmt = $pdo->prepare("INSERT INTO guides (title,slug,category,summary,intro,content_html,meta_title,meta_description,status,published_at,created_by,updated_by) VALUES (:title,:slug,:category,:summary,:intro,:content_html,:meta_title,:meta_description,:status,IF(:status='published',NOW(),NULL),:user,:user)");
-            $stmt->execute(['title'=>$title,'slug'=>$slug,'category'=>$category,'summary'=>$summary,'intro'=>$intro,'content_html'=>$content,'meta_title'=>$metaTitle ?: null,'meta_description'=>$metaDescription ?: null,'status'=>$status,'user'=>$user['id']]);
+            $stmt = $pdo->prepare("INSERT INTO guides (title,slug,category,summary,intro,content_html,meta_title,meta_description,status,published_at,created_by,updated_by) VALUES (:title,:slug,:category,:summary,:intro,:content_html,:meta_title,:meta_description,:status,IF(:published_status='published',NOW(),NULL),:created_by,:updated_by)");
+            $stmt->execute(['title'=>$title,'slug'=>$slug,'category'=>$category,'summary'=>$summary,'intro'=>$intro,'content_html'=>$content,'meta_title'=>$metaTitle ?: null,'meta_description'=>$metaDescription ?: null,'status'=>$status,'published_status'=>$status,'created_by'=>$user['id'],'updated_by'=>$user['id']]);
         }
         AdminSecurity::flash('success', 'Guide saved successfully.');
         Response::redirect('/admin/guides');
