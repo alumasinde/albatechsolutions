@@ -310,9 +310,11 @@ final class AdminController
             AdminSecurity::flash('error', 'Your session expired. Try again.');
             Response::redirect('/admin/settings');
         }
-        $allowed = ['site_name', 'site_url', 'default_author', 'default_meta_description', 'default_meta_keywords', 'whatsapp_number', 'contact_email', 'business_phone', 'business_address'];
+        $allowed = ['site_name', 'site_url', 'default_author', 'default_meta_description', 'default_meta_keywords', 'whatsapp_number', 'contact_email', 'business_phone', 'business_address', 'business_city', 'service_area', 'contact_hours', 'contact_response_time', 'support_email', 'whatsapp_prefill_message', 'terms_content', 'privacy_content'];
         $siteUrl = trim((string) $request->input('site_url', ''));
         $contactEmail = trim((string) $request->input('contact_email', ''));
+        $supportEmail = trim((string) $request->input('support_email', ''));
+        if ($supportEmail !== '' && !filter_var($supportEmail, FILTER_VALIDATE_EMAIL)) { AdminSecurity::flash('error', 'Enter a valid support email address.'); Response::redirect('/admin/settings'); }
         $whatsApp = trim((string) $request->input('whatsapp_number', ''));
         if ($siteUrl !== '' && (!filter_var($siteUrl, FILTER_VALIDATE_URL) || !in_array(strtolower((string) parse_url($siteUrl, PHP_URL_SCHEME)), ['http', 'https'], true))) {
             AdminSecurity::flash('error', 'Enter a valid website URL beginning with http:// or https://.');
@@ -336,8 +338,8 @@ final class AdminController
         $stmt = $pdo->prepare('INSERT INTO site_settings (setting_key, setting_value, value_type, setting_group, is_public, updated_by) VALUES (:key,:value,:type,:group_name,1,:user_id) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value), updated_by=VALUES(updated_by)');
         foreach ($allowed as $key) {
             $value = trim((string) $request->input($key, ''));
-            $group = in_array($key, ['whatsapp_number', 'contact_email', 'business_phone', 'business_address'], true) ? 'contact' : (str_contains($key, 'meta') || $key === 'default_author' ? 'seo' : 'branding');
-            $type = $key === 'contact_email' ? 'email' : ($key === 'site_url' ? 'url' : 'string');
+            $group = in_array($key, ['whatsapp_number', 'contact_email', 'business_phone', 'business_address', 'business_city', 'service_area', 'contact_hours', 'contact_response_time', 'support_email', 'whatsapp_prefill_message'], true) ? 'contact' : (in_array($key, ['terms_content', 'privacy_content'], true) ? 'legal' : (str_contains($key, 'meta') || $key === 'default_author' ? 'seo' : 'branding'));
+            $type = in_array($key, ['contact_email', 'support_email'], true) ? 'email' : ($key === 'site_url' ? 'url' : 'string');
             $stmt->execute(['key' => $key, 'value' => $value, 'type' => $type, 'group_name' => $group, 'user_id' => $user['id']]);
         }
         $this->audit('settings.updated', 'site_settings', null, ['keys' => $allowed]);

@@ -4,7 +4,7 @@
     <div class="home-hero__copy">
       <span class="eyebrow">Digital services for people and businesses in Kenya</span>
       <h1>Technology that helps you <span>move forward.</span></h1>
-      <p class="home-hero__lead">From building a professional website to solving everyday IT challenges, get practical support with clear communication and no unnecessary complexity.</p>
+      <p class="home-hero__lead">From building a professional website to improving your online business presence, get practical digital assistance with clear communication and no unnecessary complexity.</p>
       <div class="hero-actions">
         <a class="button button--whatsapp" href="<?= View::escape($whatsAppUrl ?? '/get-help') ?>"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Talk to us</a>
         <a class="button button--secondary" href="/services">Explore services</a>
@@ -18,7 +18,7 @@
     <aside class="home-hero__visual" aria-label="AlbaTech service areas">
       <div class="home-hero__visual-head"><span>HOW WE CAN HELP</span><span class="home-hero__visual-rule"></span></div>
       <article class="home-hero__service"><span class="home-hero__service-icon"><i class="fa-solid fa-laptop-code" aria-hidden="true"></i></span><div><h2>Websites & digital presence</h2><p>Give your business a professional place online.</p></div></article>
-      <article class="home-hero__service"><span class="home-hero__service-icon"><i class="fa-solid fa-screwdriver-wrench" aria-hidden="true"></i></span><div><h2>IT support</h2><p>Get help with technical issues and setup.</p></div></article>
+      <article class="home-hero__service"><span class="home-hero__service-icon"><i class="fa-solid fa-screwdriver-wrench" aria-hidden="true"></i></span><div><h2>Digital assistance</h2><p>Get practical help with everyday online tasks.</p></div></article>
       <article class="home-hero__service"><span class="home-hero__service-icon"><i class="fa-solid fa-gears" aria-hidden="true"></i></span><div><h2>Business systems</h2><p>Explore software and workflow solutions.</p></div></article>
       <a class="home-hero__visual-link" href="/services">Browse the service catalogue <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
     </aside>
@@ -32,7 +32,7 @@
       <div class="home-service-grid">
       <?php foreach ($featuredServices as $service):
         $serviceName = strtolower((string) ($service['name'] ?? ''));
-        $iconClass = str_contains($serviceName, 'website') || str_contains($serviceName, 'landing') || str_contains($serviceName, 'web') ? 'fa-laptop-code' : (str_contains($serviceName, 'cv') || str_contains($serviceName, 'career') ? 'fa-file-lines' : (str_contains($serviceName, 'kra') || str_contains($serviceName, 'registration') || str_contains($serviceName, 'government') ? 'fa-file-circle-check' : (str_contains($serviceName, 'it support') || str_contains($serviceName, 'technical') ? 'fa-screwdriver-wrench' : 'fa-layer-group')));
+        $iconClass = str_contains($serviceName, 'website') || str_contains($serviceName, 'landing') || str_contains($serviceName, 'web') ? 'fa-laptop-code' : (str_contains($serviceName, 'cv') || str_contains($serviceName, 'career') ? 'fa-file-lines' : (str_contains($serviceName, 'kra') || str_contains($serviceName, 'registration') || str_contains($serviceName, 'government') ? 'fa-file-circle-check' : (str_contains($serviceName, 'business system') || str_contains($serviceName, 'automation') ? 'fa-gears' : 'fa-layer-group')));
       ?>
         <article class="home-service-card">
           <div class="home-service-card__top"><span class="home-service-card__icon"><i class="fa-solid <?= $iconClass ?>" aria-hidden="true"></i></span><span class="home-service-card__category"><?= View::escape($service['category_name']) ?></span></div>

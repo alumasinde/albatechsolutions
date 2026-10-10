@@ -28,6 +28,17 @@
   --color-border: #e2e8f0;
   --color-border-strong: #cbd5e1;
   --color-border-subtle: #f1f5f9;
+  --color-footer-text: #52647b;
+  --color-footer-heading: #0f223b;
+  --color-footer-border: #d7e2ee;
+  --color-legal-hero: #f0f6fd;
+  --color-info-surface: #f5f9ff;
+  --color-info-border: #dbeafe;
+  --color-warning-surface: #fffbeb;
+  --color-warning-border: #f2d49b;
+  --color-warning-text: #72521b;
+  --color-contact-highlight: #f3fff7;
+  --color-contact-highlight-border: #bde8ce;
 
   /* Status colors */
   --color-success: #16a34a;

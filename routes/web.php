@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use AlbaTech\Controllers\AdminController;
 use AlbaTech\Controllers\HomeController;
+use AlbaTech\Controllers\GuideController;
 use AlbaTech\Controllers\ServiceController;
 use AlbaTech\Controllers\SeoController;
 use AlbaTech\Controllers\StaticPageController;
@@ -14,7 +15,9 @@ $app->router()->get('/', [new HomeController(), 'index']);
 $app->router()->get('/services', [new ServiceController(), 'index']);
 $app->router()->get('/services/{slug}', [new ServiceController(), 'show']);
 $app->router()->get('/about', [new StaticPageController(), 'about']);
-$app->router()->get('/guides', [new StaticPageController(), 'guides']);
+$guides = new GuideController();
+$app->router()->get('/guides', [$guides, 'index']);
+$app->router()->get('/guides/{slug}', [$guides, 'show']);
 $app->router()->get('/get-help', [new StaticPageController(), 'getHelp']);
 $app->router()->get('/contact-details', [new StaticPageController(), 'contactDetails']);
 $app->router()->get('/terms', [new StaticPageController(), 'terms']);

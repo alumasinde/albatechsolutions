@@ -42,7 +42,9 @@ final class Application
                 : 'Something went wrong. Please try again later. Reference: ' . $requestId;
 
             Response::html(View::render('errors/500', [
-                'pageTitle' => 'Something went wrong',
+                'pageTitle' => 'Something went wrong | AlbaTech Solutions',
+                'metaRobots' => 'noindex, nofollow',
+                'canonicalUrl' => '',
                 'errorMessage' => $message,
             ]), 500);
         }

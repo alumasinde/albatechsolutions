@@ -70,6 +70,8 @@ final class Router
                     header('Allow: ' . $this->allowedMethodsFor($path));
                     Response::html(View::render('errors/405', [
                         'pageTitle' => 'Method not allowed',
+                        'metaRobots' => 'noindex, nofollow',
+                        'canonicalUrl' => '',
                     ]), 405);
                     return;
                 }
@@ -77,7 +79,9 @@ final class Router
         }
 
         Response::html(View::render('errors/404', [
-            'pageTitle' => 'Page not found',
+            'pageTitle' => 'Page not found | AlbaTech Solutions',
+            'metaRobots' => 'noindex, nofollow',
+            'canonicalUrl' => '',
         ]), 404);
     }
 

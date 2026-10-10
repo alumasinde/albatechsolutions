@@ -90,9 +90,27 @@ php tests/security_baseline.php
 
 These checks cover scalar request handling, path normalization, and login limiter thresholds. They do not replace integration tests against MySQL or a penetration test.
 
+## Phase 4: SEO and Guides
 
-## Public information pages and footer
+- Public page metadata uses a shared layout with page-specific titles, descriptions, canonical URLs, Open Graph and Twitter card metadata.
+- Canonical URLs use the configured public `site_url` setting, with `APP_URL` as a fallback. Confirm the production setting is `https://albatechsolutions.co.ke` before launch.
+- `/sitemap.xml` lists public core pages, published service slugs and individual guide articles. `/robots.txt` points crawlers to the sitemap and disallows the admin and health routes. `/llms.txt` provides a concise index of public content and pricing caveats.
+- The Guides library includes practical articles on website costs in Kenya, domains and hosting, website preparation, local online visibility and business-registration preparation.
+- The shared layout emits Organization and WebSite JSON-LD, plus Service or Article schema when relevant. Social previews use `/assets/images/albatech-social-card.png`.
 
-The public website includes `/contact-details`, `/privacy`, and `/terms` in addition to `/get-help`. The footer pulls its public email, phone, WhatsApp number and location from `site_settings`, editable through **Admin → Settings**. `business_address` should contain an accurate public service area or office address; do not publish a private or unconfirmed street address. The contact details page explicitly warns visitors to contact the business before visiting when the configured location is a service area rather than a public office.
+Run the Phase 4 regression checks with:
 
-The terms and privacy pages are starter templates and should be reviewed against the actual services, data flows, providers and applicable Kenyan law before production launch.
+```powershell
+php tests/seo_phase4_regression.php
+```
+
+These tests check source/rendered metadata and sitemap output. They do not replace validation with Google Search Console, Rich Results Test, social-sharing debuggers or a production browser request. Article guidance is general information; confirm current official requirements before acting on government-related processes.
+
+
+## Contact page, WhatsApp widget and legal content update
+
+Apply migration `database/migrations/006_contact_legal_content.sql` to add the contact-page fields, configurable WhatsApp pre-filled message, and database-backed Terms/Privacy content fields. If your project uses a migration runner, run it through the normal migration command; otherwise apply the SQL once to the configured MySQL database.
+
+Then open **Admin → Settings** and configure the city/location label, service area, contact hours, response time, support email, WhatsApp number and pre-filled message. The Terms of Service and Privacy Policy text can be edited in the Legal page content section. Legal content is treated as plain text: put headings on their own lines prefixed with `# ` and separate paragraphs with a blank line. Do not paste raw HTML.
+
+The floating WhatsApp panel is shown only when a WhatsApp number is configured. It uses the database-configured message and opens WhatsApp in a new tab; visitors review and send the message themselves.
