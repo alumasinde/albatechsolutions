@@ -91,7 +91,7 @@ final class ServiceRepository
     public function publishedSlugs(): array
     {
         $statement = Database::connection()->prepare(
-            'SELECT s.slug FROM services s
+            'SELECT s.slug, s.updated_at FROM services s
              INNER JOIN service_categories c ON c.id = s.category_id
              WHERE s.status = :published AND c.status = :category_status
              ORDER BY s.slug ASC'

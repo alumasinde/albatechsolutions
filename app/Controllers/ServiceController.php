@@ -63,6 +63,7 @@ final class ServiceController
             'metaImage' => $baseUrl . '/assets/images/albatech-social-card.png',
             'metaRobots' => 'index, follow, max-image-preview:large',
             'service' => $service,
+            'schemaService' => $service,
         ]));
     }
 }

@@ -1,4 +1,4 @@
-@import url("./tokens.css");
+/* tokens.css is loaded by a separate <link> in layouts/main.php (an @import creates a serial request chain). */
 
 /* ============================================
    BASE STYLES - Mobile First
@@ -843,7 +843,7 @@ p {
   position: absolute;
   top: var(--space-5);
   right: var(--space-5);
-  color: #cbd5e1;
+  color: var(--color-text-subtle);
   font-size: var(--font-size-2xl);
   font-weight: 900;
 }
@@ -1800,7 +1800,7 @@ p {
 .feature-card__number {
   display: inline-block;
   margin-bottom: var(--space-8);
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   font-size: var(--font-size-sm);
   font-weight: 900;
   letter-spacing: 0.1em;
@@ -1845,7 +1845,7 @@ p {
 }
 
 .value-list article > span {
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   font-size: var(--font-size-sm);
   font-weight: 900;
 }
@@ -2539,7 +2539,7 @@ p {
 .contact-location-note { font-size:var(--font-size-sm); }
 .contact-details-grid--reference [hidden] { display:none !important; }
 .whatsapp-float { position:fixed; z-index:1000; right:max(1rem,env(safe-area-inset-right)); bottom:max(1rem,env(safe-area-inset-bottom)); display:flex; flex-direction:column; align-items:flex-end; gap:.75rem; }
-.whatsapp-float__trigger { display:flex; align-items:center; gap:.65rem; padding:.85rem 1.15rem; border:1px solid var(--color-whatsapp); border-radius:999px; background:var(--color-whatsapp); color:#fff; box-shadow:var(--shadow-card-hover); font:inherit; font-weight:800; cursor:pointer; }
+.whatsapp-float__trigger { display:flex; align-items:center; gap:.65rem; padding:.85rem 1.15rem; border:1px solid var(--color-whatsapp); border-radius:999px; background:var(--color-whatsapp); color:#052e16; box-shadow:var(--shadow-card-hover); font:inherit; font-weight:800; cursor:pointer; }
 .whatsapp-float__trigger i { font-size:1.3rem; }
 .whatsapp-float__panel { position:relative; width:min(340px,calc(100vw - 2rem)); padding:1.4rem; border:1px solid var(--color-border); border-radius:var(--radius-xl); background:var(--color-surface); box-shadow:var(--shadow-card-hover); }
 .whatsapp-float__panel[hidden] { display:none; }
@@ -2549,3 +2549,13 @@ p {
 .whatsapp-float__close { position:absolute; top:.55rem; right:.65rem; border:0; background:transparent; color:var(--color-text-secondary); font-size:1.6rem; cursor:pointer; }
 @media(max-width:800px) { .contact-details-grid--reference { grid-template-columns:1fr; } .contact-details-grid--reference .contact-detail-card { min-height:unset; } }
 @media(max-width:480px) { .whatsapp-float__trigger span { font-size:.85rem; } .contact-filter__button { padding:.65rem 1rem; } }
+
+/* A single contact card (e.g. only Location is configured) should sit centred, not stranded in a 3-column grid. */
+.contact-details-grid:has(> :only-child) {
+  grid-template-columns: minmax(0, 34rem);
+  justify-content: center;
+}
+.contact-details-note + .contact-details-grid,
+.contact-details-grid + .contact-details-note {
+  margin-top: var(--space-6);
+}

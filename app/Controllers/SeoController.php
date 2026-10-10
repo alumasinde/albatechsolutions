@@ -29,15 +29,25 @@ final class SeoController
             ['loc' => $baseUrl . '/privacy', 'priority' => '0.2', 'changefreq' => 'yearly'],
         ];
 
-        foreach (array_keys(GuideController::articles()) as $slug) {
-            $urls[] = ['loc' => $baseUrl . '/guides/' . rawurlencode($slug), 'priority' => '0.7', 'changefreq' => 'monthly'];
+        foreach (GuideController::articles() as $slug => $article) {
+            $guideUrl = ['loc' => $baseUrl . '/guides/' . rawurlencode((string) $slug), 'priority' => '0.7', 'changefreq' => 'monthly'];
+            $guideDate = (string) ($article['updated'] ?? '');
+            if (preg_match('/^\\d{4}-\\d{2}-\\d{2}$/', $guideDate) === 1) {
+                $guideUrl['lastmod'] = $guideDate;
+            }
+            $urls[] = $guideUrl;
         }
 
         try {
             foreach ($this->services->publishedSlugs() as $service) {
                 $slug = trim((string) ($service['slug'] ?? ''));
                 if ($slug !== '' && preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug) === 1) {
-                    $urls[] = ['loc' => $baseUrl . '/services/' . rawurlencode($slug), 'priority' => '0.8', 'changefreq' => 'monthly'];
+                    $entry = ['loc' => $baseUrl . '/services/' . rawurlencode($slug), 'priority' => '0.8', 'changefreq' => 'monthly'];
+                    $updated = strtotime((string) ($service['updated_at'] ?? ''));
+                    if ($updated !== false) {
+                        $entry['lastmod'] = date('Y-m-d', $updated);
+                    }
+                    $urls[] = $entry;
                 }
             }
         } catch (Throwable $exception) {
@@ -54,6 +64,9 @@ final class SeoController
         foreach ($unique as $url) {
             $xml[] = '  <url>';
             $xml[] = '    <loc>' . htmlspecialchars($url['loc'], ENT_XML1 | ENT_QUOTES, 'UTF-8') . '</loc>';
+            if (!empty($url['lastmod'])) {
+                $xml[] = '    <lastmod>' . htmlspecialchars((string) $url['lastmod'], ENT_XML1 | ENT_QUOTES, 'UTF-8') . '</lastmod>';
+            }
             $xml[] = '    <changefreq>' . $url['changefreq'] . '</changefreq>';
             $xml[] = '    <priority>' . $url['priority'] . '</priority>';
             $xml[] = '  </url>';

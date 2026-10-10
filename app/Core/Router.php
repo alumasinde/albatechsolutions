@@ -32,8 +32,26 @@ final class Router
 
     public function dispatch(Request $request): void
     {
+        // HEAD is answered by the matching GET route with the body discarded (crawlers,
+        // uptime monitors and link checkers send HEAD; it used to return 405).
+        if ($request->method() !== 'HEAD') {
+            $this->handle($request, $request->method());
+            return;
+        }
+
+        ob_start();
+        try {
+            $this->handle($request, 'GET');
+        } finally {
+            ob_end_clean();
+        }
+    }
+
+    private function handle(Request $request, string $method): void
+    {
+        $this->redirectTrailingSlash($method);
+
         $path = $request->path();
-        $method = $request->method();
         $pathMatched = false;
 
         foreach ($this->routes[$method] ?? [] as $route) {
@@ -83,6 +101,23 @@ final class Router
             'metaRobots' => 'noindex, nofollow',
             'canonicalUrl' => '',
         ]), 404);
+    }
+
+    /** /services/ -> 301 /services so each page has exactly one crawlable URL. */
+    private function redirectTrailingSlash(string $method): void
+    {
+        if ($method !== 'GET') {
+            return;
+        }
+        $uri = (string) ($_SERVER['REQUEST_URI'] ?? '/');
+        $rawPath = (string) (parse_url($uri, PHP_URL_PATH) ?? '/');
+        // Strict allow-list: no backslashes, no scheme-relative ("//host") tricks, no control chars.
+        if (strlen($rawPath) > 1 && str_ends_with($rawPath, '/')
+            && preg_match('#^/[A-Za-z0-9._~%!$&\'()*+,;=:@/-]*$#', $rawPath) === 1) {
+            $target = '/' . ltrim(rtrim($rawPath, '/'), '/');
+            $query = parse_url($uri, PHP_URL_QUERY);
+            Response::redirect($target . (is_string($query) && $query !== '' ? '?' . $query : ''), 301);
+        }
     }
 
     private function allowedMethodsFor(string $path): string

@@ -34,7 +34,9 @@ $metaImage = trim((string) ($metaImage ?? ($siteUrl . '/assets/images/albatech-s
 if ($metaImage !== '' && !preg_match('~^https://~i', $metaImage)) $metaImage = $siteUrl . '/' . ltrim($metaImage, '/');
 $metaRobots = trim((string) ($metaRobots ?? 'index, follow, max-image-preview:large'));
 $author = trim((string) ($author ?? $siteSettings['default_author'] ?? 'AlbaTech Solutions'));
-$serviceData = isset($service) && is_array($service) ? $service : null;
+// Only a controller may declare a service page. Reading plain `$service` leaked loop variables
+// from listing views (home, /services) into the layout and emitted a bogus Service node.
+$serviceData = isset($schemaService) && is_array($schemaService) ? $schemaService : null;
 $guideData = isset($guideArticle) && is_array($guideArticle) ? $guideArticle : null;
 
 $organizationId = $siteUrl . '/#organization';
@@ -55,6 +57,24 @@ $structuredGraph = [[
     'inLanguage' => 'en-KE',
     'publisher' => ['@id' => $organizationId],
 ]];
+
+// Enrich Organization with real contact data when it is configured (nothing is invented).
+$orgAddress = trim((string) ($siteSettings['business_address'] ?? ''));
+if ($orgAddress !== '') {
+    $structuredGraph[0]['address'] = [
+        '@type' => 'PostalAddress',
+        'addressLocality' => trim(explode(',', $orgAddress)[0]),
+        'addressCountry' => 'KE',
+    ];
+}
+$orgEmail = trim((string) ($siteSettings['contact_email'] ?? ''));
+if ($orgEmail !== '' && filter_var($orgEmail, FILTER_VALIDATE_EMAIL)) {
+    $structuredGraph[0]['email'] = $orgEmail;
+}
+$orgPhone = preg_replace('/[^0-9+]/', '', (string) ($siteSettings['business_phone'] ?? '')) ?? '';
+if ($orgPhone !== '') {
+    $structuredGraph[0]['telephone'] = $orgPhone;
+}
 
 if ($guideData !== null && $canonicalUrl !== '') {
     $structuredGraph[] = [
@@ -174,9 +194,11 @@ if ($footerLocation === '') $footerLocation = 'Kenya';
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23155eef'/%3E%3Ctext x='16' y='23' font-family='Arial' font-size='20' font-weight='700' text-anchor='middle' fill='%23fff'%3EA%3C/text%3E%3C/svg%3E">
+    <link rel="icon" type="image/png" sizes="512x512" href="<?= View::asset('images/albatech-logo.png') ?>">
+    <link rel="apple-touch-icon" href="<?= View::asset('images/albatech-logo.png') ?>">
 
-    <link rel="stylesheet" href="/assets/css/app.css">
+    <link rel="stylesheet" href="<?= View::asset('css/tokens.css') ?>">
+    <link rel="stylesheet" href="<?= View::asset('css/app.css') ?>">
 
     <script type="application/ld+json" nonce="<?= View::escape($cspNonce ?? '') ?>"><?=
         json_encode(
@@ -317,7 +339,7 @@ if ($footerLocation === '') $footerLocation = 'Kenya';
     <p>Send us a message on WhatsApp and tell us what you need help with.</p>
     <a class="button button--whatsapp" href="<?= View::escape($whatsAppUrl) ?>" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Start a chat</a>
   </div>
-  <button class="whatsapp-float__trigger" type="button" data-whatsapp-open aria-expanded="false" aria-label="Open WhatsApp chat panel"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i><span>Need guidance?</span></button>
+  <button class="whatsapp-float__trigger" type="button" data-whatsapp-open aria-expanded="false" aria-label="Need guidance? Open WhatsApp chat panel"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i><span>Need guidance?</span></button>
 </div>
 <script nonce="<?= View::escape($cspNonce ?? '') ?>">
 document.addEventListener('DOMContentLoaded', function () {

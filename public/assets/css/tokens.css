@@ -7,6 +7,7 @@
   --color-primary-light: #e6f0fa;
   --color-secondary: #1e3a5f;
   --color-accent: #f59e0b;
+  --color-accent-text: #b45309; /* amber for TEXT on light surfaces (5.0:1); keep --color-accent for fills */
   --color-accent-hover: #d97706;
 
   /* Neutral surfaces */
@@ -19,8 +20,8 @@
   --color-text-strong: #0f172a;
   --color-text: #1e293b;
   --color-text-secondary: #475569;
-  --color-text-muted: #64748b;
-  --color-text-subtle: #94a3b8;
+  --color-text-muted: #556274;
+  --color-text-subtle: #5b6b80;
   --color-text-on-primary: #ffffff;
   --color-text-on-accent: #1e293b;
 
@@ -41,7 +42,7 @@
   --color-contact-highlight-border: #bde8ce;
 
   /* Status colors */
-  --color-success: #16a34a;
+  --color-success: #15803d;
   --color-success-bg: #dcfce7;
   --color-danger: #dc2626;
   --color-danger-bg: #fee2e2;

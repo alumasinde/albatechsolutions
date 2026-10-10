@@ -76,7 +76,7 @@
                                             <span class="service-price__quote"><?= View::escape(($service['pricing_label'] ?? '') ?: 'Contact for price') ?></span>
                                         <?php endif; ?>
                                     </div>
-                                    <a href="/services/<?= rawurlencode($service['slug']) ?>" class="service-tile__link" aria-label="View <?= View::escape($service['name']) ?>">View service <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+                                    <a href="/services/<?= rawurlencode($service['slug']) ?>" class="service-tile__link" aria-label="View service: <?= View::escape($service['name']) ?>">View service <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
                                 </article>
                             <?php endforeach; ?>
                         </div>
