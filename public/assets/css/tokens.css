@@ -1,55 +1,67 @@
+
 :root {
   color-scheme: light;
 
-  /* Brand colors - refined for professionalism */
-  --color-primary: #0a4a8a;
-  --color-primary-hover: #083d72;
-  --color-primary-light: #e6f0fa;
-  --color-secondary: #1e3a5f;
-  --color-accent: #f59e0b;
-  --color-accent-text: #b45309; /* amber for TEXT on light surfaces (5.0:1); keep --color-accent for fills */
-  --color-accent-hover: #d97706;
+  /* Brand colors — AlbaTech Solutions */
+  --color-primary: #078C99;
+  --color-primary-hover: #067782;
+  --color-primary-light: #E3F5F5;
+  --color-secondary: #066873;
+
+  --color-accent: #FFB72B;
+  --color-accent-text: #805400;
+  --color-accent-hover: #F5A900;
 
   /* Neutral surfaces */
-  --color-page: #f8fafc;
-  --color-surface: #ffffff;
-  --color-surface-muted: #f1f5f9;
-  --color-surface-subtle: #e2e8f0;
+  --color-page: #F5FAFA;
+  --color-surface: #FFFFFF;
+  --color-surface-muted: #EDF6F6;
+  --color-surface-subtle: #DDEBEC;
 
   /* Text hierarchy */
-  --color-text-strong: #0f172a;
-  --color-text: #1e293b;
-  --color-text-secondary: #475569;
-  --color-text-muted: #556274;
-  --color-text-subtle: #5b6b80;
-  --color-text-on-primary: #ffffff;
-  --color-text-on-accent: #1e293b;
+  --color-text-strong: #12363A;
+  --color-text: #243F42;
+  --color-text-secondary: #496367;
+  --color-text-muted: #526C70;
+  --color-text-subtle: #61777A;
+  --color-text-on-primary: #FFFFFF;
+  --color-text-on-accent: #172326;
 
   /* Borders and dividers */
-  --color-border: #e2e8f0;
-  --color-border-strong: #cbd5e1;
-  --color-border-subtle: #f1f5f9;
-  --color-footer-text: #52647b;
-  --color-footer-heading: #0f223b;
-  --color-footer-border: #d7e2ee;
-  --color-legal-hero: #f0f6fd;
-  --color-info-surface: #f5f9ff;
-  --color-info-border: #dbeafe;
-  --color-warning-surface: #fffbeb;
-  --color-warning-border: #f2d49b;
-  --color-warning-text: #72521b;
-  --color-contact-highlight: #f3fff7;
-  --color-contact-highlight-border: #bde8ce;
+  --color-border: #D9E8E9;
+  --color-border-strong: #B8D1D3;
+  --color-border-subtle: #EAF2F2;
+
+  /* Footer */
+  --color-footer-text: #D3E7E8;
+  --color-footer-heading: #FFFFFF;
+  --color-footer-border: #28545A;
+
+  /* Information and legal surfaces */
+  --color-legal-hero: #EAF6F6;
+  --color-info-surface: #F0F9F9;
+  --color-info-border: #C8E5E7;
+
+  /* Warning surfaces */
+  --color-warning-surface: #FFFAEB;
+  --color-warning-border: #F0D58F;
+  --color-warning-text: #72521B;
+
+  /* Contact highlights */
+  --color-contact-highlight: #EFFAF5;
+  --color-contact-highlight-border: #B9E5CD;
 
   /* Status colors */
-  --color-success: #15803d;
-  --color-success-bg: #dcfce7;
-  --color-danger: #dc2626;
-  --color-danger-bg: #fee2e2;
-  --color-warning: #f59e0b;
-  --color-warning-bg: #fef3c7;
-  --color-whatsapp: #25d366;
-  --color-whatsapp-bg: #dcfce7;
+  --color-success: #15803D;
+  --color-success-bg: #DCFCE7;
+  --color-danger: #DC2626;
+  --color-danger-bg: #FEE2E2;
+  --color-warning: #B7791F;
+  --color-warning-bg: #FEF3C7;
+
+  /* WhatsApp */
+  --color-whatsapp: #25D366;
+  --color-whatsapp-bg: #DCFCE7;
 
   /* Typography scale - mobile-first */
   --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;

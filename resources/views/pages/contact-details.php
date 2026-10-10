@@ -6,7 +6,7 @@ $contactSettings = (new SiteSettingsRepository())->publicValues();
 $contactEmail = trim((string) ($contactSettings['contact_email'] ?? ''));
 $contactPhone = trim((string) ($contactSettings['business_phone'] ?? ''));
 $contactPhoneHref = preg_replace('/[^0-9+]/', '', $contactPhone);
-$contactLocation = trim((string) ($contactSettings['business_address'] ?? 'Ruaka, Kenya'));
+$contactLocation = trim((string) ($contactSettings['business_address'] ?? 'Nairobi, Kenya'));
 $contactLocation = $contactLocation !== '' ? $contactLocation : 'Kenya';
 $contactWhatsApp = preg_replace('/\\D+/', '', (string) ($contactSettings['whatsapp_number'] ?? ''));
 $contactMessage = trim((string) ($contactSettings['whatsapp_prefill_message'] ?? ''));

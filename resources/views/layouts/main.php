@@ -126,7 +126,7 @@ $whatsAppUrl = $whatsAppNumber !== ''
 $footerEmail = trim((string) ($siteSettings['contact_email'] ?? ''));
 $footerPhone = trim((string) ($siteSettings['business_phone'] ?? ''));
 $footerPhoneHref = preg_replace('/[^0-9+]/', '', $footerPhone) ?? '';
-$footerLocation = trim((string) ($siteSettings['business_address'] ?? 'Ruaka, Kenya'));
+$footerLocation = trim((string) ($siteSettings['business_address'] ?? 'Nairobi, Kenya'));
 if ($footerLocation === '') $footerLocation = 'Kenya';
 
 ?>
@@ -171,34 +171,31 @@ if ($footerLocation === '') $footerLocation = 'Kenya';
         <meta property="og:url" content="<?= View::escape($canonicalUrl) ?>">
     <?php endif; ?>
 
-    <?php if ($metaImage !== ''): ?>
-        <meta property="og:image" content="<?= View::escape($metaImage) ?>">
-        <meta property="og:image:type" content="image/png">
-        <meta property="og:image:width" content="1200">
-        <meta property="og:image:height" content="630">
-    <?php endif; ?>
+    <?php
+    $defaultImage = $siteUrl . '/assets/images/albatech-social-card.png';
+    $finalImage = $metaImage !== '' ? $metaImage : $defaultImage;
+    ?>
+    <meta property="og:image" content="<?= View::escape($finalImage) ?>">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="<?= View::escape($siteName . ' — practical digital services in Kenya') ?>">
 
-    <meta name="twitter:card" content="<?= $metaImage !== '' ? 'summary_large_image' : 'summary' ?>">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="<?= View::escape($pageTitle) ?>">
     <meta name="twitter:description" content="<?= View::escape($metaDescription) ?>">
-    <?php if ($metaImage !== ''): ?>
-        <meta property="og:image:alt" content="<?= View::escape($siteName . ' — practical digital services in Kenya') ?>">
-        <meta name="twitter:image:alt" content="<?= View::escape($siteName . ' — practical digital services in Kenya') ?>">
-    <?php endif; ?>
-
-    <?php if ($metaImage !== ''): ?>
-        <meta name="twitter:image" content="<?= View::escape($metaImage) ?>">
-    <?php endif; ?>
+    <meta name="twitter:image" content="<?= View::escape($finalImage) ?>">
+    <meta name="twitter:image:alt" content="<?= View::escape($siteName . ' — practical digital services in Kenya') ?>">
 
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
-    <link rel="icon" type="image/png" sizes="512x512" href="<?= View::asset('images/albatech-logo.png') ?>">
-    <link rel="apple-touch-icon" href="<?= View::asset('images/albatech-logo.png') ?>">
+    <link rel="icon" type="image/png" sizes="512x512" href="/assets/images/albatech-logo.png">
+    <link rel="apple-touch-icon" href="/assets/images/albatech-logo.png">
 
-    <link rel="stylesheet" href="<?= View::asset('css/tokens.css') ?>">
-    <link rel="stylesheet" href="<?= View::asset('css/app.css') ?>">
+    <link rel="stylesheet" href="/assets/css/tokens.css">
+    <link rel="stylesheet" href="/assets/css/app.css">
 
     <script type="application/ld+json" nonce="<?= View::escape($cspNonce ?? '') ?>"><?=
         json_encode(
@@ -223,7 +220,7 @@ if ($footerLocation === '') $footerLocation = 'Kenya';
             href="/"
             aria-label="<?= View::escape($siteName) ?> home"
         >
-            AlbaTech <span>Solutions</span>
+            <img src="/assets/images/albatech-logo.png" alt="<?= View::escape($siteName) ?>" class="brand-logo" width="180" height="48">
         </a>
 
         <button

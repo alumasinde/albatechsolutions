@@ -24,4 +24,4 @@ INSERT INTO site_settings (setting_key, setting_value, value_type, setting_group
 ('whatsapp_number', '', 'string', 'contact', 1),
 ('contact_email', '', 'email', 'contact', 1),
 ('business_phone', '', 'string', 'contact', 1),
-('business_address', 'Ruaka, Kenya', 'string', 'contact', 1);
+('business_address', 'Nairobi, Kenya', 'string', 'contact', 1);

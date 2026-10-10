@@ -1,8 +1,26 @@
 <?php use AlbaTech\Core\View; ?>
 
+<nav class="breadcrumb-nav" aria-label="Breadcrumb">
+  <div class="container">
+    <ol class="breadcrumb-list" itemscope itemtype="https://schema.org/BreadcrumbList">
+      <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a href="/" itemprop="item"><span itemprop="name">Home</span></a>
+        <meta itemprop="position" content="1">
+      </li>
+      <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a href="/services" itemprop="item"><span itemprop="name">Services</span></a>
+        <meta itemprop="position" content="2">
+      </li>
+      <li class="breadcrumb-item breadcrumb-item--current" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <span itemprop="name"><?= View::escape($service['name']) ?></span>
+        <meta itemprop="position" content="3">
+      </li>
+    </ol>
+  </div>
+</nav>
+
 <section class="service-detail-hero">
     <div class="container">
-        <a class="breadcrumb" href="/services"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> All services</a>
         <div class="service-detail-hero__grid">
             <div>
                 <span class="eyebrow"><?= View::escape($service['category_name']) ?></span>

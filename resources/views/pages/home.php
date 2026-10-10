@@ -15,12 +15,8 @@
         <span><i class="fa-solid fa-handshake" aria-hidden="true"></i> Support for real business needs</span>
       </div>
     </div>
-    <aside class="home-hero__visual" aria-label="AlbaTech service areas">
-      <div class="home-hero__visual-head"><span>HOW WE CAN HELP</span><span class="home-hero__visual-rule"></span></div>
-      <article class="home-hero__service"><span class="home-hero__service-icon"><i class="fa-solid fa-laptop-code" aria-hidden="true"></i></span><div><h2>Websites & digital presence</h2><p>Give your business a professional place online.</p></div></article>
-      <article class="home-hero__service"><span class="home-hero__service-icon"><i class="fa-solid fa-screwdriver-wrench" aria-hidden="true"></i></span><div><h2>Digital assistance</h2><p>Get practical help with everyday online tasks.</p></div></article>
-      <article class="home-hero__service"><span class="home-hero__service-icon"><i class="fa-solid fa-gears" aria-hidden="true"></i></span><div><h2>Business systems</h2><p>Explore software and workflow solutions.</p></div></article>
-      <a class="home-hero__visual-link" href="/services">Browse the service catalogue <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+    <aside class="home-hero__visual" aria-label="AlbaTech Solutions">
+      <img src="/assets/images/albatech-social-card.png" alt="AlbaTech Solutions - Digital services for Kenya" class="home-hero__image" width="400" height="300">
     </aside>
   </div>
 </section>
@@ -70,6 +66,49 @@
     <div class="why-point"><span class="why-point__icon"><i class="fa-regular fa-message" aria-hidden="true"></i></span><div><h3>Easy to reach</h3><p>Start with a simple enquiry and get help deciding the next step.</p></div></div>
   </div>
 </div></section>
+
+<section class="section home-recent-work">
+  <div class="container">
+    <div class="section-heading">
+      <span class="section-kicker">Work areas</span>
+      <h2>Types of projects we handle</h2>
+      <p>From websites to business processes, we focus on practical outcomes for businesses and individuals in Kenya.</p>
+    </div>
+    <div class="recent-work-grid">
+      <article class="case-study-card">
+        <div class="case-study-card__image">
+          <div class="case-study-placeholder"><i class="fa-solid fa-laptop-code"></i></div>
+        </div>
+        <div class="case-study-card__content">
+          <span class="case-study-card__category">Website Design</span>
+          <h3>Business Websites</h3>
+          <p>Professional, mobile-friendly websites that help customers understand your business and contact you easily.</p>
+        </div>
+      </article>
+      <article class="case-study-card">
+        <div class="case-study-card__image">
+          <div class="case-study-placeholder"><i class="fa-solid fa-file-circle-check"></i></div>
+        </div>
+        <div class="case-study-card__content">
+          <span class="case-study-card__category">Business Registration</span>
+          <h3>Company Setup</h3>
+          <p>Guidance through business registration, tax compliance setup, and understanding regulatory requirements.</p>
+        </div>
+      </article>
+      <article class="case-study-card">
+        <div class="case-study-card__image">
+          <div class="case-study-placeholder"><i class="fa-solid fa-globe"></i></div>
+        </div>
+        <div class="case-study-card__content">
+          <span class="case-study-card__category">Online Presence</span>
+          <h3>Digital Visibility</h3>
+          <p>Google Business Profile setup, online directory listings, and improving how customers find your business.</p>
+        </div>
+      </article>
+    </div>
+    <div class="section-footer-link"><a class="text-link" href="/services">Explore all services <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a></div>
+  </div>
+</section>
 
 <section class="home-cta"><div class="container home-cta__inner"><div><span class="eyebrow eyebrow--light">Let's talk</span><h2>Have a task in mind?</h2><p>Tell us what you are trying to do. We will help you work out a sensible next step.</p></div><a class="button button--accent" href="<?= View::escape($whatsAppUrl ?? '/get-help') ?>"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Start a conversation</a></div></section>
 
