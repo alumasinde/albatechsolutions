@@ -1099,3 +1099,34 @@ td strong {
 @media(max-width:700px){.admin-page-actions{align-items:flex-start;flex-direction:column}.admin-form-grid{grid-template-columns:1fr}.admin-form-grid__wide{grid-column:auto}}
 /* Shared button names used by the portfolio screens; colours come from tokens.css. */
 .button{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.7rem 1rem;border:1px solid transparent;border-radius:var(--radius-md);font:inherit;font-weight:700;line-height:1.25;text-decoration:none;cursor:pointer;transition:background .15s ease,border-color .15s ease}.button--primary{background:var(--color-primary);color:var(--color-text-on-primary)}.button--primary:hover{background:var(--color-primary-hover)}.button--secondary{background:var(--color-surface);border-color:var(--color-border-strong);color:var(--color-text-strong)}.button--secondary:hover{background:var(--color-surface-muted)}.button--danger:hover{filter:brightness(.97)}
+
+
+/* Guide CMS and sticky rich-text editor */
+.guide-admin-grid{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:20px;align-items:start}
+.guide-admin-main,.guide-admin-side{display:grid;gap:18px;min-width:0}
+.guide-side-note,.editor-help{font-size:12px;line-height:1.6;color:var(--admin-muted)}
+.guide-checklist{padding-left:19px;color:var(--admin-muted);font-size:12px;line-height:1.8}
+.guide-slug{display:block;margin-top:5px;color:var(--admin-muted);font-size:11px}
+.guide-editor-form .field input,.guide-editor-form .field textarea,.guide-editor-form .field select{font-size:14px;min-height:44px}
+.rich-editor{border:1px solid var(--admin-line);border-radius:10px;overflow:visible;background:#fff}
+.rich-toolbar{position:sticky;top:8px;z-index:20;display:flex;flex-wrap:wrap;align-items:center;gap:5px;padding:10px;background:#fff;border:1px solid var(--admin-line);border-radius:10px;box-shadow:0 5px 18px rgba(18,54,58,.12)}
+.rich-toolbar button{min-width:36px;height:36px;padding:0 9px;border:1px solid var(--admin-line);border-radius:6px;background:#fff;color:var(--admin-ink);cursor:pointer}
+.rich-toolbar button:hover,.rich-toolbar button:focus-visible{background:var(--admin-bg);border-color:var(--admin-blue);outline:2px solid transparent}
+.rich-toolbar select{max-width:155px;height:36px;border:1px solid var(--admin-line);border-radius:6px;padding:0 8px;background:#fff;color:var(--admin-ink)}
+.toolbar-separator{height:25px;width:1px;background:var(--admin-line);margin:0 3px}
+.rich-editor__canvas{min-height:520px;padding:24px;outline:none;color:var(--admin-ink);font-size:16px;line-height:1.8;overflow-wrap:anywhere}
+.rich-editor__canvas:focus{box-shadow:inset 0 0 0 2px var(--admin-blue-shadow)}
+.rich-editor__canvas h1{font-size:2em}.rich-editor__canvas h2{font-size:1.65em}.rich-editor__canvas h3{font-size:1.35em}.rich-editor__canvas h4{font-size:1.15em}
+.rich-editor__canvas img{max-width:100%;height:auto;border-radius:8px}
+.rich-editor__canvas table{border-collapse:collapse;width:100%;white-space:normal;margin:18px 0}
+.rich-editor__canvas th,.rich-editor__canvas td{border:1px solid var(--admin-line);padding:9px;text-align:left;white-space:normal}
+.rich-editor__canvas blockquote{margin:18px 0;padding:12px 18px;border-left:4px solid var(--admin-blue);background:var(--admin-bg)}
+.guide-rich-content{font-size:1.05rem;line-height:1.85;overflow-wrap:anywhere}
+.guide-rich-content img{max-width:100%;height:auto;border-radius:10px}
+.guide-rich-content table{display:block;max-width:100%;overflow-x:auto;border-collapse:collapse;margin:1.5rem 0}
+.guide-rich-content th,.guide-rich-content td{border:1px solid var(--color-border);padding:.7rem;text-align:left}
+.guide-rich-content th{background:var(--color-surface-muted)}
+.guide-rich-content h1,.guide-rich-content h2,.guide-rich-content h3,.guide-rich-content h4{line-height:1.3;margin:1.6em 0 .6em}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:1050px){.guide-admin-grid{grid-template-columns:minmax(0,1fr)}.guide-admin-side{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.guide-admin-side{grid-template-columns:minmax(0,1fr)}.rich-toolbar{top:4px;gap:4px;padding:7px}.rich-toolbar button{min-width:34px;height:34px}.rich-toolbar select{max-width:125px}.rich-editor__canvas{min-height:380px;padding:16px;font-size:16px}.editor-section{padding:15px}}

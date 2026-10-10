@@ -3739,3 +3739,11 @@ button,
   .whatsapp-float__trigger::before { animation: none; transition: none; }
   .whatsapp-float__trigger { box-shadow: 0 4px 12px rgba(0, 0, 0, .28), 0 0 0 5px rgba(37, 211, 102, .45); }
 }
+
+/* Rich content from the Guides CMS */
+.guide-rich-content{font-size:1.05rem;line-height:1.85;overflow-wrap:anywhere}
+.guide-rich-content img{max-width:100%;height:auto;border-radius:10px}
+.guide-rich-content table{display:block;max-width:100%;overflow-x:auto;border-collapse:collapse;margin:1.5rem 0}
+.guide-rich-content th,.guide-rich-content td{border:1px solid var(--color-border);padding:.7rem;text-align:left}
+.guide-rich-content th{background:var(--color-surface-muted)}
+.guide-rich-content h1,.guide-rich-content h2,.guide-rich-content h3,.guide-rich-content h4{line-height:1.3;margin:1.6em 0 .6em}

@@ -13,7 +13,7 @@ final class GuideController
     /** @return array<string, array<string, mixed>> */
     public static function articles(): array
     {
-        return [
+        $articles = [
             'how-much-does-a-website-cost-in-kenya' => [
                 'title' => 'How Much Does a Website Cost in Kenya?',
                 'meta_title' => 'Website Design Cost in Kenya: What to Budget',
@@ -96,6 +96,30 @@ final class GuideController
                 ],
             ],
         ];
+        // Published database-managed guides override/add to the original editorial catalogue.
+        try {
+            $rows = \AlbaTech\Core\Database::connection()->query("SELECT * FROM guides ORDER BY published_at DESC, updated_at DESC")->fetchAll();
+            foreach ($rows as $row) {
+                unset($articles[(string)$row['slug']]);
+                if ($row['status'] !== 'published') continue;
+                $articles[(string)$row['slug']] = [
+                    'title' => $row['title'],
+                    'meta_title' => $row['meta_title'] ?: $row['title'],
+                    'meta_description' => $row['meta_description'] ?: $row['summary'],
+                    'summary' => $row['summary'],
+                    'category' => $row['category'],
+                    'published' => !empty($row['published_at']) ? date('Y-m-d', strtotime($row['published_at'])) : '',
+                    'updated' => !empty($row['updated_at']) ? date('Y-m-d', strtotime($row['updated_at'])) : '',
+                    'intro' => $row['intro'],
+                    'content_html' => $row['content_html'],
+                    'sections' => [],
+                ];
+            }
+        } catch (\Throwable $e) {
+            // The original static guides remain available if migration 008 has not yet run.
+            error_log('[AlbaTech guides] Database-managed guides unavailable: ' . $e->getMessage());
+        }
+        return $articles;
     }
 
     public function index(): void

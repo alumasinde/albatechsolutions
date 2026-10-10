@@ -1,4 +1,9 @@
-<?php use AlbaTech\Core\View; $article = is_array($guideArticle ?? null) ? $guideArticle : []; ?>
+<?php 
+use AlbaTech\Core\View; 
+
+$article = is_array($guideArticle ?? null) ? $guideArticle : []; 
+
+?>
 <article class="guide-article">
     <header class="guide-article__hero">
         <div class="container guide-article__hero-inner">
@@ -21,6 +26,9 @@
     </header>
     <div class="container guide-article__layout">
         <div class="guide-article__body">
+            <?php if (!empty($article['content_html'])): ?>
+                <div class="guide-rich-content"><?= $article['content_html'] /* Sanitized by GuideAdminController before persistence. */ ?></div>
+            <?php else: ?>
             <?php foreach (($article['sections'] ?? []) as $section): ?>
                 <section class="guide-article__section">
                     <h2><?= View::escape($section['heading'] ?? '') ?></h2>
@@ -29,6 +37,7 @@
                     <?php if (!empty($section['link']) && is_array($section['link'])): ?><p><a class="text-link" href="<?= View::escape($section['link'][0] ?? '/services') ?>"><?= View::escape($section['link'][1] ?? 'Learn more') ?> <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a></p><?php endif; ?>
                 </section>
             <?php endforeach; ?>
+            <?php endif; ?>
             <aside class="guide-article__disclaimer"><i class="fa-solid fa-circle-info" aria-hidden="true"></i><p>Guides provide general information and may not cover every situation. Confirm current requirements with the relevant official source before making decisions or submitting applications.</p></aside>
             <div class="guide-article__back"><a class="text-link" href="/guides"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to all guides</a></div>
         </div>
