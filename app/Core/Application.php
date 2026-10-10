@@ -37,8 +37,9 @@ final class Application
             ));
 
             $debug = Env::bool('APP_DEBUG', false) && Env::get('APP_ENV', 'local') !== 'production';
+            // Templates escape public output; keep the value raw here to avoid double escaping.
             $message = $debug
-                ? View::escape($exception->getMessage()) . ' (Reference: ' . $requestId . ')'
+                ? $exception->getMessage() . ' (Reference: ' . $requestId . ')'
                 : 'Something went wrong. Please try again later. Reference: ' . $requestId;
 
             Response::html(View::render('errors/500', [

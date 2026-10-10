@@ -20,6 +20,7 @@ final class GuideController
                 'meta_description' => 'Learn what affects website design costs in Kenya, what to budget for, and which questions to ask before hiring a web designer.',
                 'summary' => 'Understand the main factors behind website pricing and how to compare quotes without focusing on price alone.',
                 'category' => 'Websites',
+                'published' => '2026-10-09',
                 'updated' => '2026-10-09',
                 'intro' => 'There is no single price for every website. The cost depends on what the site needs to do, how much content it contains, and whether it needs custom functionality.',
                 'sections' => [
@@ -35,6 +36,7 @@ final class GuideController
                 'meta_description' => 'Learn the difference between a domain name and web hosting, what each does, and what to check before paying for a website.',
                 'summary' => 'A plain-language guide to the two essentials that help your website have an address and stay online.',
                 'category' => 'Websites',
+                'published' => '2026-10-09',
                 'updated' => '2026-10-09',
                 'intro' => 'A domain name is the address people type to find your website. Hosting is the service that stores the website files and makes them available online. Most business websites need both.',
                 'sections' => [
@@ -50,6 +52,7 @@ final class GuideController
                 'meta_description' => 'Use this practical checklist to prepare your business details, services, photos, contact information and goals before website development.',
                 'summary' => 'Prepare the key information that helps a designer build a useful website with fewer delays.',
                 'category' => 'Business presence',
+                'published' => '2026-10-09',
                 'updated' => '2026-10-09',
                 'intro' => 'A website project is easier when the business owner can provide clear information early. You do not need perfect copy, but you should know what the business offers and how customers should contact you.',
                 'sections' => [
@@ -66,6 +69,7 @@ final class GuideController
                 'meta_description' => 'Practical steps for improving a business presence online with consistent contact details, useful pages, real photos and customer information.',
                 'summary' => 'Simple, sustainable ways to make it easier for customers to find accurate information about your business online.',
                 'category' => 'Online presence',
+                'published' => '2026-10-09',
                 'updated' => '2026-10-09',
                 'intro' => 'A strong online presence is more than a website. Customers should be able to find accurate information, understand what you offer and contact you without confusion.',
                 'sections' => [
@@ -81,6 +85,7 @@ final class GuideController
                 'meta_description' => 'A general preparation checklist for people exploring business registration in Kenya, including details to organise and official sources to confirm.',
                 'summary' => 'Organise your information before starting a business registration process and know what to verify through official channels.',
                 'category' => 'Business guidance',
+                'published' => '2026-10-09',
                 'updated' => '2026-10-09',
                 'intro' => 'Before starting a business registration process, organise the details that may be requested and confirm the current requirements through the relevant official service. Requirements can differ depending on the business structure and circumstances.',
                 'sections' => [

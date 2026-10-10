@@ -16,7 +16,7 @@
       </div>
     </div>
     <aside class="home-hero__visual" aria-label="AlbaTech Solutions">
-      <img src="/assets/images/albatech-social-card.png" alt="AlbaTech Solutions - Digital services for Kenya" class="home-hero__image" width="400" height="300">
+      <img src="/assets/images/albatech-social-card.png" alt="AlbaTech Solutions - Digital services for Kenya" class="home-hero__image" width="400" height="300" loading="eager" fetchpriority="high" decoding="async">
     </aside>
   </div>
 </section>

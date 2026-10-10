@@ -6,7 +6,17 @@
             <span class="eyebrow"><?= View::escape($article['category'] ?? 'Guide') ?></span>
             <h1><?= View::escape($article['title'] ?? 'Guide') ?></h1>
             <p class="guide-article__intro"><?= View::escape($article['intro'] ?? '') ?></p>
-            <div class="guide-article__byline"><span>AlbaTech Solutions</span><span aria-hidden="true">·</span><time datetime="<?= View::escape($article['updated'] ?? '') ?>">Updated <?= View::escape(date('j F Y', strtotime((string) ($article['updated'] ?? 'now')))) ?></time></div>
+            <div class="guide-article__byline">
+                <span>Prepared by <?= View::escape($article['author'] ?? 'AlbaTech Solutions') ?></span>
+                <?php $publishedDate = (string) ($article['published'] ?? ''); ?>
+                <?php $updatedDate = (string) ($article['updated'] ?? ''); ?>
+                <?php if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $publishedDate) === 1): ?>
+                    <span aria-hidden="true">·</span><span>Published <time datetime="<?= View::escape($publishedDate) ?>"><?= View::escape(date('j F Y', strtotime($publishedDate))) ?></time></span>
+                <?php endif; ?>
+                <?php if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $updatedDate) === 1): ?>
+                    <span aria-hidden="true">·</span><span>Updated <time datetime="<?= View::escape($updatedDate) ?>"><?= View::escape(date('j F Y', strtotime($updatedDate))) ?></time></span>
+                <?php endif; ?>
+            </div>
         </div>
     </header>
     <div class="container guide-article__layout">

@@ -29,7 +29,8 @@ if (function_exists('mb_strlen') && mb_strlen($metaDescription, 'UTF-8') > 320) 
 $siteUrl = SiteUrl::base();
 $canonicalUrl = trim((string) ($canonicalUrl ?? ''));
 $shouldIndex = !str_contains(strtolower((string) ($metaRobots ?? 'index, follow')), 'noindex');
-if ($canonicalUrl === '' && $shouldIndex) $canonicalUrl = $siteUrl . '/';
+// Never guess the homepage as a canonical for an unrelated indexable route.
+// Controllers must provide the page's trusted, absolute canonical URL.
 $metaImage = trim((string) ($metaImage ?? ($siteUrl . '/assets/images/albatech-social-card.png')));
 if ($metaImage !== '' && !preg_match('~^https://~i', $metaImage)) $metaImage = $siteUrl . '/' . ltrim($metaImage, '/');
 $metaRobots = trim((string) ($metaRobots ?? 'index, follow, max-image-preview:large'));
@@ -82,8 +83,8 @@ if ($guideData !== null && $canonicalUrl !== '') {
         '@id' => $canonicalUrl . '#article',
         'headline' => (string) ($guideData['title'] ?? $pageTitle),
         'description' => $metaDescription,
-        'datePublished' => (string) ($guideData['updated'] ?? date('Y-m-d')),
-        'dateModified' => (string) ($guideData['updated'] ?? date('Y-m-d')),
+        'datePublished' => (string) ($guideData['published'] ?? $guideData['updated'] ?? ''),
+        'dateModified' => (string) ($guideData['updated'] ?? $guideData['published'] ?? ''),
         'mainEntityOfPage' => ['@type' => 'WebPage', '@id' => $canonicalUrl],
         'author' => ['@type' => 'Organization', '@id' => $organizationId],
         'publisher' => ['@id' => $organizationId],
@@ -189,6 +190,9 @@ if ($footerLocation === '') $footerLocation = 'Kenya';
 
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <?php if ($canonicalUrl !== '' && rtrim($canonicalUrl, '/') === rtrim($siteUrl, '/')): ?>
+        <link rel="preload" as="image" href="/assets/images/albatech-social-card.png" fetchpriority="high">
+    <?php endif; ?>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="icon" type="image/png" sizes="512x512" href="/assets/images/albatech-logo.png">
@@ -312,7 +316,7 @@ if ($footerLocation === '') $footerLocation = 'Kenya';
             <p class="footer-location"><i class="fa-solid fa-location-dot" aria-hidden="true"></i><span><?= View::escape($footerLocation) ?><br><small>Service area; please contact us before visiting.</small></span></p>
             <?php if ($footerEmail !== '' && filter_var($footerEmail, FILTER_VALIDATE_EMAIL)): ?><a href="mailto:<?= View::escape($footerEmail) ?>"><i class="fa-regular fa-envelope" aria-hidden="true"></i><?= View::escape($footerEmail) ?></a><?php endif; ?>
             <?php if ($footerPhone !== '' && $footerPhoneHref !== ''): ?><a href="tel:<?= View::escape($footerPhoneHref) ?>"><i class="fa-solid fa-phone" aria-hidden="true"></i><?= View::escape($footerPhone) ?></a><?php endif; ?>
-            <a href="/contact-details">All contact details</a>
+            <a href="/get-help">All contact details</a>
         </div>
         <nav class="footer-column" aria-label="Information">
             <h2>Information</h2>
@@ -323,7 +327,7 @@ if ($footerLocation === '') $footerLocation = 'Kenya';
     </div>
     <div class="container footer-bottom">
         <p>&copy; <?= date('Y') ?> <?= View::escape($siteName) ?>. All rights reserved.</p>
-        <div class="footer-legal"><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/contact-details">Contact details</a></div>
+        <div class="footer-legal"><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/get-help">Contact details</a></div>
         <p class="footer-independent-note">AlbaTech Solutions is an independent service provider, not a government agency. Official decisions remain with the relevant authority.</p>
     </div>
 </footer>
@@ -331,7 +335,7 @@ if ($footerLocation === '') $footerLocation = 'Kenya';
 <?php if (strlen($whatsAppNumber) >= 8 && strlen($whatsAppNumber) <= 15 && !str_starts_with($whatsAppNumber, '0')): ?>
 <div class="whatsapp-float">
   <a class="whatsapp-float__trigger" href="<?= View::escape($whatsAppUrl) ?>" target="_blank" rel="noopener noreferrer" aria-label="Open WhatsApp chat with AlbaTech Solutions">
-    <i class="fa-brands fa-whatsapp" aria-hidden="true"></i><span>Chat on WhatsApp</span>
+    <i class="fa-brands fa-whatsapp" aria-hidden="true"></i><span></span>
   </a>
 </div>
 <?php endif; ?>

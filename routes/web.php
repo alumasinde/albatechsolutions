@@ -25,8 +25,8 @@ $app->router()->get('/guides', [$guides, 'index']);
 $app->router()->get('/guides/{slug}', [$guides, 'show']);
 $app->router()->get('/get-help', [new StaticPageController(), 'getHelp']);
 $app->router()->post('/get-help', [new EnquiryController(), 'submit']);
-$app->router()->get('/contact', [new StaticPageController(), 'getHelp']); // /contact redirects to /get-help
-$app->router()->get('/contact-details', static function () use ($app): void { Response::redirect('/get-help'); }); // Merged into /get-help
+$app->router()->get('/contact', static function (): void { Response::redirect('/get-help', 301); });
+$app->router()->get('/contact-details', static function (): void { Response::redirect('/get-help', 301); });
 $app->router()->get('/terms', [new StaticPageController(), 'terms']);
 $app->router()->get('/privacy', [new StaticPageController(), 'privacy']);
 $seo = new SeoController();

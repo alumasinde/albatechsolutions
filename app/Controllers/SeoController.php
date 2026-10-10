@@ -25,7 +25,6 @@ final class SeoController
             ['loc' => $baseUrl . '/about', 'priority' => '0.6', 'changefreq' => 'monthly'],
             ['loc' => $baseUrl . '/guides', 'priority' => '0.8', 'changefreq' => 'weekly'],
             ['loc' => $baseUrl . '/get-help', 'priority' => '0.5', 'changefreq' => 'monthly'],
-            ['loc' => $baseUrl . '/contact-details', 'priority' => '0.4', 'changefreq' => 'monthly'],
             ['loc' => $baseUrl . '/terms', 'priority' => '0.2', 'changefreq' => 'yearly'],
             ['loc' => $baseUrl . '/privacy', 'priority' => '0.2', 'changefreq' => 'yearly'],
         ];
@@ -39,12 +38,14 @@ final class SeoController
             $urls[] = $guideUrl;
         }
 
+        $dynamicSitemapIncomplete = false;
         try {
             foreach ($this->services->publishedSlugs() as $service) {
                 $slug = trim((string) ($service['slug'] ?? ''));
                 if ($slug !== '' && preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug) === 1) {
                     $entry = ['loc' => $baseUrl . '/services/' . rawurlencode($slug), 'priority' => '0.8', 'changefreq' => 'monthly'];
-                    $updated = strtotime((string) ($service['updated_at'] ?? ''));
+                    $updatedRaw = trim((string) ($service['updated_at'] ?? ''));
+                    $updated = $updatedRaw !== '' ? strtotime($updatedRaw) : false;
                     if ($updated !== false) {
                         $entry['lastmod'] = date('Y-m-d', $updated);
                     }
@@ -52,6 +53,7 @@ final class SeoController
                 }
             }
         } catch (Throwable $exception) {
+            $dynamicSitemapIncomplete = true;
             error_log('[AlbaTech SEO] Could not load service URLs for sitemap: ' . $exception->getMessage());
         }
 
@@ -61,12 +63,23 @@ final class SeoController
                 $slug = trim((string)($project['slug'] ?? ''));
                 if ($slug !== '' && preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug) === 1) {
                     $entry = ['loc' => $baseUrl . '/work/' . rawurlencode($slug), 'priority' => '0.7', 'changefreq' => 'monthly'];
-                    $updated = strtotime((string)($project['updated_at'] ?? ''));
+                    $updatedRaw = trim((string) ($project['updated_at'] ?? ''));
+                    $updated = $updatedRaw !== '' ? strtotime($updatedRaw) : false;
                     if ($updated !== false) $entry['lastmod'] = date('Y-m-d', $updated);
                     $urls[] = $entry;
                 }
             }
-        } catch (Throwable $exception) { error_log('[AlbaTech SEO] Could not load work URLs for sitemap: ' . $exception->getMessage()); }
+        } catch (Throwable $exception) {
+            $dynamicSitemapIncomplete = true;
+            error_log('[AlbaTech SEO] Could not load work URLs for sitemap: ' . $exception->getMessage());
+        }
+
+        // Do not serve/cache a sitemap that silently omits published dynamic pages.
+        if ($dynamicSitemapIncomplete) {
+            header('Cache-Control: no-store, max-age=0');
+            Response::text('Sitemap temporarily unavailable. Please retry later.', 503);
+            return;
+        }
 
         // Avoid duplicate URLs and guarantee valid XML output.
         $unique = [];
@@ -113,7 +126,6 @@ final class SeoController
             '- [About](' . $baseUrl . '/about): About the business and its approach.',
             '- [Guides](' . $baseUrl . '/guides): Practical articles and checklists.',
             '- [Contact](' . $baseUrl . '/get-help): Ways to enquire about services.',
-            '- [Contact details](' . $baseUrl . '/contact-details): Public contact and service-area information.',
             '- [Privacy policy](' . $baseUrl . '/privacy): How enquiry information is handled.',
             '- [Terms of service](' . $baseUrl . '/terms): General terms for using the website and services.',
             '',

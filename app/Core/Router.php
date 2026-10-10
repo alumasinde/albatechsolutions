@@ -49,6 +49,7 @@ final class Router
 
     private function handle(Request $request, string $method): void
     {
+        $this->redirectCanonicalCase($method);
         $this->redirectTrailingSlash($method);
 
         $path = $request->path();
@@ -101,6 +102,28 @@ final class Router
             'metaRobots' => 'noindex, nofollow',
             'canonicalUrl' => '',
         ]), 404);
+    }
+
+    /** Redirect safe GET/HEAD paths to lowercase so route case variants cannot duplicate content. */
+    private function redirectCanonicalCase(string $method): void
+    {
+        if ($method !== 'GET') {
+            return;
+        }
+
+        $uri = (string) ($_SERVER['REQUEST_URI'] ?? '/');
+        $rawPath = (string) (parse_url($uri, PHP_URL_PATH) ?? '/');
+        // Only normalize predictable URL characters. Encoded paths and unusual bytes
+        // are left to route validation rather than being rewritten ambiguously.
+        if ($rawPath === '' || preg_match('#^/[A-Za-z0-9._~!$&\'()*+,;=:@/-]*$#', $rawPath) !== 1) {
+            return;
+        }
+
+        $lowerPath = strtolower($rawPath);
+        if ($lowerPath !== $rawPath) {
+            $query = parse_url($uri, PHP_URL_QUERY);
+            Response::redirect($lowerPath . (is_string($query) && $query !== '' ? '?' . $query : ''), 301);
+        }
     }
 
     /** /services/ -> 301 /services so each page has exactly one crawlable URL. */

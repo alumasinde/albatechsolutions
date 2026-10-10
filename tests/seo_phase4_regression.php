@@ -72,12 +72,19 @@ foreach (['pages/terms', 'pages/privacy', 'pages/contact-details'] as $view) {
     $assert(str_contains($legalHtml, '<link rel="canonical"'), 'Legal/contact page renders canonical metadata: ' . $view);
 }
 
+http_response_code(200);
 ob_start();
 (new SeoController())->sitemap();
 $sitemap = (string) ob_get_clean();
-$assert(str_contains($sitemap, '<urlset'), 'Sitemap responds with XML urlset');
-foreach (array_keys($articles) as $slug) {
-    $assert(str_contains($sitemap, '/guides/' . $slug), 'Sitemap includes guide URL: ' . $slug);
+$sitemapStatus = http_response_code();
+if ($sitemapStatus === 503) {
+    $assert(!str_contains($sitemap, '<urlset'), 'Sitemap does not serve a partial URL set when dynamic sources are unavailable');
+} else {
+    $assert($sitemapStatus === 200, 'Complete sitemap returns HTTP 200');
+    $assert(str_contains($sitemap, '<urlset'), 'Sitemap responds with XML urlset');
+    foreach (array_keys($articles) as $slug) {
+        $assert(str_contains($sitemap, '/guides/' . $slug), 'Sitemap includes guide URL: ' . $slug);
+    }
 }
 
 ob_start();
@@ -85,8 +92,11 @@ ob_start();
 $robots = (string) ob_get_clean();
 $assert(str_contains($robots, 'Sitemap: ' . $baseUrl . '/sitemap.xml'), 'Robots file references the canonical sitemap URL');
 $assert(str_contains($robots, 'Disallow: /admin'), 'Robots file disallows admin routes');
-foreach (['/terms', '/privacy', '/contact-details'] as $path) {
-    $assert(str_contains($sitemap, $baseUrl . $path), 'Sitemap includes public information page: ' . $path);
+if ($sitemapStatus !== 503) {
+    foreach (['/terms', '/privacy', '/get-help'] as $path) {
+        $assert(str_contains($sitemap, $baseUrl . $path), 'Sitemap includes canonical public information page: ' . $path);
+    }
+    $assert(!str_contains($sitemap, $baseUrl . '/contact-details'), 'Sitemap excludes redirected contact-details URL');
 }
 
 fwrite(STDOUT, "PASS: {$checks} Phase 4 SEO and content regression checks.\n");
