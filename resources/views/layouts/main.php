@@ -134,7 +134,7 @@ if ($footerLocation === '') $footerLocation = 'Kenya';
 <html lang="en-KE">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
     <title><?= View::escape($pageTitle) ?></title>
 
@@ -149,7 +149,7 @@ if ($footerLocation === '') $footerLocation = 'Kenya';
 
     <meta name="robots" content="<?= View::escape($metaRobots) ?>">
     <meta name="color-scheme" content="light">
-    <meta name="theme-color" content="#0F4C81">
+    <meta name="theme-color" content="#078C99">
 
     <?php if ($canonicalUrl !== ""): ?>
         <link rel="canonical" href="<?= View::escape($canonicalUrl) ?>">
@@ -306,7 +306,7 @@ if ($footerLocation === '') $footerLocation = 'Kenya';
             <a href="/guides">Guides & resources</a>
             <a href="/about">About us</a>
         </nav>
-        <div class="footer-column">
+        <div class="footer-column footer-column--contact">
             <h2>Contact & location</h2>
             <p class="footer-location"><i class="fa-solid fa-location-dot" aria-hidden="true"></i><span><?= View::escape($footerLocation) ?><br><small>Service area; please contact us before visiting.</small></span></p>
             <?php if ($footerEmail !== '' && filter_var($footerEmail, FILTER_VALIDATE_EMAIL)): ?><a href="mailto:<?= View::escape($footerEmail) ?>"><i class="fa-regular fa-envelope" aria-hidden="true"></i><?= View::escape($footerEmail) ?></a><?php endif; ?>
@@ -322,7 +322,6 @@ if ($footerLocation === '') $footerLocation = 'Kenya';
     </div>
     <div class="container footer-bottom">
         <p>&copy; <?= date('Y') ?> <?= View::escape($siteName) ?>. All rights reserved.</p>
-        <div class="footer-legal"><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/contact-details">Contact details</a></div>
         <p class="footer-independent-note">AlbaTech Solutions is an independent service provider, not a government agency. Official decisions remain with the relevant authority.</p>
     </div>
 </footer>

@@ -26,8 +26,12 @@ final class HomeController
         $configuredNumber = (string) ($settings['whatsapp_number'] ?? '');
         $whatsAppNumber = preg_replace('/\D+/', '', $configuredNumber);
         $hasWhatsApp = strlen($whatsAppNumber) >= 8 && strlen($whatsAppNumber) <= 15 && !str_starts_with($whatsAppNumber, '0');
+        $whatsAppMessage = trim((string) ($settings['whatsapp_prefill_message'] ?? ''));
+        if ($whatsAppMessage === '') {
+            $whatsAppMessage = 'Hi ' . $appName . ', I would like to discuss a service.';
+        }
         $whatsAppUrl = $hasWhatsApp
-            ? 'https://wa.me/' . $whatsAppNumber . '?text=' . rawurlencode('Hi AlbaTech Solutions, I would like to discuss a service.')
+            ? 'https://wa.me/' . $whatsAppNumber . '?text=' . rawurlencode($whatsAppMessage)
             : '/get-help';
 
         Response::html(View::render('pages/home', [
