@@ -15,6 +15,9 @@ $checks = [
     'Contact form includes honeypot' => str_contains(file_get_contents($root . '/resources/views/pages/get-help.php'), 'name="website_url"'),
     'Mail failure is not shown as raw SMTP detail' => str_contains(file_get_contents($root . '/app/Controllers/EnquiryController.php'), "error_log('[AlbaTech enquiry email] "),
 ];
+$layout = file_get_contents($root . '/resources/views/layouts/main.php');
+$checks['Floating WhatsApp icon links directly to wa.me'] = str_contains($layout, 'class="whatsapp-float__trigger" href="<?= View::escape($whatsAppUrl) ?>"') && str_contains($layout, 'https://wa.me/') && !str_contains($layout, 'data-whatsapp-panel') && !str_contains($layout, 'data-whatsapp-open');
+
 $failed = 0;
 foreach ($checks as $label => $passed) {
     echo ($passed ? 'PASS: ' : 'FAIL: ') . $label . PHP_EOL;

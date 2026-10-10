@@ -17,11 +17,9 @@ $helpEmail = trim((string) ($siteSettings['support_email'] ?? ''));
 $mailFallback = trim((string) Env::get('MAIL_TO', ''));
 
 $serviceSlug = trim((string) ($_GET['service'] ?? ''));
-$helpSiteName = trim((string) ($siteSettings['site_name'] ?? '')) ?: 'AlbaTech Solutions';
-$whatsAppMessage = trim((string) ($siteSettings['whatsapp_prefill_message'] ?? ''));
-if ($whatsAppMessage === '') $whatsAppMessage = 'Hi ' . $helpSiteName . ', I would like to make an enquiry.';
+$whatsAppMessage = 'Hi AlbaTech Solutions, I would like to make an enquiry.';
 if ($serviceSlug !== '') {
-    $whatsAppMessage = 'Hi ' . $helpSiteName . ', I would like to ask about: ' . str_replace('-', ' ', $serviceSlug) . '.';
+    $whatsAppMessage = 'Hi AlbaTech Solutions, I would like to ask about: ' . str_replace('-', ' ', $serviceSlug) . '.';
 }
 $whatsAppUrl = $whatsAppNumber !== ''
     ? 'https://wa.me/' . $whatsAppNumber . '?text=' . rawurlencode($whatsAppMessage)

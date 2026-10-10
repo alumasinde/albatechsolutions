@@ -20,20 +20,21 @@ $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '/admin', PHP_URL_PATH) ?: '
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex,nofollow">
     <title><?= View::escape($pageTitle ?? 'Admin') ?> | AlbaTech Admin</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23078c99'/%3E%3Ctext x='16' y='23' font-family='Arial' font-size='20' font-weight='700' text-anchor='middle' fill='%23fff'%3EA%3C/text%3E%3C/svg%3E">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23078C99'/%3E%3Ctext x='16' y='23' font-family='Arial' font-size='20' font-weight='700' text-anchor='middle' fill='%23fff'%3EA%3C/text%3E%3C/svg%3E">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="<?= View::escape(View::asset('css/tokens.css')) ?>">
     <link rel="stylesheet" href="<?= View::escape(View::asset('css/admin.css')) ?>">
+    <link rel="stylesheet" href="<?= View::escape(View::asset('css/work.css')) ?>">
 </head>
 
 <body>
     <div class="admin-shell">
         <aside class="sidebar"><a class="brand" href="/admin"><span class="brand-mark">A</span><span><strong>AlbaTech</strong><small>Website Admin</small></span></a>
             <div class="nav-label">WORKSPACE</div>
-            <nav class="admin-nav"><a class="<?= $currentPath === '/admin' ? 'active' : '' ?>" href="/admin"><i class="fa-solid fa-chart-pie"></i> Overview</a><a class="<?= str_starts_with($currentPath, '/admin/services') ? 'active' : '' ?>" href="/admin/services"><i class="fa-solid fa-layer-group"></i> Services</a><a class="<?= str_starts_with($currentPath, '/admin/categories') ? 'active' : '' ?>" href="/admin/categories"><i class="fa-solid fa-folder-tree"></i> Categories</a><a class="<?= str_starts_with($currentPath, '/admin/settings') ? 'active' : '' ?>" href="/admin/settings"><i class="fa-solid fa-sliders"></i> Site settings</a></nav>
+            <nav class="admin-nav"><a class="<?= $currentPath === '/admin' ? 'active' : '' ?>" href="/admin"><i class="fa-solid fa-chart-pie"></i> Overview</a><a class="<?= str_starts_with($currentPath, '/admin/services') ? 'active' : '' ?>" href="/admin/services"><i class="fa-solid fa-layer-group"></i> Services</a><a class="<?= str_starts_with($currentPath, '/admin/work') ? 'active' : '' ?>" href="/admin/work"><i class="fa-solid fa-images"></i> Our Work</a><a class="<?= str_starts_with($currentPath, '/admin/categories') ? 'active' : '' ?>" href="/admin/categories"><i class="fa-solid fa-folder-tree"></i> Categories</a><a class="<?= str_starts_with($currentPath, '/admin/settings') ? 'active' : '' ?>" href="/admin/settings"><i class="fa-solid fa-sliders"></i> Site settings</a></nav>
             <div class="sidebar-bottom"><a href="/" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i> View website</a>
                 <form method="post" action="/admin/logout"><input type="hidden" name="_csrf" value="<?= View::escape($csrf ?? '') ?>"><button type="submit" class="logout-link"><i class="fa-solid fa-right-from-bracket"></i> Sign out</button></form>
             </div>

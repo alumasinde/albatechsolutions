@@ -26,13 +26,14 @@ final class HomeController
         $configuredNumber = (string) ($settings['whatsapp_number'] ?? '');
         $whatsAppNumber = preg_replace('/\D+/', '', $configuredNumber);
         $hasWhatsApp = strlen($whatsAppNumber) >= 8 && strlen($whatsAppNumber) <= 15 && !str_starts_with($whatsAppNumber, '0');
-        $whatsAppMessage = trim((string) ($settings['whatsapp_prefill_message'] ?? ''));
-        if ($whatsAppMessage === '') {
-            $whatsAppMessage = 'Hi ' . $appName . ', I would like to discuss a service.';
-        }
         $whatsAppUrl = $hasWhatsApp
-            ? 'https://wa.me/' . $whatsAppNumber . '?text=' . rawurlencode($whatsAppMessage)
+            ? 'https://wa.me/' . $whatsAppNumber . '?text=' . rawurlencode('Hi AlbaTech Solutions, I would like to discuss a service.')
             : '/get-help';
+
+        $featuredProjects = [];
+        try {
+            $featuredProjects = (new \AlbaTech\Repositories\WorkRepository())->featured(8);
+        } catch (\Throwable $e) { error_log('[AlbaTech Work] Featured projects unavailable: ' . $e->getMessage()); }
 
         Response::html(View::render('pages/home', [
             'pageTitle' => $appName . ' | Practical Digital Solutions in Kenya',
@@ -41,6 +42,7 @@ final class HomeController
             'canonicalUrl' => $baseUrl . '/',
             'appName' => $appName,
             'featuredServices' => $this->services->featuredServices(6),
+            'featuredProjects' => $featuredProjects,
             'whatsAppUrl' => $whatsAppUrl,
             'hasWhatsApp' => $hasWhatsApp,
         ]));

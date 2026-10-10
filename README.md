@@ -157,3 +157,8 @@ Set the destination in **Admin → Settings → Contact email** (preferred) or *
 - Submit a test enquiry using an email address you control.
 - Check the recipient inbox, spam folder and hosting error log.
 - If email fails, confirm SMTP host, port, TLS mode, credentials, sender authorization and outbound SMTP access with the hosting provider.
+
+
+## Portfolio / Our Work
+
+The portfolio is managed from **Admin → Our Work**. Apply migration `007_work_projects.sql` with `php bin/migrate.php`, then sign in with an administrator account that has the `work.manage` permission. Add a title, active service category, description, and cover image; optional client names should only be published with permission, and live links must be HTTP(S). Draft and archived projects remain private. Mark a published project as featured to include it in the homepage carousel. Sort order uses lower numbers first. Public routes are `/work` and `/work/{slug}`. The `/work` page supports category filtering using `?category=category-slug`. Project cover uploads accept JPG, PNG, and WebP up to 8 MB; when PHP GD WebP support is available, uploads are resized to a maximum 1800px edge and converted to WebP. The carousel pauses on hover, focus, touch/pointer interaction, and hidden browser tabs; users can pause/play it, and reduced-motion preferences disable autoplay by default.

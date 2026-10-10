@@ -64,6 +64,7 @@ final class ServiceController
             'metaRobots' => 'index, follow, max-image-preview:large',
             'service' => $service,
             'schemaService' => $service,
+            'relatedProjects' => (new \AlbaTech\Repositories\WorkRepository())->relatedToCategory((int)$service['category_id'], 0, 3),
         ]));
     }
 }

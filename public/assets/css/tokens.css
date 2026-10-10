@@ -160,26 +160,26 @@
   --shadow-deep: 0 24px 70px rgb(15 23 42 / 0.09);
   --shadow-admin: 0 3px 7px rgb(16 35 63 / 0.09);
 
-  /* Admin palette aliases — keep the dashboard aligned with AlbaTech brand tokens. */
-  --admin-ink: var(--color-text-strong);
-  --admin-muted: var(--color-text-secondary);
-  --admin-line: var(--color-border);
-  --admin-bg: var(--color-page);
-  --admin-blue: var(--color-primary);
-  --admin-blue-hover: var(--color-primary-hover);
-  --admin-blue-shadow: var(--color-primary-shadow);
-  --admin-gold: var(--color-accent);
-  --admin-amber: var(--color-warning);
+  /* Admin palette centralized with the rest of the design system */
+  --admin-ink: #10233F;
+  --admin-muted: #536176;
+  --admin-line: #E5EAF1;
+  --admin-bg: #F5F7FB;
+  --admin-blue: #155EEF;
+  --admin-blue-hover: #124ED0;
+  --admin-blue-shadow: rgb(21 94 239 / 0.18);
+  --admin-gold: #FFBF5B;
+  --admin-amber: #B7791F;
   --admin-purple: #6941C6;
-  --admin-white: var(--color-surface);
-  --admin-green: var(--color-success);
+  --admin-white: #FFFFFF;
+  --admin-green: #087F5B;
   --admin-green-border: #A6F4C5;
-  --admin-red: var(--color-danger);
+  --admin-red: #B42318;
   --admin-red-border: #FECDCA;
-  --admin-shadow: var(--shadow-admin);
-  --admin-label: var(--color-text-muted);
-  --admin-line-subtle: var(--color-border-subtle);
-  --admin-muted-subtle: var(--color-text-subtle);
-  --admin-ink-shadow: var(--shadow-admin);
+  --admin-shadow: rgb(16 35 63 / 0.16);
+  --admin-label: #59677B;
+  --admin-line-subtle: #EDF0F5;
+  --admin-muted-subtle: #8B96A8;
+  --admin-ink-shadow: rgb(16 35 63 / 0.09);
 
 }

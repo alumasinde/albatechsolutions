@@ -21,6 +21,7 @@ final class SeoController
         $urls = [
             ['loc' => $baseUrl . '/', 'priority' => '1.0', 'changefreq' => 'weekly'],
             ['loc' => $baseUrl . '/services', 'priority' => '0.9', 'changefreq' => 'weekly'],
+            ['loc' => $baseUrl . '/work', 'priority' => '0.8', 'changefreq' => 'weekly'],
             ['loc' => $baseUrl . '/about', 'priority' => '0.6', 'changefreq' => 'monthly'],
             ['loc' => $baseUrl . '/guides', 'priority' => '0.8', 'changefreq' => 'weekly'],
             ['loc' => $baseUrl . '/get-help', 'priority' => '0.5', 'changefreq' => 'monthly'],
@@ -53,6 +54,19 @@ final class SeoController
         } catch (Throwable $exception) {
             error_log('[AlbaTech SEO] Could not load service URLs for sitemap: ' . $exception->getMessage());
         }
+
+        try {
+            $projects = \AlbaTech\Core\Database::connection()->query("SELECT slug, updated_at FROM work_projects WHERE status='published' ORDER BY updated_at DESC")->fetchAll();
+            foreach ($projects as $project) {
+                $slug = trim((string)($project['slug'] ?? ''));
+                if ($slug !== '' && preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug) === 1) {
+                    $entry = ['loc' => $baseUrl . '/work/' . rawurlencode($slug), 'priority' => '0.7', 'changefreq' => 'monthly'];
+                    $updated = strtotime((string)($project['updated_at'] ?? ''));
+                    if ($updated !== false) $entry['lastmod'] = date('Y-m-d', $updated);
+                    $urls[] = $entry;
+                }
+            }
+        } catch (Throwable $exception) { error_log('[AlbaTech SEO] Could not load work URLs for sitemap: ' . $exception->getMessage()); }
 
         // Avoid duplicate URLs and guarantee valid XML output.
         $unique = [];
@@ -95,6 +109,7 @@ final class SeoController
             '## Main pages',
             '- [Home](' . $baseUrl . '/): Overview of AlbaTech Solutions.',
             '- [Services](' . $baseUrl . '/services): Public service catalogue and pricing information.',
+            '- [Our Work](' . $baseUrl . '/work): Published portfolio projects and case studies.',
             '- [About](' . $baseUrl . '/about): About the business and its approach.',
             '- [Guides](' . $baseUrl . '/guides): Practical articles and checklists.',
             '- [Contact](' . $baseUrl . '/get-help): Ways to enquire about services.',

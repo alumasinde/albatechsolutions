@@ -134,7 +134,7 @@ if ($footerLocation === '') $footerLocation = 'Kenya';
 <html lang="en-KE">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title><?= View::escape($pageTitle) ?></title>
 
@@ -195,7 +195,8 @@ if ($footerLocation === '') $footerLocation = 'Kenya';
     <link rel="apple-touch-icon" href="/assets/images/albatech-logo.png">
 
     <link rel="stylesheet" href="<?= View::asset('css/tokens.css') ?>">
-    <link rel="stylesheet" href="<?= View::asset('css/app.css') ?>">
+    <link rel="stylesheet" href="<?= View::escape(View::asset('css/app.css')) ?>">
+    <link rel="stylesheet" href="<?= View::escape(View::asset('css/work.css')) ?>">
 
     <script type="application/ld+json" nonce="<?= View::escape($cspNonce ?? '') ?>"><?=
         json_encode(
@@ -306,7 +307,7 @@ if ($footerLocation === '') $footerLocation = 'Kenya';
             <a href="/guides">Guides & resources</a>
             <a href="/about">About us</a>
         </nav>
-        <div class="footer-column footer-column--contact">
+        <div class="footer-column">
             <h2>Contact & location</h2>
             <p class="footer-location"><i class="fa-solid fa-location-dot" aria-hidden="true"></i><span><?= View::escape($footerLocation) ?><br><small>Service area; please contact us before visiting.</small></span></p>
             <?php if ($footerEmail !== '' && filter_var($footerEmail, FILTER_VALIDATE_EMAIL)): ?><a href="mailto:<?= View::escape($footerEmail) ?>"><i class="fa-regular fa-envelope" aria-hidden="true"></i><?= View::escape($footerEmail) ?></a><?php endif; ?>
@@ -322,30 +323,19 @@ if ($footerLocation === '') $footerLocation = 'Kenya';
     </div>
     <div class="container footer-bottom">
         <p>&copy; <?= date('Y') ?> <?= View::escape($siteName) ?>. All rights reserved.</p>
+        <div class="footer-legal"><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/contact-details">Contact details</a></div>
         <p class="footer-independent-note">AlbaTech Solutions is an independent service provider, not a government agency. Official decisions remain with the relevant authority.</p>
     </div>
 </footer>
 
 <?php if (strlen($whatsAppNumber) >= 8 && strlen($whatsAppNumber) <= 15 && !str_starts_with($whatsAppNumber, '0')): ?>
-<div class="whatsapp-float" data-whatsapp-widget>
-  <div class="whatsapp-float__panel" data-whatsapp-panel hidden>
-    <button class="whatsapp-float__close" type="button" data-whatsapp-close aria-label="Close WhatsApp chat">&times;</button>
-    <span class="whatsapp-float__eyebrow">AlbaTech Solutions</span>
-    <h2>Need guidance?</h2>
-    <p>Send us a message on WhatsApp and tell us what you need help with.</p>
-    <a class="button button--whatsapp" href="<?= View::escape($whatsAppUrl) ?>" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Start a chat</a>
-  </div>
-  <button class="whatsapp-float__trigger" type="button" data-whatsapp-open aria-expanded="false" aria-label="Need guidance? Open WhatsApp chat panel"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i><span>Need guidance?</span></button>
+<div class="whatsapp-float">
+  <a class="whatsapp-float__trigger" href="<?= View::escape($whatsAppUrl) ?>" target="_blank" rel="noopener noreferrer" aria-label="Open WhatsApp chat with AlbaTech Solutions">
+    <i class="fa-brands fa-whatsapp" aria-hidden="true"></i><span>Chat on WhatsApp</span>
+  </a>
 </div>
-<script nonce="<?= View::escape($cspNonce ?? '') ?>">
-document.addEventListener('DOMContentLoaded', function () {
- const widget = document.querySelector('[data-whatsapp-widget]'); if (!widget) return;
- const panel = widget.querySelector('[data-whatsapp-panel]'); const open = widget.querySelector('[data-whatsapp-open]'); const close = widget.querySelector('[data-whatsapp-close]');
- open.addEventListener('click', function () { panel.hidden = !panel.hidden; open.setAttribute('aria-expanded', panel.hidden ? 'false' : 'true'); });
- close.addEventListener('click', function () { panel.hidden = true; open.setAttribute('aria-expanded', 'false'); open.focus(); });
-});
-</script>
 <?php endif; ?>
 
+<script src="<?= View::escape(View::asset('js/work-carousel.js')) ?>" defer></script>
 </body>
 </html>
