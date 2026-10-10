@@ -313,7 +313,7 @@ if ($footerLocation === '') $footerLocation = 'Kenya';
         </nav>
         <div class="footer-column">
             <h2>Contact & location</h2>
-            <p class="footer-location"><i class="fa-solid fa-location-dot" aria-hidden="true"></i><span><?= View::escape($footerLocation) ?><br><small>Service area; please contact us before visiting.</small></span></p>
+            <p class="footer-location"><i class="fa-solid fa-location-dot" aria-hidden="true"></i><span><?= View::escape($footerLocation) ?></span></p>
             <?php if ($footerEmail !== '' && filter_var($footerEmail, FILTER_VALIDATE_EMAIL)): ?><a href="mailto:<?= View::escape($footerEmail) ?>"><i class="fa-regular fa-envelope" aria-hidden="true"></i><?= View::escape($footerEmail) ?></a><?php endif; ?>
             <?php if ($footerPhone !== '' && $footerPhoneHref !== ''): ?><a href="tel:<?= View::escape($footerPhoneHref) ?>"><i class="fa-solid fa-phone" aria-hidden="true"></i><?= View::escape($footerPhone) ?></a><?php endif; ?>
             <a href="/get-help">All contact details</a>

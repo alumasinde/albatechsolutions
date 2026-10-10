@@ -21,7 +21,9 @@ use AlbaTech\Core\View;
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
-    <link rel="stylesheet" href="/assets/css/admin.css">
+     <link rel="stylesheet" href="<?= View::escape(View::asset('css/tokens.css')) ?>">
+    <link rel="stylesheet" href="<?= View::escape(View::asset('css/admin.css')) ?>">
+
 </head>
 
 <body class="login-body"><?= $content ?></body>

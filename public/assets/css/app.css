@@ -3626,3 +3626,116 @@ button,
     transition-duration: 0.01ms !important;
   }
 }
+
+
+/* 2026-10 visual polish: compact homepage service cards, footer email and icon-only WhatsApp */
+.case-study-card {
+  min-width: 0;
+}
+.case-study-card__image {
+  aspect-ratio: 16 / 7;
+  max-height: 170px;
+  background: var(--color-surface-muted);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.case-study-card__image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.case-study-card__content {
+  padding: clamp(1rem, 1.6vw, 1.25rem);
+}
+.case-study-card__content p {
+  line-height: 1.55;
+}
+
+/* Give the contact column enough room for the configured email on desktop. */
+@media (min-width: 900px) {
+  .footer-main {
+    grid-template-columns: minmax(0, 1.55fr) minmax(7rem, 0.8fr) minmax(15rem, 1.2fr) minmax(8rem, 0.8fr);
+    gap: clamp(1.25rem, 2.2vw, 2rem);
+  }
+  .footer-column a[href^="mailto:"] {
+    white-space: nowrap;
+    overflow-wrap: normal;
+    font-size: 0.9rem;
+  }
+}
+
+/* High-visibility floating WhatsApp action: icon-only, direct, and discoverable. */
+.whatsapp-float {
+  gap: 0;
+  z-index: 1000;
+}
+.whatsapp-float__trigger {
+  position: relative;
+  isolation: isolate;
+  width: 58px;
+  height: 58px;
+  min-width: 58px;
+  min-height: 58px;
+  padding: 0;
+  justify-content: center;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: #25D366;
+  color: #063b20;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .28), 0 0 0 3px rgba(37, 211, 102, .38);
+  text-decoration: none;
+  animation: whatsapp-attention-glow 2.1s ease-out infinite;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+.whatsapp-float__trigger::before {
+  content: "";
+  position: absolute;
+  inset: -7px;
+  z-index: -1;
+  border: 3px solid #25D366;
+  border-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+  animation: whatsapp-attention-ring 2.1s ease-out infinite;
+}
+.whatsapp-float__trigger span {
+  display: none;
+}
+.whatsapp-float__trigger i {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+.whatsapp-float__trigger:hover,
+.whatsapp-float__trigger:focus-visible {
+  transform: translateY(-3px) scale(1.08);
+  box-shadow: 0 5px 16px rgba(0, 0, 0, .3), 0 0 0 5px rgba(37, 211, 102, .5), 0 0 28px 9px rgba(37, 211, 102, .65);
+  outline: none;
+}
+.whatsapp-float__trigger:focus-visible {
+  outline: 3px solid var(--color-primary, #078C99);
+  outline-offset: 5px;
+}
+@keyframes whatsapp-attention-glow {
+  0%, 100% { box-shadow: 0 4px 12px rgba(0, 0, 0, .28), 0 0 0 3px rgba(37, 211, 102, .38), 0 0 12px 2px rgba(37, 211, 102, .3); }
+  45% { box-shadow: 0 5px 16px rgba(0, 0, 0, .28), 0 0 0 8px rgba(37, 211, 102, .58), 0 0 30px 12px rgba(37, 211, 102, .72); }
+  65% { box-shadow: 0 4px 12px rgba(0, 0, 0, .28), 0 0 0 3px rgba(37, 211, 102, .3), 0 0 16px 4px rgba(37, 211, 102, .4); }
+}
+@keyframes whatsapp-attention-ring {
+  0% { transform: scale(.82); opacity: .9; }
+  75%, 100% { transform: scale(1.42); opacity: 0; }
+}
+@media (max-width: 480px) {
+  .whatsapp-float__trigger {
+    width: 54px;
+    height: 54px;
+    min-width: 54px;
+    min-height: 54px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .whatsapp-float__trigger,
+  .whatsapp-float__trigger::before { animation: none; transition: none; }
+  .whatsapp-float__trigger { box-shadow: 0 4px 12px rgba(0, 0, 0, .28), 0 0 0 5px rgba(37, 211, 102, .45); }
+}

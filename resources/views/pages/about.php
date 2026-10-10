@@ -3,14 +3,13 @@
         <div class="about-hero__copy">
             <span class="eyebrow">About AlbaTech Solutions</span>
             <h1>Making digital tasks feel <span>less complicated.</span></h1>
-            <p>We help people and businesses take practical steps online — from building a professional website to navigating selected digital and business processes with more confidence.</p>
+            <p>We help people and businesses take practical steps online, from building a professional website to navigating selected digital and business processes with more confidence.</p>
             <div class="hero-actions">
                 <a class="button" href="/services">Explore our services</a>
-                <a class="text-link" href="/get-help">Talk to us about your needs <span aria-hidden="true">→</span></a>
+                <a class="button" href="/get-help">Talk to us</a>
             </div>
         </div>
         <div class="about-hero__panel" aria-label="Our approach">
-            <div class="about-panel__mark" aria-hidden="true">A<span>+</span></div>
             <p class="about-panel__label">Our approach</p>
             <h2>Clear advice. Useful work. A human touch.</h2>
             <ul class="check-list">
@@ -28,7 +27,7 @@
         <div>
             <h2>Technology should move you forward, not get in your way.</h2>
             <p>For many small businesses, getting online can feel like a big project. For individuals, completing a digital process can mean dealing with unfamiliar steps, forms and requirements. It is easy to lose time trying to work out where to begin.</p>
-            <p>AlbaTech Solutions was created to make those next steps more approachable. We focus on practical solutions, straightforward communication and work that starts with what the client actually needs — not unnecessary complexity.</p>
+            <p>AlbaTech Solutions was created to make those next steps more approachable. We focus on practical solutions, straightforward communication and work that starts with what the client actually needs, not unnecessary complexity.</p>
         </div>
     </div>
 </section>
@@ -67,7 +66,7 @@
     <div class="container about-values">
         <div class="section-heading">
             <span class="eyebrow">How we work</span>
-            <h2>Simple principles. No unnecessary jargon.</h2>
+            <h2>Clear communication. Practical solutions. No unnecessary complications.</h2>
         </div>
         <div class="value-list">
             <article><span>01</span><div><h3>Listen first</h3><p>We start by understanding your goal, your situation and what a useful outcome looks like.</p></div></article>
@@ -85,6 +84,6 @@
             <h2>Let's work out the next step.</h2>
             <p>Tell us what you are trying to achieve. We will help you understand the options and what to do next.</p>
         </div>
-        <a class="button button--accent" href="/get-help">Get in touch <span aria-hidden="true">→</span></a>
+        <a class="button button--accent" href="/get-help">Get in touch</a>
     </div>
 </section>
