@@ -119,3 +119,41 @@ The floating WhatsApp panel is shown only when a WhatsApp number is configured. 
 ## Text contrast maintenance
 
 The public brand primary (`--color-primary`) and accent (`--color-accent`) are unchanged. Readable text uses dedicated darker `--color-link`, `--color-link-hover`, and neutral text tokens. Footer text tokens are dark because the footer background is currently a light surface. Admin muted text tokens were darkened without changing admin primary/button colours.
+
+
+## UI colour audit
+
+See [`UI-COLOUR-AUDIT.md`](UI-COLOUR-AUDIT.md) for the latest audit of colour/background token usage and browser validation checklist.
+
+
+## WhatsApp and email enquiry configuration
+
+### WhatsApp (Admin Panel)
+1. Sign in and open **Admin → Settings**.
+2. Enter the WhatsApp number in international format, digits only (for Kenya, for example `2547XXXXXXXX`, not `07...`).
+3. Save settings. The application normalizes accepted punctuation and stores the destination as digits only. Leave it blank to hide WhatsApp actions.
+4. WhatsApp links open the official `wa.me` compose flow with a URL-encoded message. A visitor must review and press Send in WhatsApp; this website does not send WhatsApp messages silently. Sending automated messages requires the official WhatsApp Business Platform/API and separate credentials/integration.
+
+### Email (server `.env`)
+Configure SMTP in the server's `.env` file (never commit this file):
+
+```dotenv
+MAIL_HOST=smtp.your-provider.example
+MAIL_PORT=587
+MAIL_ENCRYPTION=tls
+MAIL_USERNAME=your-mailbox@example.com
+MAIL_PASSWORD=your-mail-provider-password-or-app-password
+MAIL_FROM_ADDRESS=your-mailbox@example.com
+MAIL_FROM_NAME="AlbaTech Solutions"
+MAIL_TO=
+```
+
+Use the exact SMTP host, port, encryption and credentials provided by your email host. Port 587 normally uses STARTTLS (`MAIL_ENCRYPTION=tls`); port 465 normally uses implicit TLS (`MAIL_ENCRYPTION=ssl`). Production rejects unencrypted SMTP. Do not use a personal mailbox password if the provider requires an app password.
+
+Set the destination in **Admin → Settings → Contact email** (preferred) or **Support email**. `MAIL_TO` is an optional fallback recipient. The enquiry form submits to the server, validates inputs, checks CSRF, applies an IP-based rate limit and honeypot, then sends using SMTP. Visitor messages are not saved to the database. Email failures are logged server-side without exposing SMTP diagnostics to visitors.
+
+### Test after configuration
+- Save the WhatsApp number and confirm the homepage/contact actions use it.
+- Submit a test enquiry using an email address you control.
+- Check the recipient inbox, spam folder and hosting error log.
+- If email fails, confirm SMTP host, port, TLS mode, credentials, sender authorization and outbound SMTP access with the hosting provider.

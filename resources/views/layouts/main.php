@@ -116,11 +116,11 @@ if ($guideData !== null && $canonicalUrl !== '') {
 }
 
 $structuredData = $structuredData ?? ['@context' => 'https://schema.org', '@graph' => $structuredGraph];
-$whatsAppRaw = (string) ($siteSettings['whatsapp_number'] ?? Env::get('WHATSAPP_NUMBER', ''));
+$whatsAppRaw = (string) ($siteSettings['whatsapp_number'] ?? '');
 $whatsAppNumber = preg_replace('/\D+/', '', $whatsAppRaw) ?? '';
 $whatsAppMessage = trim((string) ($siteSettings['whatsapp_prefill_message'] ?? ''));
 if ($whatsAppMessage === '') $whatsAppMessage = 'Hi ' . $siteName . ', I would like to make an enquiry. Please guide me on the next steps.';
-$whatsAppUrl = $whatsAppNumber !== ''
+$whatsAppUrl = strlen($whatsAppNumber) >= 8 && strlen($whatsAppNumber) <= 15 && !str_starts_with($whatsAppNumber, '0')
     ? 'https://wa.me/' . $whatsAppNumber . '?text=' . rawurlencode($whatsAppMessage)
     : '/get-help';
 $footerEmail = trim((string) ($siteSettings['contact_email'] ?? ''));
@@ -194,8 +194,8 @@ if ($footerLocation === '') $footerLocation = 'Kenya';
     <link rel="icon" type="image/png" sizes="512x512" href="/assets/images/albatech-logo.png">
     <link rel="apple-touch-icon" href="/assets/images/albatech-logo.png">
 
-    <link rel="stylesheet" href="/assets/css/tokens.css">
-    <link rel="stylesheet" href="/assets/css/app.css">
+    <link rel="stylesheet" href="<?= View::asset('css/tokens.css') ?>">
+    <link rel="stylesheet" href="<?= View::asset('css/app.css') ?>">
 
     <script type="application/ld+json" nonce="<?= View::escape($cspNonce ?? '') ?>"><?=
         json_encode(
@@ -327,7 +327,7 @@ if ($footerLocation === '') $footerLocation = 'Kenya';
     </div>
 </footer>
 
-<?php if ($whatsAppNumber !== ''): ?>
+<?php if (strlen($whatsAppNumber) >= 8 && strlen($whatsAppNumber) <= 15 && !str_starts_with($whatsAppNumber, '0')): ?>
 <div class="whatsapp-float" data-whatsapp-widget>
   <div class="whatsapp-float__panel" data-whatsapp-panel hidden>
     <button class="whatsapp-float__close" type="button" data-whatsapp-close aria-label="Close WhatsApp chat">&times;</button>

@@ -315,7 +315,9 @@ final class AdminController
         $contactEmail = trim((string) $request->input('contact_email', ''));
         $supportEmail = trim((string) $request->input('support_email', ''));
         if ($supportEmail !== '' && !filter_var($supportEmail, FILTER_VALIDATE_EMAIL)) { AdminSecurity::flash('error', 'Enter a valid support email address.'); Response::redirect('/admin/settings'); }
-        $whatsApp = trim((string) $request->input('whatsapp_number', ''));
+        $whatsAppInput = trim((string) $request->input('whatsapp_number', ''));
+        // Store WhatsApp destinations in canonical international digits-only format.
+        $whatsApp = preg_replace('/\D+/', '', $whatsAppInput) ?? '';
         if ($siteUrl !== '' && (!filter_var($siteUrl, FILTER_VALIDATE_URL) || !in_array(strtolower((string) parse_url($siteUrl, PHP_URL_SCHEME)), ['http', 'https'], true))) {
             AdminSecurity::flash('error', 'Enter a valid website URL beginning with http:// or https://.');
             Response::redirect('/admin/settings');
@@ -324,7 +326,7 @@ final class AdminController
             AdminSecurity::flash('error', 'Enter a valid contact email address.');
             Response::redirect('/admin/settings');
         }
-        if ($whatsApp !== '' && !preg_match('/^[+0-9() .-]{7,25}$/', $whatsApp)) {
+        if ($whatsAppInput !== '' && (!preg_match('/^[+0-9() .-]{7,25}$/', $whatsAppInput) || strlen($whatsApp) < 8 || strlen($whatsApp) > 15 || str_starts_with($whatsApp, '0'))) {
             AdminSecurity::flash('error', 'Enter a valid WhatsApp contact number.');
             Response::redirect('/admin/settings');
         }

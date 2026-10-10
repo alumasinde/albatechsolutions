@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use AlbaTech\Controllers\AdminController;
+use AlbaTech\Controllers\EnquiryController;
 use AlbaTech\Controllers\HomeController;
 use AlbaTech\Controllers\GuideController;
 use AlbaTech\Controllers\ServiceController;
@@ -19,6 +20,7 @@ $guides = new GuideController();
 $app->router()->get('/guides', [$guides, 'index']);
 $app->router()->get('/guides/{slug}', [$guides, 'show']);
 $app->router()->get('/get-help', [new StaticPageController(), 'getHelp']);
+$app->router()->post('/get-help', [new EnquiryController(), 'submit']);
 $app->router()->get('/contact', [new StaticPageController(), 'getHelp']); // /contact redirects to /get-help
 $app->router()->get('/contact-details', static function () use ($app): void { Response::redirect('/get-help'); }); // Merged into /get-help
 $app->router()->get('/terms', [new StaticPageController(), 'terms']);

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AlbaTech\Controllers;
 
 use AlbaTech\Core\Response;
+use AlbaTech\Core\AdminSecurity;
 use AlbaTech\Core\SiteUrl;
 use AlbaTech\Core\View;
 
@@ -17,7 +18,7 @@ final class StaticPageController
 
     public function getHelp(): void
     {
-        $this->render('pages/get-help', 'Get Assistance', 'Tell AlbaTech Solutions what you need help with and explore available services.', 'get-help');
+        $this->render('pages/get-help', 'Get Assistance', 'Tell AlbaTech Solutions what you need help with and explore available services.', 'get-help', ['csrf' => AdminSecurity::csrfToken()]);
     }
 
     public function contactDetails(): void
@@ -35,7 +36,7 @@ final class StaticPageController
         $this->render('pages/privacy', 'Privacy Policy', 'Learn how AlbaTech Solutions handles enquiries and personal information.', 'privacy');
     }
 
-    private function render(string $view, string $title, string $description, string $slug): void
+    private function render(string $view, string $title, string $description, string $slug, array $extra = []): void
     {
         $baseUrl = SiteUrl::base();
         Response::html(View::render($view, [
@@ -43,6 +44,6 @@ final class StaticPageController
             'metaDescription' => $description,
             'canonicalUrl' => $baseUrl . '/' . $slug,
             'metaImage' => $baseUrl . '/assets/images/albatech-social-card.png',
-        ]));
+        ] + $extra));
     }
 }

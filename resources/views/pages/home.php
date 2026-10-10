@@ -6,7 +6,7 @@
       <h1>Technology that helps you <span>move forward.</span></h1>
       <p class="home-hero__lead">From building a professional website to improving your online business presence, get practical digital assistance with clear communication and no unnecessary complexity.</p>
       <div class="hero-actions">
-        <a class="button button--whatsapp" href="<?= View::escape($whatsAppUrl ?? '/get-help') ?>"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Talk to us</a>
+        <a class="button <?= !empty($hasWhatsApp) ? 'button--whatsapp' : 'button--secondary' ?>" href="<?= View::escape($whatsAppUrl ?? '/get-help') ?>"><?php if (!empty($hasWhatsApp)): ?><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Chat on WhatsApp<?php else: ?><i class="fa-regular fa-envelope" aria-hidden="true"></i> Send an enquiry<?php endif; ?></a>
         <a class="button button--secondary" href="/services">Explore services</a>
       </div>
       <div class="home-hero__meta">
@@ -110,6 +110,6 @@
   </div>
 </section>
 
-<section class="home-cta"><div class="container home-cta__inner"><div><span class="eyebrow eyebrow--light">Let's talk</span><h2>Have a task in mind?</h2><p>Tell us what you are trying to do. We will help you work out a sensible next step.</p></div><a class="button button--accent" href="<?= View::escape($whatsAppUrl ?? '/get-help') ?>"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Start a conversation</a></div></section>
+<section class="home-cta"><div class="container home-cta__inner"><div><span class="eyebrow eyebrow--light">Let's talk</span><h2>Have a task in mind?</h2><p>Tell us what you are trying to do. We will help you work out a sensible next step.</p></div><a class="button button--accent" href="<?= View::escape($whatsAppUrl ?? '/get-help') ?>"><?php if (!empty($hasWhatsApp)): ?><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Start a WhatsApp chat<?php else: ?><i class="fa-regular fa-envelope" aria-hidden="true"></i> Send an enquiry<?php endif; ?></a></div></section>
 
 <section class="independent-note independent-note--home"><div class="container independent-note__inner"><span class="independent-note__icon"><i class="fa-solid fa-circle-info" aria-hidden="true"></i></span><p><strong>Our service promise</strong> We explain the scope and charges before starting. For government-related assistance, AlbaTech Solutions is an independent service provider, not a government agency. Official decisions remain with the relevant authority.</p></div></section>

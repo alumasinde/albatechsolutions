@@ -130,4 +130,56 @@
   --transition-fast: 150ms ease;
   --transition-base: 200ms ease;
   --transition-slow: 300ms ease;
+
+  /* Compatibility aliases used by older component rules */
+  --color-background: var(--color-page);
+  --color-background-secondary: var(--color-surface-muted);
+  --color-border-hover: var(--color-border-strong);
+  --color-text-on-whatsapp: #052E16;
+  --color-whatsapp-hover: #1FBE5B;
+  --color-warning-light: var(--color-warning-bg);
+  --color-transparent: transparent;
+
+  /* Shared component and decorative colors */
+  --color-header-glass: rgb(255 255 255 / 0.96);
+  --color-overlay-light: rgb(255 255 255 / 0.2);
+  --color-accent-glow: rgb(255 183 43 / 0.14);
+  --color-primary-glow: rgb(7 140 153 / 0.12);
+  --color-primary-shadow: rgb(7 140 153 / 0.22);
+  --color-surface-gradient-end: #F2F7F7;
+  --color-surface-gradient-soft: #F8FBFB;
+  --color-surface-gradient-blue: #EDF4F4;
+  --color-print-border: #EDF0F4;
+  --color-white: #FFFFFF;
+  --color-black: #000000;
+
+  /* Shared shadows: shadow color remains centralized here */
+  --shadow-soft: 0 5px 20px rgb(15 23 42 / 0.03);
+  --shadow-medium: 0 12px 28px rgb(15 23 42 / 0.1);
+  --shadow-raised: 0 14px 34px rgb(15 23 42 / 0.08);
+  --shadow-deep: 0 24px 70px rgb(15 23 42 / 0.09);
+  --shadow-admin: 0 3px 7px rgb(16 35 63 / 0.09);
+
+  /* Admin palette centralized with the rest of the design system */
+  --admin-ink: #10233F;
+  --admin-muted: #536176;
+  --admin-line: #E5EAF1;
+  --admin-bg: #F5F7FB;
+  --admin-blue: #155EEF;
+  --admin-blue-hover: #124ED0;
+  --admin-blue-shadow: rgb(21 94 239 / 0.18);
+  --admin-gold: #FFBF5B;
+  --admin-amber: #B7791F;
+  --admin-purple: #6941C6;
+  --admin-white: #FFFFFF;
+  --admin-green: #087F5B;
+  --admin-green-border: #A6F4C5;
+  --admin-red: #B42318;
+  --admin-red-border: #FECDCA;
+  --admin-shadow: rgb(16 35 63 / 0.16);
+  --admin-label: #59677B;
+  --admin-line-subtle: #EDF0F5;
+  --admin-muted-subtle: #8B96A8;
+  --admin-ink-shadow: rgb(16 35 63 / 0.09);
+
 }

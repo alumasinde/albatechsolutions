@@ -1,10 +1,10 @@
 <?php
-use AlbaTech\Core\Env;
 use AlbaTech\Core\View;
+use AlbaTech\Core\Env;
 use AlbaTech\Repositories\SiteSettingsRepository;
 
 $siteSettings = (new SiteSettingsRepository())->publicValues();
-$whatsAppNumber = preg_replace('/\D+/', '', $siteSettings['whatsapp_number'] ?? (Env::get('WHATSAPP_NUMBER', '') ?? ''));
+$whatsAppNumber = preg_replace('/\D+/', '', (string) ($siteSettings['whatsapp_number'] ?? ''));
 $contactEmail = trim((string) ($siteSettings['contact_email'] ?? ''));
 $contactPhone = trim((string) ($siteSettings['business_phone'] ?? ''));
 $contactPhoneHref = preg_replace('/[^0-9+]/', '', $contactPhone);
@@ -14,6 +14,7 @@ $contactResponseTime = trim((string) ($siteSettings['contact_response_time'] ?? 
 $contactCity = trim((string) ($siteSettings['business_city'] ?? 'Nairobi, Kenya'));
 $contactServiceArea = trim((string) ($siteSettings['service_area'] ?? 'Nationwide — fully online'));
 $helpEmail = trim((string) ($siteSettings['support_email'] ?? ''));
+$mailFallback = trim((string) Env::get('MAIL_TO', ''));
 
 $serviceSlug = trim((string) ($_GET['service'] ?? ''));
 $whatsAppMessage = 'Hi AlbaTech Solutions, I would like to make an enquiry.';
@@ -25,9 +26,10 @@ $whatsAppUrl = $whatsAppNumber !== ''
     : null;
 
 $hasEmail = ($contactEmail !== '' && filter_var($contactEmail, FILTER_VALIDATE_EMAIL))
-    || ($helpEmail !== '' && filter_var($helpEmail, FILTER_VALIDATE_EMAIL));
+    || ($helpEmail !== '' && filter_var($helpEmail, FILTER_VALIDATE_EMAIL))
+    || ($mailFallback !== '' && filter_var($mailFallback, FILTER_VALIDATE_EMAIL));
 $hasPhone = $contactPhoneHref !== '' && strlen(preg_replace('/\D+/', '', $contactPhoneHref)) >= 7;
-$hasWhatsApp = $whatsAppNumber !== '';
+$hasWhatsApp = strlen($whatsAppNumber) >= 8 && strlen($whatsAppNumber) <= 15 && !str_starts_with($whatsAppNumber, '0');
 ?>
 <section class="contact-hero">
     <div class="container contact-hero__inner">
@@ -46,7 +48,10 @@ $hasWhatsApp = $whatsAppNumber !== '';
                 <h2>Quick enquiry form</h2>
                 <p class="contact-intro">Fill in your details and we'll help you work out the next step. Your information is safe with us.</p>
 
+                <?php if (($_GET['sent'] ?? '') === '1'): ?><div class="form-success" role="status">Your enquiry has been sent successfully. We will respond using the contact details you provided.</div><?php elseif (($_GET['sent'] ?? '') === '0'): ?><div class="form-error" role="alert">We could not send your enquiry right now. Please try again later or use the direct contact details.</div><?php endif; ?>
                 <form class="enquiry-form" id="enquiryForm" method="post" action="/get-help">
+                    <input type="hidden" name="_csrf" value="<?= View::escape($csrf ?? '') ?>">
+                    <div class="form-honeypot" aria-hidden="true"><label>Leave this field empty<input type="text" name="website_url" tabindex="-1" autocomplete="off"></label></div>
                     <div class="form-group">
                         <label for="enquiry-name">Your name <span class="required">*</span></label>
                         <input
@@ -122,13 +127,18 @@ $hasWhatsApp = $whatsAppNumber !== '';
                     </div>
 
                     <div class="form-actions">
-                        <button type="submit" class="button button--whatsapp" id="whatsapp-submit">
-                            <i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Send via WhatsApp
+                        <?php if ($hasWhatsApp): ?>
+                        <button type="button" class="button button--whatsapp" id="whatsapp-submit">
+                            <i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Continue in WhatsApp
                         </button>
+                        <?php endif; ?>
                         <?php if ($hasEmail): ?>
-                        <button type="button" class="button button--secondary" id="email-submit">
-                            <i class="fa-regular fa-envelope" aria-hidden="true"></i> Send via Email
+                        <button type="submit" name="send_method" value="email" class="button button--secondary" id="email-submit">
+                            <i class="fa-regular fa-envelope" aria-hidden="true"></i> Send enquiry by email
                         </button>
+                        <?php endif; ?>
+                        <?php if (!$hasWhatsApp && !$hasEmail): ?>
+                        <p class="form-error" role="alert">Contact delivery is not configured yet. Please try again later.</p>
                         <?php endif; ?>
                     </div>
 
@@ -211,87 +221,30 @@ $hasWhatsApp = $whatsAppNumber !== '';
 <script nonce="<?= View::escape($cspNonce ?? '') ?>">
 (function() {
     const form = document.getElementById('enquiryForm');
-    const whatsappSubmit = document.getElementById('whatsapp-submit');
-    const emailSubmit = document.getElementById('email-submit');
+    const whatsappButton = document.getElementById('whatsapp-submit');
+    if (!form || !whatsappButton) return;
 
-    if (!form || !whatsappSubmit) return;
-
-    // WhatsApp submission
-    whatsappSubmit.addEventListener('click', function(e) {
-        e.preventDefault();
-
-        const name = form.name.value.trim();
-        const email = form.email.value.trim();
-        const phone = form.phone.value.trim();
-        const service = form.service.value;
-        const message = form.message.value.trim();
-
-        if (!name || !email || !message) {
-            alert('Please fill in your name, email, and message.');
+    whatsappButton.addEventListener('click', function() {
+        if (!form.checkValidity()) { form.reportValidity(); return; }
+        const data = new FormData(form);
+        const name = String(data.get('name') || '').trim();
+        const email = String(data.get('email') || '').trim();
+        const phone = String(data.get('phone') || '').trim();
+        const service = String(data.get('service') || '').trim();
+        const message = String(data.get('message') || '').trim();
+        const number = '<?= View::escape($whatsAppNumber) ?>';
+        if (!/^\d{8,15}$/.test(number) || number.startsWith('0')) {
+            window.location.href = '/get-help';
             return;
         }
-
-        if (!form.checkValidity()) {
-            form.reportValidity();
-            return;
-        }
-
-        // Build WhatsApp message
-        let whatsappMsg = 'Hi AlbaTech Solutions,\n\n';
-        whatsappMsg += 'Name: ' + name + '\n';
-        whatsappMsg += 'Email: ' + email + '\n';
-        if (phone) whatsappMsg += 'Phone: ' + phone + '\n';
-        if (service) whatsappMsg += 'Service interest: ' + service + '\n';
-        whatsappMsg += '\nMessage:\n' + message;
-
-        const whatsappNumber = '<?= $whatsAppNumber ?>';
-        if (whatsappNumber) {
-            const whatsappUrl = 'https://wa.me/' + whatsappNumber + '?text=' + encodeURIComponent(whatsappMsg);
-            window.open(whatsappUrl, '_blank');
-        } else {
-            alert('WhatsApp contact is not configured. Please use email instead.');
-        }
+        let body = 'Hi AlbaTech Solutions,\n\nName: ' + name + '\nEmail: ' + email;
+        if (phone) body += '\nPhone: ' + phone;
+        if (service) body += '\nService interest: ' + service;
+        body += '\n\nMessage:\n' + message;
+        const url = 'https://wa.me/' + number + '?text=' + encodeURIComponent(body);
+        const opened = window.open(url, '_blank');
+        if (opened) opened.opener = null;
+        else window.location.href = url;
     });
-
-    // Email submission
-    if (emailSubmit) {
-        emailSubmit.addEventListener('click', function(e) {
-            e.preventDefault();
-
-            const name = form.name.value.trim();
-            const email = form.email.value.trim();
-            const phone = form.phone.value.trim();
-            const service = form.service.value;
-            const message = form.message.value.trim();
-
-            if (!name || !email || !message) {
-                alert('Please fill in your name, email, and message.');
-                return;
-            }
-
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                return;
-            }
-
-            // Build email
-            let emailSubject = 'Enquiry from ' + name;
-            if (service) emailSubject += ' - ' + service;
-
-            let emailBody = 'Name: ' + name + '\n';
-            emailBody += 'Email: ' + email + '\n';
-            if (phone) emailBody += 'Phone: ' + phone + '\n';
-            if (service) emailBody += 'Service interest: ' + service + '\n';
-            emailBody += '\nMessage:\n' + message;
-
-            const contactEmail = '<?= $contactEmail ?: $helpEmail ?>';
-            if (contactEmail) {
-                const mailtoUrl = 'mailto:' + contactEmail + '?subject=' + encodeURIComponent(emailSubject) + '&body=' + encodeURIComponent(emailBody);
-                window.location.href = mailtoUrl;
-            } else {
-                alert('Email contact is not configured. Please use WhatsApp instead.');
-            }
-        });
-    }
 })();
 </script>
