@@ -114,3 +114,8 @@ Apply migration `database/migrations/006_contact_legal_content.sql` to add the c
 Then open **Admin → Settings** and configure the city/location label, service area, contact hours, response time, support email, WhatsApp number and pre-filled message. The Terms of Service and Privacy Policy text can be edited in the Legal page content section. Legal content is treated as plain text: put headings on their own lines prefixed with `# ` and separate paragraphs with a blank line. Do not paste raw HTML.
 
 The floating WhatsApp panel is shown only when a WhatsApp number is configured. It uses the database-configured message and opens WhatsApp in a new tab; visitors review and send the message themselves.
+
+
+## Text contrast maintenance
+
+The public brand primary (`--color-primary`) and accent (`--color-accent`) are unchanged. Readable text uses dedicated darker `--color-link`, `--color-link-hover`, and neutral text tokens. Footer text tokens are dark because the footer background is currently a light surface. Admin muted text tokens were darkened without changing admin primary/button colours.
