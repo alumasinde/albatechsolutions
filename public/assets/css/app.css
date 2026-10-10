@@ -2818,3 +2818,70 @@ p {
 /* Public enquiry form feedback uses the shared design-token palette. */
 .form-success { padding: 0.875rem 1rem; margin: 0 0 1rem; color: var(--color-success); background: var(--color-success-bg); border: 1px solid var(--color-success); border-radius: var(--radius-md, 0.5rem); }
 .form-error { padding: 0.875rem 1rem; margin: 0 0 1rem; color: var(--color-danger); background: var(--color-danger-bg); border: 1px solid var(--color-danger); border-radius: var(--radius-md, 0.5rem); }
+
+
+/* Readability, responsive layout and scrolling refinement (2026-10) */
+:root {
+  scroll-padding-top: calc(var(--header-height) + 1rem);
+}
+html {
+  scroll-behavior: smooth;
+  overflow-x: clip;
+  scrollbar-gutter: stable;
+}
+body {
+  overflow-wrap: break-word;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+#main-content { min-width: 0; }
+.container { width: min(calc(100% - 2.5rem), var(--container-width)); }
+p, li { text-wrap: pretty; }
+/* Ensure small utility, footer and metadata text stays comfortably readable. */
+small, .eyebrow, .section-eyebrow, .footer-column a, .footer-column p,
+.footer-bottom p, .footer-legal a, .footer-location small,
+.legal-updated, .contact-card-eyebrow, .whatsapp-float__eyebrow,
+.guide-card time, .guide-card__date {
+  font-size: max(0.875rem, 1em);
+}
+button, input, select, textarea { font: inherit; }
+input, select, textarea { max-width: 100%; }
+img, video, iframe { max-width: 100%; }
+.card, article, section, main, .container, .footer-column { min-width: 0; }
+.site-nav a, .button, .btn, button, .contact-filter__button { min-height: var(--touch-target-min); }
+
+@media (max-width: 767px) {
+  html { scroll-padding-top: calc(var(--header-height-mobile) + .75rem); }
+  .container { width: min(calc(100% - 2rem), var(--container-width)); }
+  .header-inner { gap: .75rem; padding-block: .5rem; }
+  .brand-logo { max-height: 42px; max-width: 150px; }
+  .site-nav { max-height: calc(100dvh - var(--header-height-mobile)); overflow-y: auto; overscroll-behavior: contain; }
+  h1 { font-size: clamp(2rem, 7vw, 2.75rem); line-height: 1.12; letter-spacing: -.035em; }
+  h2 { line-height: 1.2; }
+  p, li { line-height: 1.7; }
+  .section, .section-padding { padding-block: clamp(2.25rem, 8vw, 3.5rem); }
+  .hero, .page-hero, .legal-hero, .contact-page-hero { padding-block: clamp(2.25rem, 8vw, 3.5rem); }
+  .grid, .cards-grid, .services-grid, .guide-grid, .work-grid,
+  .contact-details-grid--reference { grid-template-columns: minmax(0, 1fr) !important; }
+  .footer-main { grid-template-columns: minmax(0, 1fr); gap: 1.75rem; }
+  .footer-brand-block { grid-column: auto; }
+  .footer-bottom { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  .footer-legal { gap: .75rem 1rem; }
+  .legal-sidebar { position: static; }
+  .whatsapp-float { right: max(.75rem, env(safe-area-inset-right)); bottom: max(.75rem, env(safe-area-inset-bottom)); }
+  .whatsapp-float__trigger { min-height: 48px; padding: .75rem 1rem; max-width: calc(100vw - 1.5rem); }
+  .whatsapp-float__trigger span { font-size: .9375rem; }
+  .whatsapp-float__panel { max-height: min(70dvh, 520px); overflow-y: auto; overscroll-behavior: contain; }
+  .contact-details-grid--reference .contact-detail-card { min-height: unset; }
+  .contact-details-grid--reference .contact-detail-card h2 { margin-bottom: 1rem; }
+  .contact-filter { justify-content: flex-start; }
+}
+@media (max-width: 380px) {
+  .container { width: calc(100% - 1.5rem); }
+  .brand-logo { max-width: 128px; }
+  .whatsapp-float__trigger span { max-width: 12rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
