@@ -1,7 +1,7 @@
 <section class="about-hero">
     <div class="container about-hero__grid">
         <div class="about-hero__copy">
-            <span class="eyebrow">About AlbaTech Solutions</span>
+            <span class="eyebrow">About Us</span>
             <h1>Making digital tasks feel <span>less complicated.</span></h1>
             <p>We help people and businesses take practical steps online, from building a professional website to navigating selected digital and business processes with more confidence.</p>
             <div class="hero-actions">

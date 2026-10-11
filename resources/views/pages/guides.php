@@ -4,15 +4,15 @@ use AlbaTech\Core\View; ?>
 <section class="page-intro guide-intro">
     <div class="container">
         <span class="eyebrow">Guides & resources</span>
-        <h1>Clear answers to common digital questions</h1>
-        <p>Practical, plain-language guides for Kenyan business owners, job seekers and anyone preparing to use digital services.</p>
+        <h1>Practical Digital Guides and Tech Tips for Kenya</h1>
+        <p>Learn how to build a business website, choose web hosting, improve your online presence and use digital services. Get simple, practical advice for Kenyan businesses, entrepreneurs and job seekers.</p>
     </div>
 </section>
 <section class="section guide-library">
     <div class="container">
         <div class="guide-library__heading">
             <div>
-                <h2>Browse the guides</h2>
+                <h2>Browse Our Latest Guides</h2>
             </div>
         </div>
         <div class="guide-grid">

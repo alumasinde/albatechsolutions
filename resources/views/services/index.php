@@ -1,4 +1,10 @@
-<?php use AlbaTech\Core\View; ?>
+<?php
+
+use AlbaTech\Core\View; 
+/**
+ * @var array<string, mixed> $categories
+ */
+?>
 
 <section class="services-hero">
     <div class="container services-hero__inner">
@@ -10,7 +16,10 @@
                 <a class="button" href="#service-catalogue">Explore services <i class="fa-solid fa-arrow-down" aria-hidden="true"></i></a>
                 <a class="button button--secondary" href="/get-help">Not sure where to start?</a>
             </div>
-            <div class="services-trust-line"><span><i class="fa-solid fa-file-circle-check" aria-hidden="true"></i> Clear scope</span><span><i class="fa-regular fa-comments" aria-hidden="true"></i> Straightforward communication</span><span><i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i> Mobile-friendly solutions</span></div>
+            <div class="services-trust-line">
+                <span><i class="fa-solid fa-file-circle-check" aria-hidden="true"></i> Clear scope</span>
+                <span><i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i> Mobile-friendly solutions</span>
+            </div>
         </div>
         <div class="services-hero__visual" aria-hidden="true">
             <div class="service-visual-card service-visual-card--main">
