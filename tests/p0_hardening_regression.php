@@ -19,7 +19,7 @@ $assert(str_contains($layout, "Controllers must provide the page's trusted, abso
 
 $router = $read('app/Core/Router.php');
 $assert(str_contains($router, '$this->redirectCanonicalCase($method);'), 'Router normalizes safe uppercase GET paths');
-$assert(str_contains($router, 'Response::redirect($lowerPath'), 'Case normalization uses permanent redirect');
+$assert(str_contains($router, 'Response::redirect($targetPath'), 'Case normalization uses permanent redirect');
 $assert(str_contains($router, '$this->redirectTrailingSlash($method);'), 'Router normalizes trailing slash');
 
 $routes = $read('routes/web.php');

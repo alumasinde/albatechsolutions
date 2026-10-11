@@ -17,7 +17,8 @@ $helpEmail = trim((string) ($siteSettings['support_email'] ?? ''));
 $mailFallback = trim((string) Env::get('MAIL_TO', ''));
 
 $serviceSlug = trim((string) ($_GET['service'] ?? ''));
-$whatsAppMessage = 'Hi AlbaTech Solutions, I would like to make an enquiry.';
+$whatsAppMessage = trim((string) ($siteSettings['whatsapp_prefill_message'] ?? ''));
+if ($whatsAppMessage === '') $whatsAppMessage = 'Hi AlbaTech Solutions, I would like to make an enquiry.';
 if ($serviceSlug !== '') {
     $whatsAppMessage = 'Hi AlbaTech Solutions, I would like to ask about: ' . str_replace('-', ' ', $serviceSlug) . '.';
 }
@@ -33,9 +34,9 @@ $hasWhatsApp = strlen($whatsAppNumber) >= 8 && strlen($whatsAppNumber) <= 15 && 
 ?>
 <section class="contact-hero">
     <div class="container contact-hero__inner">
-        <span class="eyebrow">Contact us</span>
-        <h1>Tell us what you need.<br><span>We'll help with the next step.</span></h1>
-        <p>Have a question about a website, an online business service or help with a digital process? Use the form below or reach us directly. We'll guide you on what to do next.</p>
+        <span class="eyebrow"><?= View::escape($cmsPage['title'] ?? 'Contact us') ?></span>
+        <h1><?= View::escape($cmsPage['title'] ?? 'Tell us what you need.') ?></h1>
+        <p><?= View::escape($cmsPage['intro'] ?? 'Have a question about a website, an online business service or help with a digital process? Use the form below or reach us directly. We will guide you on what to do next.') ?></p>
     </div>
 </section>
 

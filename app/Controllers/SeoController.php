@@ -22,12 +22,38 @@ final class SeoController
             ['loc' => $baseUrl . '/', 'priority' => '1.0', 'changefreq' => 'weekly'],
             ['loc' => $baseUrl . '/services', 'priority' => '0.9', 'changefreq' => 'weekly'],
             ['loc' => $baseUrl . '/work', 'priority' => '0.8', 'changefreq' => 'weekly'],
-            ['loc' => $baseUrl . '/about', 'priority' => '0.6', 'changefreq' => 'monthly'],
             ['loc' => $baseUrl . '/guides', 'priority' => '0.8', 'changefreq' => 'weekly'],
-            ['loc' => $baseUrl . '/get-help', 'priority' => '0.5', 'changefreq' => 'monthly'],
-            ['loc' => $baseUrl . '/terms', 'priority' => '0.2', 'changefreq' => 'yearly'],
-            ['loc' => $baseUrl . '/privacy', 'priority' => '0.2', 'changefreq' => 'yearly'],
         ];
+
+        // Only include CMS pages that are published and have a real public route.
+        // Arbitrary CMS slugs are not routable in this application and must not be indexed.
+        $cmsRoutes = [
+            'about' => '/about',
+            'get-help' => '/get-help',
+            'terms' => '/terms',
+            'privacy' => '/privacy',
+        ];
+        $dynamicSitemapIncomplete = false;
+        try {
+            $cmsPages = \AlbaTech\Core\Database::connection()->query(
+                "SELECT slug, updated_at FROM cms_pages WHERE status='published' ORDER BY slug"
+            )->fetchAll();
+            foreach ($cmsPages as $page) {
+                $slug = trim((string) ($page['slug'] ?? ''));
+                if (!isset($cmsRoutes[$slug])) {
+                    continue;
+                }
+                $entry = ['loc' => $baseUrl . $cmsRoutes[$slug], 'priority' => in_array($slug, ['about'], true) ? '0.6' : (in_array($slug, ['terms', 'privacy'], true) ? '0.2' : '0.5'), 'changefreq' => in_array($slug, ['terms', 'privacy'], true) ? 'yearly' : 'monthly'];
+                $updatedRaw = trim((string) ($page['updated_at'] ?? ''));
+                $updated = $updatedRaw !== '' ? strtotime($updatedRaw) : false;
+                if ($updated !== false) $entry['lastmod'] = date('Y-m-d', $updated);
+                $urls[] = $entry;
+            }
+        } catch (Throwable $exception) {
+            $dynamicSitemapIncomplete = true;
+            error_log('[AlbaTech SEO] Could not load CMS pages for sitemap: ' . $exception->getMessage());
+        }
+
 
         foreach (GuideController::articles() as $slug => $article) {
             $guideUrl = ['loc' => $baseUrl . '/guides/' . rawurlencode((string) $slug), 'priority' => '0.7', 'changefreq' => 'monthly'];
@@ -38,7 +64,6 @@ final class SeoController
             $urls[] = $guideUrl;
         }
 
-        $dynamicSitemapIncomplete = false;
         try {
             foreach ($this->services->publishedSlugs() as $service) {
                 $slug = trim((string) ($service['slug'] ?? ''));
@@ -123,14 +148,29 @@ final class SeoController
             '- [Home](' . $baseUrl . '/): Overview of AlbaTech Solutions.',
             '- [Services](' . $baseUrl . '/services): Public service catalogue and pricing information.',
             '- [Our Work](' . $baseUrl . '/work): Published portfolio projects and case studies.',
-            '- [About](' . $baseUrl . '/about): About the business and its approach.',
             '- [Guides](' . $baseUrl . '/guides): Practical articles and checklists.',
-            '- [Contact](' . $baseUrl . '/get-help): Ways to enquire about services.',
-            '- [Privacy policy](' . $baseUrl . '/privacy): How enquiry information is handled.',
-            '- [Terms of service](' . $baseUrl . '/terms): General terms for using the website and services.',
-            '',
-            '## Guides',
         ];
+        $cmsRoutes = [
+            'about' => ['path' => '/about', 'label' => 'About', 'summary' => 'About the business and its approach.'],
+            'get-help' => ['path' => '/get-help', 'label' => 'Contact', 'summary' => 'Ways to enquire about services.'],
+            'privacy' => ['path' => '/privacy', 'label' => 'Privacy policy', 'summary' => 'How enquiry information is handled.'],
+            'terms' => ['path' => '/terms', 'label' => 'Terms of service', 'summary' => 'Terms for using the website and services.'],
+        ];
+        try {
+            $cmsPages = \AlbaTech\Core\Database::connection()->query("SELECT slug,title,intro FROM cms_pages WHERE status='published' ORDER BY title")->fetchAll();
+            foreach ($cmsPages as $page) {
+                $slug = (string) ($page['slug'] ?? '');
+                if (!isset($cmsRoutes[$slug])) continue;
+                $route = $cmsRoutes[$slug];
+                $label = trim((string) ($page['title'] ?? '')) ?: $route['label'];
+                $summary = trim((string) ($page['intro'] ?? '')) ?: $route['summary'];
+                $lines[] = '- [' . str_replace([']', '[', "\r", "\n"], '', $label) . '](' . $baseUrl . $route['path'] . '): ' . str_replace(["\r", "\n"], ' ', $summary);
+            }
+        } catch (Throwable $exception) {
+            error_log('[AlbaTech SEO] Could not load CMS pages for llms.txt: ' . $exception->getMessage());
+        }
+        $lines[] = '';
+        $lines[] = '## Guides';
         foreach (GuideController::articles() as $slug => $article) {
             $lines[] = '- [' . $article['title'] . '](' . $baseUrl . '/guides/' . $slug . '): ' . $article['summary'];
         }

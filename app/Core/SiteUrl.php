@@ -18,10 +18,13 @@ final class SiteUrl
             // APP_URL remains the fallback during first setup or a database outage.
         }
 
-        $configured = trim((string) (
-            $settings['site_url']
-            ?? Env::get('APP_URL', 'https://albatechsolutions.co.ke')
-        ));
+        // In local/staging environments APP_URL must win so canonical URLs do not
+        // accidentally point crawlers and test assertions at the production domain.
+        $appUrl = trim((string) Env::get('APP_URL', ''));
+        $environment = strtolower((string) Env::get('APP_ENV', 'local'));
+        $configured = ($environment !== 'production' && $appUrl !== '')
+            ? $appUrl
+            : trim((string) ($settings['site_url'] ?? ($appUrl !== '' ? $appUrl : 'https://albatechsolutions.co.ke')));
         $parts = parse_url($configured);
 
         if (!is_array($parts)

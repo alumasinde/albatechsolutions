@@ -34,22 +34,13 @@ $get = static fn(string $key, string $fallback = '') => View::escape($settings[$
         </div>
     </section>
     <section class="panel editor-section">
-        <div class="section-heading"><span><i class="fa-solid fa-file-lines"></i></span>
-            <div>
-                <h3>Legal page content</h3>
-                <p>Update the Terms and Privacy page copy here. Plain text is displayed as paragraphs; keep headings on separate lines.</p>
-            </div>
-        </div>
-        <div class="form-grid"><label class="field full">Terms of Service content<textarea name="terms_content" rows="10"><?= $get('terms_content') ?></textarea></label><label class="field full">Privacy Policy content<textarea name="privacy_content" rows="10"><?= $get('privacy_content') ?></textarea></label></div>
-    </section>
-    <section class="panel editor-section">
         <div class="section-heading"><span><i class="fa-solid fa-magnifying-glass"></i></span>
             <div>
                 <h3>Default SEO</h3>
                 <p>Used where a page does not provide its own metadata.</p>
             </div>
         </div>
-        <div class="form-grid"><label class="field full">Default author metadata<input name="default_author" value="<?= $get('default_author', 'Albert Masinde') ?>"><small>This is metadata, not public page copy.</small></label><label class="field full">Default meta description<textarea name="default_meta_description" rows="3" maxlength="320"><?= $get('default_meta_description') ?></textarea></label><label class="field full">Default meta keywords<textarea name="default_meta_keywords" rows="2"><?= $get('default_meta_keywords') ?></textarea><small>Search engines may not use meta keywords. Write page content for people first.</small></label></div>
+        <div class="form-grid"><label class="field full">Default SEO title<input name="default_meta_title" maxlength="255" value="<?= $get('default_meta_title', 'AlbaTech Solutions | Practical Digital Services in Kenya') ?>"><small>Fallback title for pages that do not define their own title.</small></label><label class="field full">Default author metadata<input name="default_author" value="<?= $get('default_author', 'Albert Masinde') ?>"><small>This is metadata, not public page copy.</small></label><label class="field full">Default social-sharing image URL<input type="text" name="default_social_image" maxlength="500" value="<?= $get('default_social_image', '/assets/images/albatech-social-card.png') ?>"><small>Use a public HTTPS image URL or a site-relative path. Recommended dimensions: 1200 × 630.</small></label><label class="field full">Default meta description<textarea name="default_meta_description" rows="3" maxlength="320"><?= $get('default_meta_description') ?></textarea></label><label class="field full">Default meta keywords<textarea name="default_meta_keywords" rows="2"><?= $get('default_meta_keywords') ?></textarea><small>Search engines may not use meta keywords. Write page content for people first.</small></label></div>
     </section>
     <div class="settings-save"><span><i class="fa-solid fa-circle-info"></i> Changes save directly to the website database.</span><button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> Save settings</button></div>
 </form>

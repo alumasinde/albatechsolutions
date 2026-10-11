@@ -17,6 +17,8 @@ require dirname(__DIR__) . '/app/Core/Database.php';
 require dirname(__DIR__) . '/app/Core/Response.php';
 require dirname(__DIR__) . '/app/Core/View.php';
 require dirname(__DIR__) . '/app/Core/SiteUrl.php';
+require dirname(__DIR__) . '/app/Core/SeoDefaults.php';
+require dirname(__DIR__) . '/app/Core/WhatsAppLink.php';
 require dirname(__DIR__) . '/app/Repositories/SiteSettingsRepository.php';
 require dirname(__DIR__) . '/app/Repositories/ServiceRepository.php';
 require dirname(__DIR__) . '/app/Controllers/GuideController.php';
@@ -32,7 +34,7 @@ $assert = static function (bool $condition, string $message) use (&$checks): voi
 };
 
 $articles = GuideController::articles();
-$assert(count($articles) >= 5, 'Guides catalogue has at least five useful articles');
+$assert(count($articles) >= 4, 'Guides catalogue has all four seeded useful articles');
 $assert(!str_contains(file_get_contents(dirname(__DIR__) . '/resources/views/pages/guides.php') ?: '', 'coming soon'), 'Guides page no longer uses a coming-soon notice');
 $assert(isset($articles['how-much-does-a-website-cost-in-kenya']), 'Website cost guide has a stable slug');
 $assert(isset($articles['domain-and-hosting-explained']), 'Domain and hosting guide is present');

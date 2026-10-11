@@ -1,0 +1,22 @@
+<?php
+declare(strict_types=1);
+$root = dirname(__DIR__);
+$checks = 0;
+$assert = static function (bool $ok, string $message) use (&$checks): void { $checks++; if (!$ok) { fwrite(STDERR, "FAIL: {$message}\n"); exit(1); } };
+$migration = file_get_contents($root . '/database/migrations/009_cms_foundation.sql') ?: '';
+$routes = file_get_contents($root . '/routes/web.php') ?: '';
+$home = file_get_contents($root . '/resources/views/pages/home.php') ?: '';
+$layout = file_get_contents($root . '/resources/views/layouts/main.php') ?: '';
+$admin = file_get_contents($root . '/resources/views/admin/cms.php') ?: '';
+$controller = file_get_contents($root . '/app/Controllers/CmsAdminController.php') ?: '';
+foreach (['cms_pages','site_navigation','site_ctas','home_hero_title','home_meta_description','home_social_image'] as $needle) $assert(str_contains($migration, $needle), 'Migration contains ' . $needle);
+foreach (['/admin/cms','/admin/cms/homepage','/admin/cms/pages','/admin/cms/navigation','/admin/cms/ctas'] as $route) $assert(str_contains($routes, $route), 'Route registered: ' . $route);
+foreach (['home_hero_title','home_services_title','home_process_title','home_why_title','home_areas_title','home_cta_title'] as $key) $assert(str_contains($home, $key), 'Homepage renders editable field ' . $key);
+$assert(str_contains($layout, 'site_navigation WHERE is_enabled=1'), 'Shared layout loads enabled navigation from database');
+$assert(str_contains($layout, 'site_ctas WHERE is_enabled=1'), 'Shared layout loads enabled CTAs from database');
+$assert(str_contains($admin, 'Save homepage') && str_contains($admin, 'Website pages') && str_contains($admin, 'Navigation') && str_contains($admin, 'Reusable calls to action'), 'Admin CMS sections are present');
+$assert(str_contains($controller, 'verifyCsrf') && str_contains($controller, 'requirePermission(\'settings.manage\')'), 'CMS writes require CSRF and settings permission');
+$assert(str_contains($controller, 'validImageReference') && str_contains($controller, 'validInternalOrHttpsUrl'), 'Image and link inputs are validated');
+$assert(str_contains($admin, 'data-cms-target="pages"') && str_contains($admin, 'id="cms-page-select"') && str_contains($admin, 'data-cms-page='), 'CMS editor supports section navigation and choosing one page at a time');
+$assert(is_file($root . '/public/assets/js/admin-cms.js') && str_contains(file_get_contents($root . '/public/assets/js/admin-cms.js'), 'showPanel'), 'CMS editor interaction script exists');
+echo "PASS: {$checks} CMS foundation static regression checks.\n";

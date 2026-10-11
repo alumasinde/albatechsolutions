@@ -7,6 +7,8 @@ namespace AlbaTech\Controllers;
 use AlbaTech\Core\Env;
 use AlbaTech\Core\Request;
 use AlbaTech\Core\SiteUrl;
+use AlbaTech\Core\SeoDefaults;
+use AlbaTech\Core\WhatsAppLink;
 use AlbaTech\Core\Response;
 use AlbaTech\Core\View;
 use AlbaTech\Repositories\ServiceRepository;
@@ -23,12 +25,8 @@ final class HomeController
         $settings = $this->settings->publicValues();
         $appName = $settings['site_name'] ?? (Env::get('APP_NAME', 'AlbaTech Solutions') ?? 'AlbaTech Solutions');
         $baseUrl = SiteUrl::base();
-        $configuredNumber = (string) ($settings['whatsapp_number'] ?? '');
-        $whatsAppNumber = preg_replace('/\D+/', '', $configuredNumber);
-        $hasWhatsApp = strlen($whatsAppNumber) >= 8 && strlen($whatsAppNumber) <= 15 && !str_starts_with($whatsAppNumber, '0');
-        $whatsAppUrl = $hasWhatsApp
-            ? 'https://wa.me/' . $whatsAppNumber . '?text=' . rawurlencode('Hi AlbaTech Solutions, I would like to discuss a service.')
-            : '/get-help';
+        $whatsAppUrl = WhatsAppLink::build($settings);
+        $hasWhatsApp = str_starts_with($whatsAppUrl, 'https://wa.me/');
 
         $featuredProjects = [];
         try {
@@ -36,15 +34,28 @@ final class HomeController
         } catch (\Throwable $e) { error_log('[AlbaTech Work] Featured projects unavailable: ' . $e->getMessage()); }
 
         Response::html(View::render('pages/home', [
-            'pageTitle' => $appName . ' | Practical Digital Solutions in Kenya',
-            'metaDescription' => 'Website design, online business presence, business systems and practical digital assistance for people and businesses in Kenya. Explore services and get a clear next step.',
-            'metaImage' => $baseUrl . '/assets/images/albatech-social-card.png',
+            'pageTitle' => SeoDefaults::title((string) ($settings['home_meta_title'] ?? ''), $appName . ' | Practical Digital Solutions in Kenya'),
+            'metaDescription' => SeoDefaults::description((string) ($settings['home_meta_description'] ?? ''), (string) ($settings['default_meta_description'] ?? SeoDefaults::DESCRIPTION)),
+            'metaImage' => SeoDefaults::image((string) ($settings['home_social_image'] ?? $settings['default_social_image'] ?? $settings['home_hero_image'] ?? ''), $baseUrl),
             'canonicalUrl' => $baseUrl . '/',
             'appName' => $appName,
+            'homeContent' => $settings,
+            'navigationItems' => $this->navigation('header'),
+            'ctaItems' => $this->ctas(),
             'featuredServices' => $this->services->featuredServices(6),
             'featuredProjects' => $featuredProjects,
             'whatsAppUrl' => $whatsAppUrl,
             'hasWhatsApp' => $hasWhatsApp,
         ]));
+    }
+
+    private function navigation(string $placement): array
+    {
+        try { $stmt = \AlbaTech\Core\Database::connection()->prepare('SELECT label,url,open_new_tab FROM site_navigation WHERE placement=:placement AND is_enabled=1 ORDER BY sort_order,id'); $stmt->execute(['placement'=>$placement]); return $stmt->fetchAll(); } catch (\Throwable $e) { return []; }
+    }
+
+    private function ctas(): array
+    {
+        try { $rows = \AlbaTech\Core\Database::connection()->query('SELECT cta_key,label,url,placement,style_class FROM site_ctas WHERE is_enabled=1')->fetchAll(); $out=[]; foreach ($rows as $row) $out[$row['cta_key']]=$row; return $out; } catch (\Throwable $e) { return []; }
     }
 }

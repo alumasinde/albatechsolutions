@@ -119,10 +119,15 @@ final class Router
             return;
         }
 
-        $lowerPath = strtolower($rawPath);
-        if ($lowerPath !== $rawPath) {
+        $targetPath = strtolower($rawPath);
+        // Normalize case and a trailing slash in one hop to avoid redirect chains such as
+        // /Services/ -> /services/ -> /services. Root remains exactly '/'.
+        if (strlen($targetPath) > 1 && str_ends_with($targetPath, '/')) {
+            $targetPath = rtrim($targetPath, '/');
+        }
+        if ($targetPath !== $rawPath) {
             $query = parse_url($uri, PHP_URL_QUERY);
-            Response::redirect($lowerPath . (is_string($query) && $query !== '' ? '?' . $query : ''), 301);
+            Response::redirect($targetPath . (is_string($query) && $query !== '' ? '?' . $query : ''), 301);
         }
     }
 

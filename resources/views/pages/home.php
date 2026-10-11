@@ -1,15 +1,18 @@
 <?php
 
-use AlbaTech\Core\View; ?>
+use AlbaTech\Core\View;
+$homeContent = is_array($homeContent ?? null) ? $homeContent : [];
+$ctaItems = is_array($ctaItems ?? null) ? $ctaItems : [];
+?>
 <section class="home-hero">
   <div class="container home-hero__grid">
     <div class="home-hero__copy">
-      <span class="eyebrow">Digital services for people and businesses in Kenya</span>
-      <h1>Technology that helps you <span>move forward.</span></h1>
-      <p class="home-hero__lead">From building a professional website to improving your online business presence, get practical digital assistance with clear communication and no unnecessary complexity.</p>
+      <span class="eyebrow"><?= View::escape($homeContent['home_hero_eyebrow'] ?? 'Digital services for people and businesses in Kenya') ?></span>
+      <h1><?= View::escape($homeContent['home_hero_title'] ?? 'Technology that helps you move forward.') ?></h1>
+      <p class="home-hero__lead"><?= View::escape($homeContent['home_hero_lead'] ?? 'From building a professional website to improving your online business presence, get practical digital assistance with clear communication and no unnecessary complexity.') ?></p>
       <div class="hero-actions">
-        <a class="button <?= !empty($hasWhatsApp) ? 'button--whatsapp' : 'button--secondary' ?>" href="<?= View::escape($whatsAppUrl ?? '/get-help') ?>"><?php if (!empty($hasWhatsApp)): ?><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Chat on WhatsApp<?php else: ?><i class="fa-regular fa-envelope" aria-hidden="true"></i> Send an enquiry<?php endif; ?></a>
-        <a class="button button--secondary" href="/services">Explore services</a>
+        <a class="button <?= !empty($hasWhatsApp) ? 'button--whatsapp' : 'button--secondary' ?>" href="<?= View::escape(!empty($hasWhatsApp) ? $whatsAppUrl : ($ctaItems['primary_enquiry']['url'] ?? ($homeContent['home_hero_primary_url'] ?? '/get-help'))) ?>"><?php if (!empty($hasWhatsApp)): ?><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Chat on WhatsApp<?php else: ?><i class="fa-regular fa-envelope" aria-hidden="true"></i> <?= View::escape($ctaItems['primary_enquiry']['label'] ?? ($homeContent['home_hero_primary_label'] ?? 'Send an enquiry')) ?><?php endif; ?></a>
+        <a class="button button--secondary" href="<?= View::escape($ctaItems['explore_services']['url'] ?? ($homeContent['home_hero_secondary_url'] ?? '/services')) ?>"><?= View::escape($ctaItems['explore_services']['label'] ?? ($homeContent['home_hero_secondary_label'] ?? 'Explore services')) ?></a>
       </div>
       <div class="home-hero__meta">
         <span><i class="fa-solid fa-receipt" aria-hidden="true"></i> Clear scope and pricing</span>
@@ -17,7 +20,7 @@ use AlbaTech\Core\View; ?>
       </div>
     </div>
     <aside class="home-hero__visual" aria-label="AlbaTech Solutions">
-      <img src="/assets/images/albatech-social-card.png" alt="AlbaTech Solutions - Digital services for Kenya" class="home-hero__image" width="400" height="300" loading="eager" fetchpriority="high" decoding="async">
+      <img src="<?= View::escape($homeContent['home_hero_image'] ?? '/assets/images/albatech-social-card.png') ?>" alt="<?= View::escape($appName ?? 'AlbaTech Solutions') ?> - Digital services for Kenya" class="home-hero__image" width="400" height="300" loading="eager" fetchpriority="high" decoding="async">
     </aside>
   </div>
 </section>
@@ -25,8 +28,8 @@ use AlbaTech\Core\View; ?>
 <section class="section home-services-section">
   <div class="container">
     <div class="section-heading section-heading--split">
-      <div><span class="section-kicker">Services</span>
-        <h2>What can we help you get done?</h2>
+      <div><span class="section-kicker"><?= View::escape($homeContent['home_services_kicker'] ?? 'Services') ?></span>
+        <h2><?= View::escape($homeContent['home_services_title'] ?? 'What can we help you get done?') ?></h2>
       </div>
     </div>
     <?php if (!empty($featuredServices)): ?>
@@ -65,10 +68,10 @@ use AlbaTech\Core\View; ?>
   <section class="section home-work-section" aria-labelledby="home-work-title">
     <div class="container">
       <div class="section-heading section-heading--split">
-        <div><span class="section-kicker">Selected work</span>
-          <h2 id="home-work-title">A look at what we've built.</h2>
+        <div><span class="section-kicker"><?= View::escape($homeContent['home_work_kicker'] ?? 'Selected work') ?></span>
+          <h2 id="home-work-title"><?= View::escape($homeContent['home_work_title'] ?? 'A look at what we have built.') ?></h2>
         </div>
-        <p>Explore selected projects and practical solutions from AlbaTech Solutions.</p>
+        <p><?= View::escape($homeContent['home_work_description'] ?? 'Explore selected projects and practical solutions from AlbaTech Solutions.') ?></p>
       </div>
       <div class="work-carousel" data-work-carousel aria-roledescription="carousel" aria-label="Featured projects">
         <div class="work-carousel__viewport">
@@ -92,22 +95,22 @@ use AlbaTech\Core\View; ?>
 
 <section class="section section--tint home-process-section">
   <div class="container">
-    <div class="section-heading section-heading--center"><span class="section-kicker">How it works</span>
-      <h2>A straightforward way to get started.</h2>
-      <p>You do not need to know the technical details. Tell us the outcome you want, and we can work through the options together.</p>
+    <div class="section-heading section-heading--center"><span class="section-kicker"><?= View::escape($homeContent['home_process_kicker'] ?? 'How it works') ?></span>
+      <h2><?= View::escape($homeContent['home_process_title'] ?? 'A straightforward way to get started.') ?></h2>
+      <p><?= View::escape($homeContent['home_process_description'] ?? 'You do not need to know the technical details. Tell us the outcome you want, and we can work through the options together.') ?></p>
     </div>
     <div class="process-grid">
       <article class="process-card"><span class="process-card__number">01</span><span class="process-card__icon"><i class="fa-regular fa-comments" aria-hidden="true"></i></span>
-        <h3>Tell us what you need</h3>
-        <p>Describe the task, challenge or idea in your own words.</p>
+        <h3><?= View::escape($homeContent['home_step1_title'] ?? 'Tell us what you need') ?></h3>
+        <p><?= View::escape($homeContent['home_step1_description'] ?? 'Describe the task, challenge or idea in your own words.') ?></p>
       </article>
       <article class="process-card"><span class="process-card__number">02</span><span class="process-card__icon"><i class="fa-solid fa-clipboard-list" aria-hidden="true"></i></span>
-        <h3>Agree on the plan</h3>
-        <p>We confirm the scope, price and expected next steps before work begins.</p>
+        <h3><?= View::escape($homeContent['home_step2_title'] ?? 'Agree on the plan') ?></h3>
+        <p><?= View::escape($homeContent['home_step2_description'] ?? 'We confirm the scope, price and expected next steps before work begins.') ?></p>
       </article>
       <article class="process-card"><span class="process-card__number">03</span><span class="process-card__icon"><i class="fa-solid fa-laptop-file" aria-hidden="true"></i></span>
-        <h3>Move forward</h3>
-        <p>We work on the agreed task and keep communication clear along the way.</p>
+        <h3><?= View::escape($homeContent['home_step3_title'] ?? 'Move forward with clarity') ?></h3>
+        <p><?= View::escape($homeContent['home_step3_description'] ?? 'Know what happens next and what information or action is needed from you.') ?></p>
       </article>
     </div>
   </div>
@@ -115,27 +118,27 @@ use AlbaTech\Core\View; ?>
 
 <section class="section home-why-section">
   <div class="container home-why-grid">
-    <div class="home-why-copy"><span class="section-kicker">The AlbaTech approach</span>
-      <h2>Technology should make life easier, not more complicated.</h2>
-      <p>We focus on practical solutions, plain language and realistic expectations. Whether you are building a business presence or need help with a digital task, we start by understanding what you are trying to achieve.</p><a class="text-link" href="/about">Learn about AlbaTech <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+    <div class="home-why-copy"><span class="section-kicker"><?= View::escape($homeContent['home_why_kicker'] ?? 'The AlbaTech approach') ?></span>
+      <h2><?= View::escape($homeContent['home_why_title'] ?? 'Technology should make life easier, not more complicated.') ?></h2>
+      <p><?= View::escape($homeContent['home_why_description'] ?? 'We focus on practical solutions, plain language and realistic expectations. Whether you are building a business presence or need help with a digital task, we start by understanding what you are trying to achieve.') ?></p><a class="text-link" href="/about">Learn about AlbaTech <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
     </div>
     <div class="home-why-points">
       <div class="why-point"><span class="why-point__icon"><i class="fa-solid fa-list-check" aria-hidden="true"></i></span>
         <div>
-          <h3>Practical, not complicated</h3>
-          <p>Recommendations that fit the task and your situation.</p>
+          <h3><?= View::escape($homeContent['home_why1_title'] ?? 'Practical, not complicated') ?></h3>
+          <p><?= View::escape($homeContent['home_why1_description'] ?? 'Recommendations that fit the task and your situation.') ?></p>
         </div>
       </div>
       <div class="why-point"><span class="why-point__icon"><i class="fa-solid fa-receipt" aria-hidden="true"></i></span>
         <div>
-          <h3>Transparent expectations</h3>
-          <p>Understand the scope and charges before agreeing to proceed.</p>
+          <h3><?= View::escape($homeContent['home_why2_title'] ?? 'Transparent expectations') ?></h3>
+          <p><?= View::escape($homeContent['home_why2_description'] ?? 'Understand the scope and charges before agreeing to proceed.') ?></p>
         </div>
       </div>
       <div class="why-point"><span class="why-point__icon"><i class="fa-regular fa-message" aria-hidden="true"></i></span>
         <div>
-          <h3>Easy to reach</h3>
-          <p>Start with a simple enquiry and get help deciding the next step.</p>
+          <h3><?= View::escape($homeContent['home_why3_title'] ?? 'Easy to reach') ?></h3>
+          <p><?= View::escape($homeContent['home_why3_description'] ?? 'Start with a simple enquiry and get help deciding the next step.') ?></p>
         </div>
       </div>
     </div>
@@ -145,9 +148,9 @@ use AlbaTech\Core\View; ?>
 <section class="section home-recent-work">
   <div class="container">
     <div class="section-heading">
-      <span class="section-kicker">Work areas</span>
-      <h2>Types of projects we handle</h2>
-      <p>From websites to business processes, we focus on practical outcomes for businesses and individuals in Kenya.</p>
+      <span class="section-kicker"><?= View::escape($homeContent['home_areas_kicker'] ?? 'Work areas') ?></span>
+      <h2><?= View::escape($homeContent['home_areas_title'] ?? 'Types of projects we handle') ?></h2>
+      <p><?= View::escape($homeContent['home_areas_description'] ?? 'From websites to business processes, we focus on practical outcomes for businesses and individuals in Kenya.') ?></p>
     </div>
     <div class="recent-work-grid">
       <article class="case-study-card">
@@ -155,9 +158,9 @@ use AlbaTech\Core\View; ?>
           <div class="case-study-placeholder"><i class="fa-solid fa-laptop-code"></i></div>
         </div>
         <div class="case-study-card__content">
-          <span class="case-study-card__category">Website Design</span>
-          <h3>Business Websites</h3>
-          <p>Professional, mobile-friendly websites that help customers understand your business and contact you easily.</p>
+          <span class="case-study-card__category"><?= View::escape($homeContent['home_area1_category'] ?? 'Website Design') ?></span>
+          <h3><?= View::escape($homeContent['home_area1_title'] ?? 'Business Websites') ?></h3>
+          <p><?= View::escape($homeContent['home_area1_description'] ?? 'Professional, mobile-friendly websites that help customers understand your business and contact you easily.') ?></p>
         </div>
       </article>
       <article class="case-study-card">
@@ -165,9 +168,9 @@ use AlbaTech\Core\View; ?>
           <div class="case-study-placeholder"><i class="fa-solid fa-file-circle-check"></i></div>
         </div>
         <div class="case-study-card__content">
-          <span class="case-study-card__category">Business Registration</span>
-          <h3>Company Setup</h3>
-          <p>Guidance through business registration, tax compliance setup, and understanding regulatory requirements.</p>
+          <span class="case-study-card__category"><?= View::escape($homeContent['home_area2_category'] ?? 'Business Registration') ?></span>
+          <h3><?= View::escape($homeContent['home_area2_title'] ?? 'Company Setup') ?></h3>
+          <p><?= View::escape($homeContent['home_area2_description'] ?? 'Guidance through business registration, tax compliance setup, and understanding regulatory requirements.') ?></p>
         </div>
       </article>
       <article class="case-study-card">
@@ -175,9 +178,9 @@ use AlbaTech\Core\View; ?>
           <div class="case-study-placeholder"><i class="fa-solid fa-globe"></i></div>
         </div>
         <div class="case-study-card__content">
-          <span class="case-study-card__category">Online Presence</span>
-          <h3>Digital Visibility</h3>
-          <p>Google Business Profile setup, online directory listings, and improving how customers find your business.</p>
+          <span class="case-study-card__category"><?= View::escape($homeContent['home_area3_category'] ?? 'Online Presence') ?></span>
+          <h3><?= View::escape($homeContent['home_area3_title'] ?? 'Digital Visibility') ?></h3>
+          <p><?= View::escape($homeContent['home_area3_description'] ?? 'Google Business Profile setup, online directory listings, and improving how customers find your business.') ?></p>
         </div>
       </article>
     </div>
@@ -187,15 +190,15 @@ use AlbaTech\Core\View; ?>
 
 <section class="home-cta">
   <div class="container home-cta__inner">
-    <div><span class="eyebrow eyebrow--light">Let's talk</span>
-      <h2>Have a task in mind?</h2>
-      <p>Tell us what you are trying to do. We will help you work out a sensible next step.</p>
+    <div><span class="eyebrow eyebrow--light"><?= View::escape($homeContent['home_cta_kicker'] ?? 'Talk to us') ?></span>
+      <h2><?= View::escape($homeContent['home_cta_title'] ?? 'Have a task in mind?') ?></h2>
+      <p><?= View::escape($homeContent['home_cta_description'] ?? 'Tell us what you are trying to do. We will help you work out a sensible next step.') ?></p>
     </div><a class="button button--accent" href="<?= View::escape($whatsAppUrl ?? '/get-help') ?>"><?php if (!empty($hasWhatsApp)): ?><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Start a WhatsApp chat<?php else: ?><i class="fa-regular fa-envelope" aria-hidden="true"></i> Send an enquiry<?php endif; ?></a>
   </div>
 </section>
 
 <section class="independent-note independent-note--home">
   <div class="container independent-note__inner"><span class="independent-note__icon"><i class="fa-solid fa-circle-info" aria-hidden="true"></i></span>
-    <p><strong>Our service promise</strong> We explain the scope and charges before starting. For government-related assistance, AlbaTech Solutions is an independent service provider, not a government agency. Official decisions remain with the relevant authority.</p>
+    <p><strong>Our service promise</strong> <?= View::escape($homeContent['home_promise'] ?? 'We explain the scope and charges before starting. For government-related assistance, AlbaTech Solutions is an independent service provider, not a government agency. Official decisions remain with the relevant authority.') ?></p>
   </div>
 </section>

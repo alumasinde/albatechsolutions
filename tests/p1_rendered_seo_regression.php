@@ -11,6 +11,8 @@ require dirname(__DIR__) . '/app/Core/Database.php';
 require dirname(__DIR__) . '/app/Core/Response.php';
 require dirname(__DIR__) . '/app/Core/View.php';
 require dirname(__DIR__) . '/app/Core/SiteUrl.php';
+require dirname(__DIR__) . '/app/Core/SeoDefaults.php';
+require dirname(__DIR__) . '/app/Core/WhatsAppLink.php';
 require dirname(__DIR__) . '/app/Repositories/SiteSettingsRepository.php';
 require dirname(__DIR__) . '/app/Repositories/ServiceRepository.php';
 require dirname(__DIR__) . '/app/Controllers/GuideController.php';

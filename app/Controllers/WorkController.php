@@ -10,6 +10,8 @@ use AlbaTech\Core\Request;
 use AlbaTech\Core\Response;
 use AlbaTech\Core\SiteUrl;
 use AlbaTech\Core\View;
+use AlbaTech\Core\WhatsAppLink;
+use AlbaTech\Core\SeoDefaults;
 use PDO;
 use Throwable;
 
@@ -44,15 +46,14 @@ final class WorkController
         $description = trim((string) ($project['meta_description'] ?: $project['description']));
         $description = preg_replace('/\s+/', ' ', $description) ?? $description;
         if (strlen($description) > 300) $description = substr($description, 0, 297) . '...';
-        $number = preg_replace('/\D+/', '', (string) (new \AlbaTech\Repositories\SiteSettingsRepository())->publicValues()['whatsapp_number'] ?? '') ?? '';
-        $message = 'Hi AlbaTech Solutions, I would like to discuss a project similar to: ' . $project['title'] . '.';
-        $wa = strlen($number) >= 8 && strlen($number) <= 15 && !str_starts_with($number, '0') ? 'https://wa.me/' . $number . '?text=' . rawurlencode($message) : '/get-help?project=' . rawurlencode($project['slug']);
+        $contactSettings = (new \AlbaTech\Repositories\SiteSettingsRepository())->publicValues();
+        $wa = WhatsAppLink::build($contactSettings, '/get-help?project=' . rawurlencode($project['slug']));
         $relatedStmt = Database::connection()->prepare("SELECT w.id,w.title,w.slug,w.description,w.cover_image,c.name AS category_name FROM work_projects w JOIN service_categories c ON c.id=w.category_id WHERE w.status='published' AND w.id<>:id AND w.category_id=:category ORDER BY w.is_featured DESC,w.sort_order,w.updated_at DESC LIMIT 3");
         $relatedStmt->execute(['id'=>$project['id'],'category'=>$project['category_id']]);
         Response::html(View::render('work/show', [
-            'pageTitle' => trim((string) ($project['meta_title'] ?: $project['title'])) . ' | AlbaTech Solutions',
-            'metaDescription' => $description, 'canonicalUrl' => $base . '/work/' . rawurlencode($project['slug']),
-            'metaImage' => $base . '/' . ltrim($project['cover_image'], '/'), 'project' => $project,
+            'pageTitle' => SeoDefaults::title((string) ($project['meta_title'] ?: ''), (string) $project['title'] . ' | AlbaTech Solutions'),
+            'metaDescription' => SeoDefaults::description($description), 'canonicalUrl' => $base . '/work/' . rawurlencode($project['slug']),
+            'metaImage' => SeoDefaults::image((string) ($project['cover_image'] ?? ''), $base), 'project' => $project,
             'relatedProjects' => $relatedStmt->fetchAll(), 'whatsAppUrl' => $wa,
         ]));
     }

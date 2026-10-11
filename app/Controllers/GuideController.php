@@ -7,6 +7,7 @@ namespace AlbaTech\Controllers;
 use AlbaTech\Core\Response;
 use AlbaTech\Core\SiteUrl;
 use AlbaTech\Core\View;
+use AlbaTech\Core\SeoDefaults;
 
 final class GuideController
 {
@@ -58,10 +59,10 @@ final class GuideController
         $articles = self::articles();
         $baseUrl = SiteUrl::base();
         Response::html(View::render('pages/guides', [
-            'pageTitle' => 'Practical Business & Website Guides in Kenya | AlbaTech Solutions',
-            'metaDescription' => 'Practical guides for Kenyan small businesses on website costs, domains and hosting, preparing a business website, and improving local online visibility.',
+            'pageTitle' => SeoDefaults::title('', 'Practical Business & Website Guides in Kenya | AlbaTech Solutions'),
+            'metaDescription' => SeoDefaults::description('', 'Practical guides for Kenyan small businesses on website costs, domains and hosting, preparing a business website, and improving local online visibility.'),
             'canonicalUrl' => $baseUrl . '/guides',
-            'metaImage' => $baseUrl . '/assets/images/albatech-social-card.png',
+            'metaImage' => SeoDefaults::image('', $baseUrl),
             'guideArticles' => $articles,
         ]));
     }
@@ -83,10 +84,10 @@ final class GuideController
 
         $baseUrl = SiteUrl::base();
         Response::html(View::render('pages/guide-article', [
-            'pageTitle' => $article['meta_title'] . ' | AlbaTech Solutions',
-            'metaDescription' => $article['meta_description'],
+            'pageTitle' => SeoDefaults::title((string) $article['meta_title'], (string) $article['title']) . ' | AlbaTech Solutions',
+            'metaDescription' => SeoDefaults::description((string) $article['meta_description'], (string) $article['summary']),
             'canonicalUrl' => $baseUrl . '/guides/' . rawurlencode($slug),
-            'metaImage' => $baseUrl . '/assets/images/albatech-social-card.png',
+            'metaImage' => SeoDefaults::image('', $baseUrl),
             'guideArticle' => $article,
             'guideSlug' => $slug,
         ]));

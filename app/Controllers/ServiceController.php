@@ -7,6 +7,7 @@ namespace AlbaTech\Controllers;
 use AlbaTech\Core\Env;
 use AlbaTech\Core\Response;
 use AlbaTech\Core\SiteUrl;
+use AlbaTech\Core\SeoDefaults;
 use AlbaTech\Core\Request;
 use AlbaTech\Core\View;
 use AlbaTech\Repositories\ServiceRepository;
@@ -28,10 +29,10 @@ final class ServiceController
 
         $baseUrl = SiteUrl::base();
         Response::html(View::render('services/index', [
-            'pageTitle' => 'Services | AlbaTech Solutions',
-            'metaDescription' => 'Explore web design, online business presence and selected government and business assistance services in Kenya.',
+            'pageTitle' => SeoDefaults::title('', 'Services | AlbaTech Solutions'),
+            'metaDescription' => SeoDefaults::description('', 'Explore web design, online business presence and selected government and business assistance services in Kenya.'),
             'canonicalUrl' => $baseUrl . '/services',
-            'metaImage' => $baseUrl . '/assets/images/albatech-social-card.png',
+            'metaImage' => SeoDefaults::image('', $baseUrl),
             'categories' => $categories,
         ]));
     }
@@ -57,10 +58,10 @@ final class ServiceController
         }
 
         Response::html(View::render('services/show', [
-            'pageTitle' => ($service['meta_title'] ?: $service['name']) . ' | AlbaTech Solutions',
-            'metaDescription' => $description,
+            'pageTitle' => SeoDefaults::title((string) ($service['meta_title'] ?? ''), (string) $service['name']) . ' | AlbaTech Solutions',
+            'metaDescription' => SeoDefaults::description($description, (string) ($service['short_description'] ?? 'Explore this service from AlbaTech Solutions.')),
             'canonicalUrl' => $baseUrl . '/services/' . rawurlencode($service['slug']),
-            'metaImage' => $baseUrl . '/assets/images/albatech-social-card.png',
+            'metaImage' => SeoDefaults::image('', $baseUrl),
             'metaRobots' => 'index, follow, max-image-preview:large',
             'service' => $service,
             'schemaService' => $service,

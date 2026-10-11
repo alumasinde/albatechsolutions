@@ -3,21 +3,22 @@
 use AlbaTech\Core\Env;
 use AlbaTech\Core\SiteUrl;
 use AlbaTech\Core\View;
+use AlbaTech\Core\SeoDefaults;
+use AlbaTech\Core\WhatsAppLink;
 use AlbaTech\Repositories\SiteSettingsRepository;
 
 $siteSettings = (new SiteSettingsRepository())->publicValues();
 $siteName = trim((string) ($siteSettings['site_name'] ?? $appName ?? Env::get('APP_NAME', 'AlbaTech Solutions')));
 if ($siteName === '') $siteName = 'AlbaTech Solutions';
 
-$pageTitle = trim((string) ($pageTitle ?? $siteName));
-if ($pageTitle === '') $pageTitle = $siteName;
+$pageTitle = SeoDefaults::title((string) ($pageTitle ?? ''), (string) ($siteSettings['default_meta_title'] ?? $siteName));
 
 $defaultDescription = trim((string) ($siteSettings['default_meta_description'] ?? ''));
 if ($defaultDescription === '') {
-    $defaultDescription = 'Website design, online business presence and practical digital assistance for people and businesses in Kenya.';
+    $defaultDescription = SeoDefaults::DESCRIPTION;
 }
 $meta = isset($meta) && is_array($meta) ? $meta : [];
-$metaDescription = trim((string) ($metaDescription ?? $meta['meta_description'] ?? $defaultDescription));
+$metaDescription = SeoDefaults::description((string) ($metaDescription ?? $meta['meta_description'] ?? ''), $defaultDescription);
 if ($metaDescription === '') $metaDescription = $defaultDescription;
 // Keep snippets useful; avoid outputting excessively long descriptions by mistake.
 if (function_exists('mb_strlen') && mb_strlen($metaDescription, 'UTF-8') > 320) {
@@ -31,8 +32,7 @@ $canonicalUrl = trim((string) ($canonicalUrl ?? ''));
 $shouldIndex = !str_contains(strtolower((string) ($metaRobots ?? 'index, follow')), 'noindex');
 // Never guess the homepage as a canonical for an unrelated indexable route.
 // Controllers must provide the page's trusted, absolute canonical URL.
-$metaImage = trim((string) ($metaImage ?? ($siteUrl . '/assets/images/albatech-social-card.png')));
-if ($metaImage !== '' && !preg_match('~^https://~i', $metaImage)) $metaImage = $siteUrl . '/' . ltrim($metaImage, '/');
+$metaImage = SeoDefaults::image((string) ($metaImage ?? $siteSettings['default_social_image'] ?? ''), $siteUrl);
 $metaRobots = trim((string) ($metaRobots ?? 'index, follow, max-image-preview:large'));
 $author = trim((string) ($author ?? $siteSettings['default_author'] ?? 'AlbaTech Solutions'));
 // Only a controller may declare a service page. Reading plain `$service` leaked loop variables
@@ -78,19 +78,22 @@ if ($orgPhone !== '') {
 }
 
 if ($guideData !== null && $canonicalUrl !== '') {
-    $structuredGraph[] = [
+    $articleSchema = [
         '@type' => 'Article',
         '@id' => $canonicalUrl . '#article',
         'headline' => (string) ($guideData['title'] ?? $pageTitle),
         'description' => $metaDescription,
-        'datePublished' => (string) ($guideData['published'] ?? $guideData['updated'] ?? ''),
-        'dateModified' => (string) ($guideData['updated'] ?? $guideData['published'] ?? ''),
         'mainEntityOfPage' => ['@type' => 'WebPage', '@id' => $canonicalUrl],
         'author' => ['@type' => 'Organization', '@id' => $organizationId],
         'publisher' => ['@id' => $organizationId],
         'image' => [$metaImage],
         'inLanguage' => 'en-KE',
     ];
+    $publishedDate = trim((string) ($guideData['published'] ?? ''));
+    $modifiedDate = trim((string) ($guideData['updated'] ?? ''));
+    if ($publishedDate !== '' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $publishedDate)) $articleSchema['datePublished'] = $publishedDate;
+    if ($modifiedDate !== '' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $modifiedDate)) $articleSchema['dateModified'] = $modifiedDate;
+    $structuredGraph[] = $articleSchema;
 } elseif ($serviceData !== null && $canonicalUrl !== '') {
     $serviceName = trim((string) ($serviceData['name'] ?? $siteName));
     $serviceDescription = trim((string) ($serviceData['meta_description'] ?? $serviceData['short_description'] ?? $metaDescription));
@@ -117,18 +120,22 @@ if ($guideData !== null && $canonicalUrl !== '') {
 }
 
 $structuredData = $structuredData ?? ['@context' => 'https://schema.org', '@graph' => $structuredGraph];
-$whatsAppRaw = (string) ($siteSettings['whatsapp_number'] ?? '');
-$whatsAppNumber = preg_replace('/\D+/', '', $whatsAppRaw) ?? '';
-$whatsAppMessage = trim((string) ($siteSettings['whatsapp_prefill_message'] ?? ''));
-if ($whatsAppMessage === '') $whatsAppMessage = 'Hi ' . $siteName . ', I would like to make an enquiry. Please guide me on the next steps.';
-$whatsAppUrl = strlen($whatsAppNumber) >= 8 && strlen($whatsAppNumber) <= 15 && !str_starts_with($whatsAppNumber, '0')
-    ? 'https://wa.me/' . $whatsAppNumber . '?text=' . rawurlencode($whatsAppMessage)
-    : '/get-help';
+$whatsAppUrl = WhatsAppLink::build($siteSettings);
 $footerEmail = trim((string) ($siteSettings['contact_email'] ?? ''));
 $footerPhone = trim((string) ($siteSettings['business_phone'] ?? ''));
 $footerPhoneHref = preg_replace('/[^0-9+]/', '', $footerPhone) ?? '';
 $footerLocation = trim((string) ($siteSettings['business_address'] ?? 'Nairobi, Kenya'));
 if ($footerLocation === '') $footerLocation = 'Kenya';
+
+$headerNavigation = []; $footerExploreNavigation = []; $footerInfoNavigation = []; $layoutCtas = [];
+try {
+    $navRows = \AlbaTech\Core\Database::connection()->query('SELECT label,url,placement,open_new_tab FROM site_navigation WHERE is_enabled=1 ORDER BY sort_order,id')->fetchAll();
+    foreach ($navRows as $navRow) { if ($navRow['placement']==='header') $headerNavigation[]=$navRow; elseif ($navRow['placement']==='footer_explore') $footerExploreNavigation[]=$navRow; elseif ($navRow['placement']==='footer_information') $footerInfoNavigation[]=$navRow; }
+    foreach (\AlbaTech\Core\Database::connection()->query('SELECT cta_key,label,url,placement,style_class FROM site_ctas WHERE is_enabled=1')->fetchAll() as $ctaRow) $layoutCtas[$ctaRow['cta_key']]=$ctaRow;
+} catch (\Throwable $e) { error_log('[AlbaTech layout CMS] '.$e->getMessage()); }
+if (!$headerNavigation) $headerNavigation = [['label'=>'Home','url'=>'/','open_new_tab'=>0],['label'=>'Services','url'=>'/services','open_new_tab'=>0],['label'=>'Guides','url'=>'/guides','open_new_tab'=>0],['label'=>'About','url'=>'/about','open_new_tab'=>0],['label'=>'Contact','url'=>'/get-help','open_new_tab'=>0]];
+if (!$footerExploreNavigation) $footerExploreNavigation = [['label'=>'Our services','url'=>'/services','open_new_tab'=>0],['label'=>'Guides & resources','url'=>'/guides','open_new_tab'=>0],['label'=>'About us','url'=>'/about','open_new_tab'=>0]];
+if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy','url'=>'/privacy','open_new_tab'=>0],['label'=>'Terms of service','url'=>'/terms','open_new_tab'=>0],['label'=>'Make an enquiry','url'=>'/get-help','open_new_tab'=>0]];
 
 ?>
 <!doctype html>
@@ -177,9 +184,6 @@ if ($footerLocation === '') $footerLocation = 'Kenya';
     $finalImage = $metaImage !== '' ? $metaImage : $defaultImage;
     ?>
     <meta property="og:image" content="<?= View::escape($finalImage) ?>">
-    <meta property="og:image:type" content="image/png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="<?= View::escape($siteName . ' — practical digital services in Kenya') ?>">
 
     <meta name="twitter:card" content="summary_large_image">
@@ -240,11 +244,7 @@ if ($footerLocation === '') $footerLocation = 'Kenya';
         </button>
 
         <nav class="site-nav" id="site-nav" aria-label="Main navigation">
-            <a href="/">Home</a>
-            <a href="/services">Services</a>
-            <a href="/guides">Guides</a>
-            <a href="/about">About</a>
-            <a href="/get-help">Contact</a>
+            <?php foreach ($headerNavigation as $nav): ?><a href="<?= View::escape($nav['url']) ?>"<?= !empty($nav['open_new_tab']) ? ' target="_blank" rel="noopener noreferrer"' : '' ?>><?= View::escape($nav['label']) ?></a><?php endforeach; ?>
         </nav>
     </div>
 </header>
@@ -302,14 +302,12 @@ if ($footerLocation === '') $footerLocation = 'Kenya';
     <div class="container footer-main">
         <div class="footer-brand-block">
             <a class="brand" href="/" aria-label="<?= View::escape($siteName) ?> home">AlbaTech <span>Solutions</span></a>
-            <p class="footer-description">Practical website, online presence and digital assistance for people and businesses in Kenya. Clear scope, straightforward communication and realistic next steps.</p>
-            <a class="footer-contact-cta" href="/get-help">Tell us what you need <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+            <p class="footer-description"><?= View::escape($siteSettings['footer_description'] ?? 'Practical website, online presence and digital assistance for people and businesses in Kenya. Clear scope, straightforward communication and realistic next steps.') ?></p>
+            <?php $footerCta = $layoutCtas['primary_enquiry'] ?? ['label'=>'Tell us what you need','url'=>'/get-help']; ?><a class="footer-contact-cta" href="<?= View::escape($footerCta['url']) ?>"><?= View::escape($footerCta['label']) ?> <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
         </div>
         <nav class="footer-column" aria-label="Explore">
             <h2>Explore</h2>
-            <a href="/services">Our services</a>
-            <a href="/guides">Guides & resources</a>
-            <a href="/about">About us</a>
+            <?php foreach ($footerExploreNavigation as $nav): ?><a href="<?= View::escape($nav['url']) ?>"<?= !empty($nav['open_new_tab']) ? ' target="_blank" rel="noopener noreferrer"' : '' ?>><?= View::escape($nav['label']) ?></a><?php endforeach; ?>
         </nav>
         <div class="footer-column">
             <h2>Contact & location</h2>
@@ -320,9 +318,7 @@ if ($footerLocation === '') $footerLocation = 'Kenya';
         </div>
         <nav class="footer-column" aria-label="Information">
             <h2>Information</h2>
-            <a href="/privacy">Privacy policy</a>
-            <a href="/terms">Terms of service</a>
-            <a href="/get-help">Make an enquiry</a>
+            <?php foreach ($footerInfoNavigation as $nav): ?><a href="<?= View::escape($nav['url']) ?>"<?= !empty($nav['open_new_tab']) ? ' target="_blank" rel="noopener noreferrer"' : '' ?>><?= View::escape($nav['label']) ?></a><?php endforeach; ?>
         </nav>
     </div>
     <div class="container footer-bottom">
@@ -332,7 +328,7 @@ if ($footerLocation === '') $footerLocation = 'Kenya';
     </div>
 </footer>
 
-<?php if (strlen($whatsAppNumber) >= 8 && strlen($whatsAppNumber) <= 15 && !str_starts_with($whatsAppNumber, '0')): ?>
+<?php if (str_starts_with($whatsAppUrl, 'https://wa.me/')): ?>
 <div class="whatsapp-float">
   <a class="whatsapp-float__trigger" href="<?= View::escape($whatsAppUrl) ?>" target="_blank" rel="noopener noreferrer" aria-label="Open WhatsApp chat with AlbaTech Solutions">
     <i class="fa-brands fa-whatsapp" aria-hidden="true"></i><span></span>

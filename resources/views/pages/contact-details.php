@@ -1,6 +1,7 @@
 <?php
 use AlbaTech\Core\View;
 use AlbaTech\Repositories\SiteSettingsRepository;
+use AlbaTech\Core\WhatsAppLink;
 
 $contactSettings = (new SiteSettingsRepository())->publicValues();
 $contactEmail = trim((string) ($contactSettings['contact_email'] ?? ''));
@@ -9,8 +10,7 @@ $contactPhoneHref = preg_replace('/[^0-9+]/', '', $contactPhone);
 $contactLocation = trim((string) ($contactSettings['business_address'] ?? 'Nairobi, Kenya'));
 $contactLocation = $contactLocation !== '' ? $contactLocation : 'Kenya';
 $contactWhatsApp = preg_replace('/\\D+/', '', (string) ($contactSettings['whatsapp_number'] ?? ''));
-$contactMessage = trim((string) ($contactSettings['whatsapp_prefill_message'] ?? ''));
-if ($contactMessage === '') $contactMessage = 'Hi AlbaTech Solutions, I would like to make an enquiry. Please guide me on the next steps.';
+$contactWhatsAppUrl = WhatsAppLink::build($contactSettings);
 $contactHours = trim((string) ($contactSettings['contact_hours'] ?? 'Monday–Friday, 8:00 am–5:00 pm'));
 $contactResponseTime = trim((string) ($contactSettings['contact_response_time'] ?? 'Within one business day'));
 $contactCity = trim((string) ($contactSettings['business_city'] ?? 'Nairobi, Kenya'));
@@ -29,7 +29,7 @@ $contactTabs = ['All', 'WhatsApp', 'Email', 'Location'];
     $hasEmail = ($contactEmail !== '' && filter_var($contactEmail, FILTER_VALIDATE_EMAIL))
         || ($helpEmail !== '' && filter_var($helpEmail, FILTER_VALIDATE_EMAIL));
     $hasPhone = $contactPhoneHref !== '' && strlen(preg_replace('/\D+/', '', $contactPhoneHref)) >= 7;
-    $hasWhatsApp = $contactWhatsApp !== '';
+    $hasWhatsApp = str_starts_with($contactWhatsAppUrl, 'https://wa.me/');
     $contactTabs = [];
     if ($hasWhatsApp) $contactTabs['whatsapp'] = 'WhatsApp';
     if ($hasPhone) $contactTabs['phone'] = 'Phone';
@@ -52,7 +52,7 @@ $contactTabs = ['All', 'WhatsApp', 'Email', 'Location'];
       <article class="contact-detail-card" data-contact-card="whatsapp">
         <span class="contact-card-eyebrow">Fastest response</span><h2>WhatsApp Support</h2>
         <?php if ($contactHours !== ''): ?><div class="contact-detail-facts"><p><strong>Availability:</strong><br><?= View::escape($contactHours) ?></p></div><?php endif; ?>
-        <a class="button button--whatsapp contact-card-action" href="https://wa.me/<?= View::escape($contactWhatsApp) ?>?text=<?= rawurlencode($contactMessage) ?>" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Chat on WhatsApp</a>
+        <a class="button button--whatsapp contact-card-action" href="<?= View::escape($contactWhatsAppUrl) ?>" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Chat on WhatsApp</a>
       </article>
       <?php endif; ?>
       <?php if ($hasPhone): ?>
