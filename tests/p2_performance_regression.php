@@ -22,8 +22,9 @@ $assert(str_contains($htaccess, 'max-age=31536000, immutable'), 'Versioned stati
 $assert(str_contains($htaccess, 'ExpiresByType image/webp'), 'WebP assets should have an expiry policy.');
 $assert(str_contains($htaccess, 'ExpiresByType image/avif'), 'AVIF assets should have an expiry policy.');
 $assert(str_contains($htaccess, 'mod_deflate.c'), 'Compression should remain configured.');
-$assert(str_contains($layout, 'rel="preload" as="image"'), 'Homepage hero image should be preloaded.');
-$assert(str_contains($layout, 'fetchpriority="high"'), 'Hero image preload should carry high fetch priority.');
+$assert(!str_contains($layout, 'rel="preload" as="image"'), 'CMS-configurable hero should not preload a hardcoded fallback image URL.');
+$home = file_get_contents(__DIR__ . '/../resources/views/pages/home.php');
+$assert(str_contains($home, 'fetchpriority="high"'), 'Hero image should carry high fetch priority on the image element.');
 $assert(str_contains($home, 'loading="eager" fetchpriority="high"'), 'Homepage hero image should load eagerly with high priority.');
 $assert(str_contains($home, 'width="400" height="300"'), 'Homepage hero image should declare dimensions to reduce layout shift.');
 $assert(str_contains($workCss, 'aspect-ratio:16/10'), 'Portfolio card images should reserve an aspect-ratio box.');

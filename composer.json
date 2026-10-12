@@ -14,12 +14,15 @@
     }
   },
   "scripts": {
-    "migrate": "php bin/migrate.php",
     "serve": [
-      "Composer\\Config::disableProcessTimeout",
-      "php -S albatechsolution.test:8000 -t public"
+        "Composer\\Config::disableProcessTimeout",
+        "php -S albatechsolution.test:8000 -t public"
+    ],
+    "serve:lan": [
+        "Composer\\Config::disableProcessTimeout",
+        "php -S 0.0.0.0:8000 -t public"
     ]
-  },
+},
   "config": {
     "sort-packages": true,
     "optimize-autoloader": true

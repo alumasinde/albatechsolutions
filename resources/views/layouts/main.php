@@ -304,10 +304,8 @@ if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy',
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
 
-    <!-- Preload hero image only on homepage -->
-    <?php if ($canonicalUrl !== '' && rtrim($canonicalUrl, '/') === rtrim($siteUrl, '/')): ?>
-        <link rel="preload" as="image" href="/assets/images/albatech-hero.webp" fetchpriority="high">
-    <?php endif; ?>
+    <!-- The hero image is CMS-configurable. Its <img fetchpriority="high"> is the source of truth;
+         avoid preloading a hardcoded fallback URL when an administrator may choose another image. -->
 
     <!-- Favicons -->
     <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
@@ -317,6 +315,8 @@ if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy',
     <link rel="apple-touch-icon" sizes="192x192" href="/assets/images/favicon-192x192.png">
 
     <link rel="stylesheet" href="<?= View::escape(View::asset('css/bundle.css')) ?>">
+    <!-- SVG sprite is the primary icon system. Font Awesome remains temporarily for legacy solid/regular icons and brand marks until all legacy icons are migrated. -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
 
     <?php
     // Analytics tracking (Plausible or GA4)
