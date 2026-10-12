@@ -39,9 +39,11 @@ $author = trim((string) ($author ?? $siteSettings['default_author'] ?? 'AlbaTech
 // from listing views (home, /services) into the layout and emitted a bogus Service node.
 $serviceData = isset($schemaService) && is_array($schemaService) ? $schemaService : null;
 $guideData = isset($guideArticle) && is_array($guideArticle) ? $guideArticle : null;
+$projectData = isset($schemaProject) && is_array($schemaProject) ? $schemaProject : null;
 
 $organizationId = $siteUrl . '/#organization';
 $websiteId = $siteUrl . '/#website';
+$localBusinessId = $siteUrl . '/#localbusiness';
 $structuredGraph = [[
     '@type' => 'Organization',
     '@id' => $organizationId,
@@ -77,6 +79,91 @@ if ($orgPhone !== '') {
     $structuredGraph[0]['telephone'] = $orgPhone;
 }
 
+// Build LocalBusiness schema
+$localBusinessSchema = [
+    '@type' => 'ProfessionalService',
+    '@id' => $localBusinessId,
+    'name' => $siteName,
+    'url' => $siteUrl . '/',
+    'description' => $defaultDescription,
+    'logo' => ['@type' => 'ImageObject', 'url' => $siteUrl . '/assets/images/albatech-logo.png'],
+    'areaServed' => ['@type' => 'Country', 'name' => 'Kenya'],
+    'priceRange' => 'KSh',
+];
+
+if ($orgAddress !== '') {
+    $localBusinessSchema['address'] = [
+        '@type' => 'PostalAddress',
+        'addressLocality' => trim(explode(',', $orgAddress)[0]),
+        'addressCountry' => 'KE',
+    ];
+}
+if ($orgEmail !== '' && filter_var($orgEmail, FILTER_VALIDATE_EMAIL)) {
+    $localBusinessSchema['email'] = $orgEmail;
+}
+if ($orgPhone !== '') {
+    $localBusinessSchema['telephone'] = $orgPhone;
+}
+
+// Add geo coordinates if available
+$lat = trim((string) ($siteSettings['business_latitude'] ?? ''));
+$lng = trim((string) ($siteSettings['business_longitude'] ?? ''));
+if ($lat !== '' && $lng !== '' && is_numeric($lat) && is_numeric($lng)) {
+    $localBusinessSchema['geo'] = [
+        '@type' => 'GeoCoordinates',
+        'latitude' => (float) $lat,
+        'longitude' => (float) $lng,
+    ];
+}
+
+// Add opening hours if available
+$openingHours = trim((string) ($siteSettings['opening_hours'] ?? ''));
+if ($openingHours !== '') {
+    $localBusinessSchema['openingHoursSpecification'] = [
+        '@type' => 'OpeningHoursSpecification',
+        'dayOfWeek' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+        'opens' => '09:00',
+        'closes' => '17:00',
+    ];
+}
+
+// Add sameAs social links
+$sameAs = [];
+$socialLinks = [
+    'social_facebook' => 'facebook.com',
+    'social_twitter' => 'twitter.com',
+    'social_linkedin' => 'linkedin.com',
+    'social_instagram' => 'instagram.com',
+];
+foreach ($socialLinks as $key => $domain) {
+    $url = trim((string) ($siteSettings[$key] ?? ''));
+    if ($url !== '' && filter_var($url, FILTER_VALIDATE_URL)) {
+        $sameAs[] = $url;
+    }
+}
+if (!empty($sameAs)) {
+    $localBusinessSchema['sameAs'] = $sameAs;
+}
+
+$structuredGraph[] = $localBusinessSchema;
+
+// Add BreadcrumbList if provided by controller
+if (isset($breadcrumbs) && is_array($breadcrumbs) && !empty($breadcrumbs)) {
+    $breadcrumbList = [
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => [],
+    ];
+    foreach ($breadcrumbs as $index => $crumb) {
+        $breadcrumbList['itemListElement'][] = [
+            '@type' => 'ListItem',
+            'position' => $index + 1,
+            'name' => $crumb['name'] ?? '',
+            'item' => isset($crumb['url']) && $crumb['url'] !== '' ? $siteUrl . $crumb['url'] : null,
+        ];
+    }
+    $structuredGraph[] = $breadcrumbList;
+}
+
 if ($guideData !== null && $canonicalUrl !== '') {
     $articleSchema = [
         '@type' => 'Article',
@@ -94,6 +181,28 @@ if ($guideData !== null && $canonicalUrl !== '') {
     if ($publishedDate !== '' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $publishedDate)) $articleSchema['datePublished'] = $publishedDate;
     if ($modifiedDate !== '' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $modifiedDate)) $articleSchema['dateModified'] = $modifiedDate;
     $structuredGraph[] = $articleSchema;
+} elseif ($projectData !== null && $canonicalUrl !== '') {
+    $projectSchema = [
+        '@type' => 'CreativeWork',
+        '@id' => $canonicalUrl . '#creative-work',
+        'name' => (string) ($projectData['title'] ?? $pageTitle),
+        'description' => $metaDescription,
+        'url' => $canonicalUrl,
+        'author' => ['@type' => 'Organization', '@id' => $organizationId],
+        'publisher' => ['@id' => $organizationId],
+        'image' => [$metaImage],
+        'inLanguage' => 'en-KE',
+    ];
+    if (!empty($projectData['client_name'])) {
+        $projectSchema['about'] = [
+            '@type' => 'Thing',
+            'name' => (string) $projectData['client_name'],
+        ];
+    }
+    if (!empty($projectData['category_name'])) {
+        $projectSchema['genre'] = (string) $projectData['category_name'];
+    }
+    $structuredGraph[] = $projectSchema;
 } elseif ($serviceData !== null && $canonicalUrl !== '') {
     $serviceName = trim((string) ($serviceData['name'] ?? $siteName));
     $serviceDescription = trim((string) ($serviceData['meta_description'] ?? $serviceData['short_description'] ?? $metaDescription));
@@ -194,17 +303,44 @@ if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy',
 
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+
+    <!-- Preload hero image only on homepage -->
     <?php if ($canonicalUrl !== '' && rtrim($canonicalUrl, '/') === rtrim($siteUrl, '/')): ?>
-        <link rel="preload" as="image" href="/assets/images/albatech-social-card.png" fetchpriority="high">
+        <link rel="preload" as="image" href="/assets/images/albatech-hero.webp" fetchpriority="high">
     <?php endif; ?>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
-    <link rel="icon" type="image/png" sizes="512x512" href="/assets/images/albatech-logo.png">
-    <link rel="apple-touch-icon" href="/assets/images/albatech-logo.png">
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
+    <link rel="icon" type="image/png" sizes="48x48" href="/assets/images/favicon-48x48.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/images/favicon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/assets/images/favicon-512x512.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="/assets/images/favicon-192x192.png">
 
-    <link rel="stylesheet" href="<?= View::asset('css/tokens.css') ?>">
-    <link rel="stylesheet" href="<?= View::escape(View::asset('css/app.css')) ?>">
-    <link rel="stylesheet" href="<?= View::escape(View::asset('css/work.css')) ?>">
+    <link rel="stylesheet" href="<?= View::escape(View::asset('css/bundle.css')) ?>">
+
+    <?php
+    // Analytics tracking (Plausible or GA4)
+    $analyticsEnabled = !empty($siteSettings['analytics_enabled']) && $siteSettings['analytics_enabled'] === '1';
+    $analyticsProvider = trim((string) ($siteSettings['analytics_provider'] ?? ''));
+    $analyticsDomain = trim((string) ($siteSettings['analytics_domain'] ?? ''));
+    $analyticsScriptUrl = trim((string) ($siteSettings['analytics_script_url'] ?? ''));
+
+    if ($analyticsEnabled && $analyticsProvider === 'plausible' && $analyticsDomain !== '' && $analyticsScriptUrl !== ''):
+    ?>
+        <script defer data-domain="<?= View::escape($analyticsDomain) ?>" src="<?= View::escape($analyticsScriptUrl) ?>"></script>
+    <?php
+    elseif ($analyticsEnabled && $analyticsProvider === 'ga4' && $analyticsScriptUrl !== ''):
+    ?>
+        <script async src="<?= View::escape($analyticsScriptUrl) ?>"></script>
+        <script nonce="<?= View::escape($cspNonce ?? '') ?>">
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            <?php if ($analyticsDomain !== ''): ?>
+            gtag('config', '<?= View::escape($analyticsDomain) ?>');
+            <?php endif; ?>
+        </script>
+    <?php endif; ?>
 
     <script type="application/ld+json" nonce="<?= View::escape($cspNonce ?? '') ?>"><?=
         json_encode(
@@ -229,7 +365,7 @@ if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy',
             href="/"
             aria-label="<?= View::escape($siteName) ?> home"
         >
-            <img src="/assets/images/albatech-logo.png" alt="<?= View::escape($siteName) ?>" class="brand-logo" width="180" height="48">
+            <img src="/assets/images/albatech-logo.png" alt="<?= View::escape($siteName) ?>" class="brand-logo" width="180" height="180">
         </a>
 
         <button
@@ -240,7 +376,7 @@ if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy',
             aria-controls="site-nav"
             id="mobile-menu-toggle"
         >
-            <i class="fa-solid fa-bars" aria-hidden="true"></i>
+            <svg class="icon icon-bars" aria-hidden="true"><use href="/assets/images/icons.svg#icon-bars"></use></svg>
         </button>
 
         <nav class="site-nav" id="site-nav" aria-label="Main navigation">
@@ -256,12 +392,17 @@ if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy',
 
     if (!menuToggle || !siteNav) return;
 
-    const menuIcon = menuToggle.querySelector('i') || document.createElement('i');
+    const menuIcon = menuToggle.querySelector('svg');
 
     menuToggle.addEventListener('click', function() {
         const isOpen = siteNav.classList.toggle('is-open');
         menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-        menuIcon.className = isOpen ? 'fa-solid fa-xmark' : 'fa-solid fa-bars';
+        if (menuIcon) {
+            const use = menuIcon.querySelector('use');
+            if (use) {
+                use.setAttribute('href', isOpen ? '/assets/images/icons.svg#icon-xmark' : '/assets/images/icons.svg#icon-bars');
+            }
+        }
     });
 
     // Close menu when clicking a link
@@ -269,7 +410,12 @@ if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy',
         link.addEventListener('click', function() {
             siteNav.classList.remove('is-open');
             menuToggle.setAttribute('aria-expanded', 'false');
-            menuIcon.className = 'fa-solid fa-bars';
+            if (menuIcon) {
+                const use = menuIcon.querySelector('use');
+                if (use) {
+                    use.setAttribute('href', '/assets/images/icons.svg#icon-bars');
+                }
+            }
         });
     });
 
@@ -278,7 +424,12 @@ if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy',
         if (!siteNav.contains(e.target) && !menuToggle.contains(e.target)) {
             siteNav.classList.remove('is-open');
             menuToggle.setAttribute('aria-expanded', 'false');
-            menuIcon.className = 'fa-solid fa-bars';
+            if (menuIcon) {
+                const use = menuIcon.querySelector('use');
+                if (use) {
+                    use.setAttribute('href', '/assets/images/icons.svg#icon-bars');
+                }
+            }
         }
     });
 
@@ -287,7 +438,12 @@ if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy',
         if (e.key === 'Escape' && siteNav.classList.contains('is-open')) {
             siteNav.classList.remove('is-open');
             menuToggle.setAttribute('aria-expanded', 'false');
-            menuIcon.className = 'fa-solid fa-bars';
+            if (menuIcon) {
+                const use = menuIcon.querySelector('use');
+                if (use) {
+                    use.setAttribute('href', '/assets/images/icons.svg#icon-bars');
+                }
+            }
             menuToggle.focus();
         }
     });

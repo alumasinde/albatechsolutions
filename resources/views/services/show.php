@@ -1,23 +1,23 @@
 <?php use AlbaTech\Core\View; ?>
 
+<?php if (isset($breadcrumbs) && is_array($breadcrumbs) && !empty($breadcrumbs)): ?>
 <nav class="breadcrumb-nav" aria-label="Breadcrumb">
   <div class="container">
     <ol class="breadcrumb-list" itemscope itemtype="https://schema.org/BreadcrumbList">
-      <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-        <a href="/" itemprop="item"><span itemprop="name">Home</span></a>
-        <meta itemprop="position" content="1">
-      </li>
-      <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-        <a href="/services" itemprop="item"><span itemprop="name">Services</span></a>
-        <meta itemprop="position" content="2">
-      </li>
-      <li class="breadcrumb-item breadcrumb-item--current" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-        <span itemprop="name"><?= View::escape($service['name']) ?></span>
-        <meta itemprop="position" content="3">
-      </li>
+      <?php foreach ($breadcrumbs as $index => $crumb): ?>
+        <li class="breadcrumb-item<?= ($index === count($breadcrumbs) - 1) ? ' breadcrumb-item--current' : '' ?>" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <?php if (!empty($crumb['url']) && $index < count($breadcrumbs) - 1): ?>
+            <a href="<?= View::escape($crumb['url']) ?>" itemprop="item"><span itemprop="name"><?= View::escape($crumb['name']) ?></span></a>
+          <?php else: ?>
+            <span itemprop="name"><?= View::escape($crumb['name']) ?></span>
+          <?php endif; ?>
+          <meta itemprop="position" content="<?= $index + 1 ?>">
+        </li>
+      <?php endforeach; ?>
     </ol>
   </div>
 </nav>
+<?php endif; ?>
 
 <section class="service-detail-hero">
     <div class="container">
@@ -82,6 +82,6 @@
 </section>
 
 
-<?php if (!empty($relatedProjects)): ?><section class="section section--tint"><div class="container"><div class="section-heading section-heading--split"><div><span class="section-kicker">Examples</span><h2>Related work</h2></div><a class="text-link" href="/work">Explore all projects <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a></div><div class="work-grid work-grid--related"><?php foreach($relatedProjects as $project): ?><article class="work-card"><a class="work-card__image-link" href="/work/<?= rawurlencode($project['slug']) ?>"><img class="work-card__image" src="/<?= View::escape(ltrim($project['cover_image'],'/')) ?>" alt="<?= View::escape($project['title']) ?>" loading="lazy" decoding="async"></a><div class="work-card__body"><span class="work-card__text-category"><?= View::escape($project['category_name']) ?></span><h3><a href="/work/<?= rawurlencode($project['slug']) ?>"><?= View::escape($project['title']) ?></a></h3><p><?= View::escape($project['description']) ?></p></div></article><?php endforeach; ?></div></div></section><?php endif; ?>
+<?php if (!empty($relatedProjects)): ?><section class="section section--tint"><div class="container"><div class="section-heading section-heading--split"><div><span class="section-kicker">Examples</span><h2>Related work</h2></div><a class="text-link" href="/work">Explore all projects <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a></div><div class="work-grid work-grid--related"><?php foreach($relatedProjects as $project): ?><article class="work-card"><a class="work-card__image-link" href="/work/<?= rawurlencode($project['slug']) ?>"><img class="work-card__image" src="/<?= View::escape(ltrim($project['cover_image'],'/')) ?>" alt="<?= View::escape($project['title']) ?>" width="600" height="400" loading="lazy" decoding="async"></a><div class="work-card__body"><span class="work-card__text-category"><?= View::escape($project['category_name']) ?></span><h3><a href="/work/<?= rawurlencode($project['slug']) ?>"><?= View::escape($project['title']) ?></a></h3><p><?= View::escape($project['description']) ?></p></div></article><?php endforeach; ?></div></div></section><?php endif; ?>
 
 <section class="service-detail-bottom"><div class="container service-detail-bottom__inner"><div><h2>Need help choosing?</h2><p>Tell us what you are trying to achieve and we will help you identify the right next step.</p></div><a class="button button--secondary" href="/get-help">Contact AlbaTech <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a></div></section>

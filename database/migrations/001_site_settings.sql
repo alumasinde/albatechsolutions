@@ -24,4 +24,15 @@ INSERT INTO site_settings (setting_key, setting_value, value_type, setting_group
 ('whatsapp_number', '', 'string', 'contact', 1),
 ('contact_email', '', 'email', 'contact', 1),
 ('business_phone', '', 'string', 'contact', 1),
-('business_address', 'Nairobi, Kenya', 'string', 'contact', 1);
+('business_address', 'Nairobi, Kenya', 'string', 'contact', 1),
+('business_latitude', '', 'string', 'contact', 1),
+('business_longitude', '', 'string', 'contact', 1),
+('opening_hours', '', 'text', 'contact', 1),
+('social_facebook', '', 'url', 'contact', 1),
+('social_twitter', '', 'url', 'contact', 1),
+('social_linkedin', '', 'url', 'contact', 1),
+('social_instagram', '', 'url', 'contact', 1),
+('analytics_enabled', '0', 'boolean', 'analytics', 1),
+('analytics_provider', 'plausible', 'string', 'analytics', 1),
+('analytics_domain', '', 'string', 'analytics', 1),
+('analytics_script_url', '', 'url', 'analytics', 1);

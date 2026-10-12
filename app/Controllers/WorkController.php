@@ -31,8 +31,13 @@ final class WorkController
         Response::html(View::render('work/index', [
             'pageTitle' => 'Our Work | AlbaTech Solutions',
             'metaDescription' => 'Explore selected digital projects and practical solutions from AlbaTech Solutions in Kenya.',
-            'canonicalUrl' => $base . '/work', 'metaImage' => $base . '/assets/images/albatech-social-card.png',
+            'canonicalUrl' => $base . '/work',
+            'metaImage' => $base . '/assets/images/albatech-social-card.png',
             'projects' => $stmt->fetchAll(), 'categories' => $categories, 'selectedCategory' => $categorySlug,
+            'breadcrumbs' => [
+                ['name' => 'Home', 'url' => '/'],
+                ['name' => 'Our Work', 'url' => '/work'],
+            ],
         ]));
     }
 
@@ -55,6 +60,12 @@ final class WorkController
             'metaDescription' => SeoDefaults::description($description), 'canonicalUrl' => $base . '/work/' . rawurlencode($project['slug']),
             'metaImage' => SeoDefaults::image((string) ($project['cover_image'] ?? ''), $base), 'project' => $project,
             'relatedProjects' => $relatedStmt->fetchAll(), 'whatsAppUrl' => $wa,
+            'breadcrumbs' => [
+                ['name' => 'Home', 'url' => '/'],
+                ['name' => 'Our Work', 'url' => '/work'],
+                ['name' => $project['title'], 'url' => ''],
+            ],
+            'schemaProject' => $project,
         ]));
     }
 

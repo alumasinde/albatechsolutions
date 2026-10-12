@@ -64,6 +64,10 @@ final class GuideController
             'canonicalUrl' => $baseUrl . '/guides',
             'metaImage' => SeoDefaults::image('', $baseUrl),
             'guideArticles' => $articles,
+            'breadcrumbs' => [
+                ['name' => 'Home', 'url' => '/'],
+                ['name' => 'Guides', 'url' => '/guides'],
+            ],
         ]));
     }
 
@@ -90,6 +94,11 @@ final class GuideController
             'metaImage' => SeoDefaults::image('', $baseUrl),
             'guideArticle' => $article,
             'guideSlug' => $slug,
+            'breadcrumbs' => [
+                ['name' => 'Home', 'url' => '/'],
+                ['name' => 'Guides', 'url' => '/guides'],
+                ['name' => $article['title'], 'url' => ''],
+            ],
         ]));
     }
 }

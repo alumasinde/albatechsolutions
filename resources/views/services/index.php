@@ -1,16 +1,33 @@
 <?php
 
-use AlbaTech\Core\View; 
+use AlbaTech\Core\View;
 /**
  * @var array<string, mixed> $categories
  */
 ?>
-
+<?php if (isset($breadcrumbs) && is_array($breadcrumbs) && !empty($breadcrumbs)): ?>
+<nav class="breadcrumb-nav" aria-label="Breadcrumb">
+  <div class="container">
+    <ol class="breadcrumb-list" itemscope itemtype="https://schema.org/BreadcrumbList">
+      <?php foreach ($breadcrumbs as $index => $crumb): ?>
+        <li class="breadcrumb-item<?= ($index === count($breadcrumbs) - 1) ? ' breadcrumb-item--current' : '' ?>" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <?php if (!empty($crumb['url']) && $index < count($breadcrumbs) - 1): ?>
+            <a href="<?= View::escape($crumb['url']) ?>" itemprop="item"><span itemprop="name"><?= View::escape($crumb['name']) ?></span></a>
+          <?php else: ?>
+            <span itemprop="name"><?= View::escape($crumb['name']) ?></span>
+          <?php endif; ?>
+          <meta itemprop="position" content="<?= $index + 1 ?>">
+        </li>
+      <?php endforeach; ?>
+    </ol>
+  </div>
+</nav>
+<?php endif; ?>
 <section class="services-hero">
     <div class="container services-hero__inner">
         <div class="services-hero__copy">
             <span class="eyebrow">What we can help with</span>
-            <h1>Practical services.<br><span>Clear next steps.</span></h1>
+            <h1>Website Design, Business Registration & Digital Services in Kenya</h1>
             <p>From getting your business online to navigating selected digital processes, find practical support for the task in front of you.</p>
             <div class="hero-actions">
                 <a class="button" href="#service-catalogue">Explore services <i class="fa-solid fa-arrow-down" aria-hidden="true"></i></a>

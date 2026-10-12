@@ -4,11 +4,29 @@ use AlbaTech\Core\View;
 $homeContent = is_array($homeContent ?? null) ? $homeContent : [];
 $ctaItems = is_array($ctaItems ?? null) ? $ctaItems : [];
 ?>
+<?php if (isset($breadcrumbs) && is_array($breadcrumbs) && !empty($breadcrumbs)): ?>
+<nav class="breadcrumb-nav" aria-label="Breadcrumb">
+  <div class="container">
+    <ol class="breadcrumb-list" itemscope itemtype="https://schema.org/BreadcrumbList">
+      <?php foreach ($breadcrumbs as $index => $crumb): ?>
+        <li class="breadcrumb-item<?= ($index === count($breadcrumbs) - 1) ? ' breadcrumb-item--current' : '' ?>" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <?php if (!empty($crumb['url']) && $index < count($breadcrumbs) - 1): ?>
+            <a href="<?= $crumb['url'] ?>" itemprop="item"><span itemprop="name"><?= htmlspecialchars($crumb['name']) ?></span></a>
+          <?php else: ?>
+            <span itemprop="name"><?= htmlspecialchars($crumb['name']) ?></span>
+          <?php endif; ?>
+          <meta itemprop="position" content="<?= $index + 1 ?>">
+        </li>
+      <?php endforeach; ?>
+    </ol>
+  </div>
+</nav>
+<?php endif; ?>
 <section class="home-hero">
   <div class="container home-hero__grid">
     <div class="home-hero__copy">
       <span class="eyebrow"><?= View::escape($homeContent['home_hero_eyebrow'] ?? 'Digital services for people and businesses in Kenya') ?></span>
-      <h1><?= View::escape($homeContent['home_hero_title'] ?? 'Technology that helps you move forward.') ?></h1>
+      <h1><?= View::escape($homeContent['home_hero_title'] ?? 'Website Design & Business Registration in Nairobi') ?></h1>
       <p class="home-hero__lead"><?= View::escape($homeContent['home_hero_lead'] ?? 'From building a professional website to improving your online business presence, get practical digital assistance with clear communication and no unnecessary complexity.') ?></p>
       <div class="hero-actions">
         <a class="button <?= !empty($hasWhatsApp) ? 'button--whatsapp' : 'button--secondary' ?>" href="<?= View::escape(!empty($hasWhatsApp) ? $whatsAppUrl : ($ctaItems['primary_enquiry']['url'] ?? ($homeContent['home_hero_primary_url'] ?? '/get-help'))) ?>"><?php if (!empty($hasWhatsApp)): ?><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Chat on WhatsApp<?php else: ?><i class="fa-regular fa-envelope" aria-hidden="true"></i> <?= View::escape($ctaItems['primary_enquiry']['label'] ?? ($homeContent['home_hero_primary_label'] ?? 'Send an enquiry')) ?><?php endif; ?></a>
@@ -20,7 +38,7 @@ $ctaItems = is_array($ctaItems ?? null) ? $ctaItems : [];
       </div>
     </div>
     <aside class="home-hero__visual" aria-label="AlbaTech Solutions">
-      <img src="<?= View::escape($homeContent['home_hero_image'] ?? '/assets/images/albatech-social-card.png') ?>" alt="<?= View::escape($appName ?? 'AlbaTech Solutions') ?> - Digital services for Kenya" class="home-hero__image" width="400" height="300" loading="eager" fetchpriority="high" decoding="async">
+      <img src="<?= View::escape($homeContent['home_hero_image'] ?? '/assets/images/albatech-hero.webp') ?>" alt="<?= View::escape($appName ?? 'AlbaTech Solutions') ?> - Digital services for Kenya" class="home-hero__image" width="1200" height="630" loading="eager" fetchpriority="high" decoding="async">
     </aside>
   </div>
 </section>
@@ -76,7 +94,7 @@ $ctaItems = is_array($ctaItems ?? null) ? $ctaItems : [];
       <div class="work-carousel" data-work-carousel aria-roledescription="carousel" aria-label="Featured projects">
         <div class="work-carousel__viewport">
           <div class="work-carousel__track" data-carousel-track>
-            <?php foreach ($featuredProjects as $project): ?><article class="work-card work-carousel__slide" data-carousel-slide><a class="work-card__image-link" href="/work/<?= rawurlencode($project['slug']) ?>"><img class="work-card__image" src="/<?= View::escape(ltrim($project['cover_image'], '/')) ?>" alt="<?= View::escape($project['title']) ?>" loading="lazy" decoding="async"><span class="work-card__category"><?= View::escape($project['category_name']) ?></span></a>
+            <?php foreach ($featuredProjects as $project): ?><article class="work-card work-carousel__slide" data-carousel-slide><a class="work-card__image-link" href="/work/<?= rawurlencode($project['slug']) ?>"><img class="work-card__image" src="/<?= View::escape(ltrim($project['cover_image'], '/')) ?>" alt="<?= View::escape($project['title']) ?>" width="600" height="400" loading="lazy" decoding="async"><span class="work-card__category"><?= View::escape($project['category_name']) ?></span></a>
                 <div class="work-card__body">
                   <h3><a href="/work/<?= rawurlencode($project['slug']) ?>"><?= View::escape($project['title']) ?></a></h3>
                   <p><?= View::escape($project['description']) ?></p><a class="text-link" href="/work/<?= rawurlencode($project['slug']) ?>">View project <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>

@@ -29,11 +29,15 @@ final class ServiceController
 
         $baseUrl = SiteUrl::base();
         Response::html(View::render('services/index', [
-            'pageTitle' => SeoDefaults::title('', 'Services | AlbaTech Solutions'),
-            'metaDescription' => SeoDefaults::description('', 'Explore web design, online business presence and selected government and business assistance services in Kenya.'),
+            'pageTitle' => SeoDefaults::title('', 'Website Design, Business Registration & Digital Services in Kenya | AlbaTech Solutions'),
+            'metaDescription' => SeoDefaults::description('', 'Professional website design, business registration, KRA returns filing, and digital assistance services in Kenya. Clear pricing and practical solutions.'),
             'canonicalUrl' => $baseUrl . '/services',
             'metaImage' => SeoDefaults::image('', $baseUrl),
             'categories' => $categories,
+            'breadcrumbs' => [
+                ['name' => 'Home', 'url' => '/'],
+                ['name' => 'Services', 'url' => '/services'],
+            ],
         ]));
     }
 
@@ -66,6 +70,11 @@ final class ServiceController
             'service' => $service,
             'schemaService' => $service,
             'relatedProjects' => (new \AlbaTech\Repositories\WorkRepository())->relatedToCategory((int)$service['category_id'], 0, 3),
+            'breadcrumbs' => [
+                ['name' => 'Home', 'url' => '/'],
+                ['name' => 'Services', 'url' => '/services'],
+                ['name' => $service['name'], 'url' => ''],
+            ],
         ]));
     }
 }

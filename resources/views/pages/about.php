@@ -1,3 +1,21 @@
+<?php if (isset($breadcrumbs) && is_array($breadcrumbs) && !empty($breadcrumbs)): ?>
+<nav class="breadcrumb-nav" aria-label="Breadcrumb">
+  <div class="container">
+    <ol class="breadcrumb-list" itemscope itemtype="https://schema.org/BreadcrumbList">
+      <?php foreach ($breadcrumbs as $index => $crumb): ?>
+        <li class="breadcrumb-item<?= ($index === count($breadcrumbs) - 1) ? ' breadcrumb-item--current' : '' ?>" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <?php if (!empty($crumb['url']) && $index < count($breadcrumbs) - 1): ?>
+            <a href="<?= $crumb['url'] ?>" itemprop="item"><span itemprop="name"><?= htmlspecialchars($crumb['name']) ?></span></a>
+          <?php else: ?>
+            <span itemprop="name"><?= htmlspecialchars($crumb['name']) ?></span>
+          <?php endif; ?>
+          <meta itemprop="position" content="<?= $index + 1 ?>">
+        </li>
+      <?php endforeach; ?>
+    </ol>
+  </div>
+</nav>
+<?php endif; ?>
 <section class="about-hero">
     <div class="container about-hero__grid">
         <div class="about-hero__copy">

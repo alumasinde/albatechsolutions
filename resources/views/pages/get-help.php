@@ -17,6 +17,26 @@ $helpEmail = trim((string) ($siteSettings['support_email'] ?? ''));
 $mailFallback = trim((string) Env::get('MAIL_TO', ''));
 
 $serviceSlug = trim((string) ($_GET['service'] ?? ''));
+?>
+<?php if (isset($breadcrumbs) && is_array($breadcrumbs) && !empty($breadcrumbs)): ?>
+<nav class="breadcrumb-nav" aria-label="Breadcrumb">
+  <div class="container">
+    <ol class="breadcrumb-list" itemscope itemtype="https://schema.org/BreadcrumbList">
+      <?php foreach ($breadcrumbs as $index => $crumb): ?>
+        <li class="breadcrumb-item<?= ($index === count($breadcrumbs) - 1) ? ' breadcrumb-item--current' : '' ?>" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <?php if (!empty($crumb['url']) && $index < count($breadcrumbs) - 1): ?>
+            <a href="<?= View::escape($crumb['url']) ?>" itemprop="item"><span itemprop="name"><?= View::escape($crumb['name']) ?></span></a>
+          <?php else: ?>
+            <span itemprop="name"><?= View::escape($crumb['name']) ?></span>
+          <?php endif; ?>
+          <meta itemprop="position" content="<?= $index + 1 ?>">
+        </li>
+      <?php endforeach; ?>
+    </ol>
+  </div>
+</nav>
+<?php endif; ?>
+<?php
 $whatsAppMessage = trim((string) ($siteSettings['whatsapp_prefill_message'] ?? ''));
 if ($whatsAppMessage === '') $whatsAppMessage = 'Hi AlbaTech Solutions, I would like to make an enquiry.';
 if ($serviceSlug !== '') {

@@ -1171,3 +1171,44 @@ td strong {
 .cms-panel .settings-save .btn{min-height:42px;padding:10px 18px}
 @media(max-width:1100px){.cms-workspace-nav{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:640px){.cms-intro{align-items:flex-start;flex-direction:column;padding:18px}.cms-intro>.btn{width:100%;justify-content:center}.cms-workspace-nav{grid-template-columns:1fr 1fr;gap:8px}.cms-nav-option{align-items:flex-start;gap:9px;padding:12px 10px}.cms-nav-icon{flex-basis:32px;width:32px;height:32px}.cms-nav-option small{font-size:10px}.cms-nav-arrow{display:none}.cms-editor-hint{font-size:11px}.cms-page-picker{grid-template-columns:1fr;padding:14px}.cms-page-picker p{grid-column:auto}.cms-panel .settings-save{position:static;flex-direction:column;align-items:stretch}.cms-panel .settings-save .btn{width:100%}}
+
+
+
+/* UX refinement: clearer admin workspaces and more comfortable editing forms */
+.admin-shell { background: var(--admin-bg); }
+.main-content { min-width: 0; }
+.page-header { gap: 1rem; }
+.page-header h1, .page-title { letter-spacing: -.035em; line-height: 1.15; }
+.card, .panel, .content-card, .stat-card, .form-card {
+  border-radius: 14px;
+  box-shadow: var(--shadow-admin);
+}
+:where(.card, .panel, .content-card, .form-card) { min-width: 0; }
+:where(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+  width: 100%;
+  max-width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--admin-line);
+  border-radius: 9px;
+  padding: 10px 12px;
+  background: var(--admin-white);
+  color: var(--admin-ink);
+}
+textarea { min-height: 120px; resize: vertical; }
+:where(input, select, textarea):focus-visible {
+  outline: 3px solid var(--admin-blue-shadow);
+  outline-offset: 1px;
+  border-color: var(--admin-blue);
+}
+:where(button, .btn, input[type="submit"]) { cursor: pointer; }
+:where(button, .btn, a):focus-visible { outline: 3px solid var(--admin-blue-shadow); outline-offset: 3px; }
+:where(.btn, button[type="submit"], input[type="submit"]) { min-height: 40px; }
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; color: var(--admin-muted); font-weight: 700; }
+td, th { padding: 12px 14px; vertical-align: top; }
+@media (max-width: 760px) {
+  .main-content { padding-inline: 14px; }
+  .page-header { align-items: flex-start; flex-direction: column; }
+  .table-wrap, .table-responsive { max-width: 100%; overflow-x: auto; }
+  table { min-width: 620px; }
+}

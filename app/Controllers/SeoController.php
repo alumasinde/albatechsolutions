@@ -30,6 +30,7 @@ final class SeoController
         $cmsRoutes = [
             'about' => '/about',
             'get-help' => '/get-help',
+            'contact-details' => '/contact-details',
             'terms' => '/terms',
             'privacy' => '/privacy',
         ];
@@ -153,6 +154,7 @@ final class SeoController
         $cmsRoutes = [
             'about' => ['path' => '/about', 'label' => 'About', 'summary' => 'About the business and its approach.'],
             'get-help' => ['path' => '/get-help', 'label' => 'Contact', 'summary' => 'Ways to enquire about services.'],
+            'contact-details' => ['path' => '/contact-details', 'label' => 'Contact Details', 'summary' => 'Full contact information and location details.'],
             'privacy' => ['path' => '/privacy', 'label' => 'Privacy policy', 'summary' => 'How enquiry information is handled.'],
             'terms' => ['path' => '/terms', 'label' => 'Terms of service', 'summary' => 'Terms for using the website and services.'],
         ];

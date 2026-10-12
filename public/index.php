@@ -37,7 +37,8 @@ $csp = "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors
     . "object-src 'none'; img-src 'self' data: https:; "
     . "font-src 'self' data: https://cdnjs.cloudflare.com https://fonts.gstatic.com; "
     . "style-src 'self' https://cdnjs.cloudflare.com https://fonts.googleapis.com; "
-    . "script-src 'self' 'nonce-{$cspNonce}'; connect-src 'self'";
+    . "script-src 'self' 'nonce-{$cspNonce}' https://plausible.io https://*.plausible.io https://www.googletagmanager.com https://www.google-analytics.com; "
+    . "connect-src 'self' https://plausible.io https://*.plausible.io https://www.google-analytics.com";
 
 // upgrade-insecure-requests rewrites every request to https://. Sending it on a
 // plain-HTTP origin (e.g. http://albatechsolution.test:8000) breaks CSS/JS with

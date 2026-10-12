@@ -18,6 +18,24 @@ $contactServiceArea = trim((string) ($contactSettings['service_area'] ?? 'Nation
 $helpEmail = trim((string) ($contactSettings['support_email'] ?? ''));
 $contactTabs = ['All', 'WhatsApp', 'Email', 'Location'];
 ?>
+<?php if (isset($breadcrumbs) && is_array($breadcrumbs) && !empty($breadcrumbs)): ?>
+<nav class="breadcrumb-nav" aria-label="Breadcrumb">
+  <div class="container">
+    <ol class="breadcrumb-list" itemscope itemtype="https://schema.org/BreadcrumbList">
+      <?php foreach ($breadcrumbs as $index => $crumb): ?>
+        <li class="breadcrumb-item<?= ($index === count($breadcrumbs) - 1) ? ' breadcrumb-item--current' : '' ?>" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <?php if (!empty($crumb['url']) && $index < count($breadcrumbs) - 1): ?>
+            <a href="<?= View::escape($crumb['url']) ?>" itemprop="item"><span itemprop="name"><?= View::escape($crumb['name']) ?></span></a>
+          <?php else: ?>
+            <span itemprop="name"><?= View::escape($crumb['name']) ?></span>
+          <?php endif; ?>
+          <meta itemprop="position" content="<?= $index + 1 ?>">
+        </li>
+      <?php endforeach; ?>
+    </ol>
+  </div>
+</nav>
+<?php endif; ?>
 <section class="contact-page-hero">
   <div class="container"><span class="eyebrow">Contact & location</span><h1>How can we help you?</h1><p>Choose the best way to reach AlbaTech Solutions. Tell us what you need and we’ll help you work out the next step.</p></div>
 </section>
