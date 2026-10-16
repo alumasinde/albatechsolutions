@@ -1146,7 +1146,7 @@ p {
 .service-visual-card {
   position: relative;
   z-index: 1;
-  width: min(100%, 320px);
+  width: min(100%, 340px);
   padding: var(--space-6);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
@@ -1164,35 +1164,56 @@ p {
   text-transform: uppercase;
 }
 
-.service-visual-list {
+.service-visual-nav {
   display: grid;
-  gap: var(--space-1);
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  gap: var(--space-2);
 }
 
-.service-visual-list a {
+.service-visual-nav__item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: var(--space-3);
-  padding: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
   color: var(--color-text-strong);
   font-weight: 650;
   text-decoration: none;
 }
 
-.service-visual-list a:hover {
-  background: var(--color-surface-muted);
+.service-visual-nav__item:hover {
+  border-color: var(--color-primary);
+  background: var(--color-surface);
   color: var(--color-primary);
 }
 
-.service-visual-list span {
-  color: var(--color-text-subtle);
-  font-weight: 600;
+.service-visual-nav__count {
+  min-width: 26px;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: var(--font-size-xs);
+  font-weight: 750;
   font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.service-visual-nav__name {
+  flex: 1;
+  min-width: 0;
+}
+
+.service-visual-nav__arrow {
+  color: var(--color-text-subtle);
+  font-size: var(--font-size-xs);
+  transition: transform 120ms ease;
+}
+
+.service-visual-nav__item:hover .service-visual-nav__arrow {
+  color: var(--color-primary);
+  transform: translateX(2px);
 }
 
 @media (min-width: 768px) {
@@ -1387,10 +1408,6 @@ p {
   .service-card-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-}
-
-.empty-category {
-  color: var(--color-text-subtle);
 }
 
 /* Services bottom CTA */

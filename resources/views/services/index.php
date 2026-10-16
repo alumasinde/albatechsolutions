@@ -42,11 +42,15 @@ use AlbaTech\Core\View;
         <div class="services-hero__visual">
             <div class="service-visual-card">
                 <span class="service-visual-card__label">Browse by category</span>
-                <ul class="service-visual-list">
-                    <?php foreach ($categories as $category): $serviceCount = count($category['services'] ?? []); ?>
-                        <li><a href="#category-<?= View::escape($category['slug']) ?>"><?= View::escape($category['name']) ?><?php if ($serviceCount > 0): ?><span><?= $serviceCount ?></span><?php endif; ?></a></li>
+                <nav class="service-visual-nav" aria-label="Service categories">
+                    <?php foreach ($categories as $category): ?>
+                        <a class="service-visual-nav__item" href="#category-<?= View::escape($category['slug']) ?>">
+                            <span class="service-visual-nav__count"><?= count($category['services']) ?></span>
+                            <span class="service-visual-nav__name"><?= View::escape($category['name']) ?></span>
+                            <i class="fa-solid fa-arrow-right service-visual-nav__arrow" aria-hidden="true"></i>
+                        </a>
                     <?php endforeach; ?>
-                </ul>
+                </nav>
             </div>
         </div>
         <?php endif; ?>
@@ -85,30 +89,26 @@ use AlbaTech\Core\View;
                         <span class="service-category__count"><?= count($category['services']) ?> <?= count($category['services']) === 1 ? 'service' : 'services' ?></span>
                     </div>
 
-                    <?php if ($category['services'] !== []): ?>
-                        <div class="service-card-grid">
-                            <?php foreach ($category['services'] as $service): ?>
-                                <article class="service-tile">
-                                    <div class="service-tile__top">
-                                        <span class="service-tile__symbol"><i class="fa-solid fa-briefcase" aria-hidden="true"></i></span>
-                                        <span class="service-tile__arrow"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></span>
-                                    </div>
-                                    <h4><?= View::escape($service['name']) ?></h4>
-                                    <p><?= View::escape($service['short_description'] ?? '') ?></p>
-                                    <div class="service-price">
-                                        <?php if (in_array((string) ($service['pricing_type'] ?? 'quote'), ['fixed', 'starting_at'], true) && ($service['pricing_amount'] ?? null) !== null && $service['pricing_amount'] !== ''): ?>
-                                            <span class="service-price__amount"><?= ($service['pricing_type'] ?? '') === 'starting_at' ? 'From ' : '' ?>KSh <?= View::escape(number_format((float) $service['pricing_amount'], ((float) $service['pricing_amount'] == (int) $service['pricing_amount']) ? 0 : 2)) ?></span>
-                                        <?php else: ?>
-                                            <span class="service-price__quote"><?= View::escape(($service['pricing_label'] ?? '') ?: 'Contact for price') ?></span>
-                                        <?php endif; ?>
-                                    </div>
-                                    <a href="/services/<?= rawurlencode($service['slug']) ?>" class="service-tile__link" aria-label="View service: <?= View::escape($service['name']) ?>">View service <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
-                                </article>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php else: ?>
-                        <p class="empty-category">Services in this category will be announced soon.</p>
-                    <?php endif; ?>
+                    <div class="service-card-grid">
+                        <?php foreach ($category['services'] as $service): ?>
+                            <article class="service-tile">
+                                <div class="service-tile__top">
+                                    <span class="service-tile__symbol"><i class="fa-solid fa-briefcase" aria-hidden="true"></i></span>
+                                    <span class="service-tile__arrow"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></span>
+                                </div>
+                                <h4><?= View::escape($service['name']) ?></h4>
+                                <p><?= View::escape($service['short_description'] ?? '') ?></p>
+                                <div class="service-price">
+                                    <?php if (in_array((string) ($service['pricing_type'] ?? 'quote'), ['fixed', 'starting_at'], true) && ($service['pricing_amount'] ?? null) !== null && $service['pricing_amount'] !== ''): ?>
+                                        <span class="service-price__amount"><?= ($service['pricing_type'] ?? '') === 'starting_at' ? 'From ' : '' ?>KSh <?= View::escape(number_format((float) $service['pricing_amount'], ((float) $service['pricing_amount'] == (int) $service['pricing_amount']) ? 0 : 2)) ?></span>
+                                    <?php else: ?>
+                                        <span class="service-price__quote"><?= View::escape(($service['pricing_label'] ?? '') ?: 'Contact for price') ?></span>
+                                    <?php endif; ?>
+                                </div>
+                                <a href="/services/<?= rawurlencode($service['slug']) ?>" class="service-tile__link" aria-label="View service: <?= View::escape($service['name']) ?>">View service <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+                            </article>
+                        <?php endforeach; ?>
+                    </div>
                 </section>
             <?php endforeach; ?>
         <?php endif; ?>

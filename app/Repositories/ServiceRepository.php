@@ -11,7 +11,8 @@ use Throwable;
 final class ServiceRepository
 {
     /**
-     * Public catalogue. Only published services in active categories are exposed.
+     * Public catalogue. Only published services in active categories are exposed;
+     * categories with no published services are omitted entirely.
      */
     public function categoriesWithServices(): array
     {
@@ -20,7 +21,7 @@ final class ServiceRepository
                        s.short_description, s.pricing_type, s.pricing_amount,
                        s.pricing_label, s.is_featured
                 FROM service_categories c
-                LEFT JOIN services s
+                INNER JOIN services s
                   ON s.category_id = c.id AND s.status = :published
                 WHERE c.status = :category_status
                 ORDER BY c.sort_order ASC, c.name ASC, s.sort_order ASC, s.name ASC';
