@@ -14,12 +14,14 @@ use AlbaTech\Repositories\SiteSettingsRepository;
 
 require dirname(__DIR__) . '/app/Core/Env.php';
 require dirname(__DIR__) . '/app/Core/Database.php';
+AlbaTech\Core\Env::load(dirname(__DIR__) . '/.env');
 require dirname(__DIR__) . '/app/Core/Response.php';
 require dirname(__DIR__) . '/app/Core/View.php';
 require dirname(__DIR__) . '/app/Core/SiteUrl.php';
 require dirname(__DIR__) . '/app/Core/SeoDefaults.php';
 require dirname(__DIR__) . '/app/Core/WhatsAppLink.php';
 require dirname(__DIR__) . '/app/Repositories/SiteSettingsRepository.php';
+require dirname(__DIR__) . '/app/Repositories/CmsRepository.php';
 require dirname(__DIR__) . '/app/Repositories/ServiceRepository.php';
 require dirname(__DIR__) . '/app/Controllers/GuideController.php';
 require dirname(__DIR__) . '/app/Controllers/SeoController.php';
@@ -33,12 +35,12 @@ $assert = static function (bool $condition, string $message) use (&$checks): voi
     }
 };
 
-$articles = GuideController::articles();
+$articles = GuideController::articlesMeta();
 $assert(count($articles) >= 4, 'Guides catalogue has all four seeded useful articles');
 $assert(!str_contains(file_get_contents(dirname(__DIR__) . '/resources/views/pages/guides.php') ?: '', 'coming soon'), 'Guides page no longer uses a coming-soon notice');
 $assert(isset($articles['how-much-does-a-website-cost-in-kenya']), 'Website cost guide has a stable slug');
 $assert(isset($articles['domain-and-hosting-explained']), 'Domain and hosting guide is present');
-$assert(isset($articles['business-registration-assistance-what-to-prepare']), 'Business preparation guide is present');
+$assert(isset($articles['what-to-prepare-before-building-a-business-website']), 'Business preparation guide is present');
 foreach ($articles as $slug => $article) {
     $assert(preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug) === 1, 'Guide slug is URL safe: ' . $slug);
     $assert(trim((string) ($article['meta_title'] ?? '')) !== '', 'Guide has SEO title: ' . $slug);
@@ -98,7 +100,7 @@ if ($sitemapStatus !== 503) {
     foreach (['/terms', '/privacy', '/get-help'] as $path) {
         $assert(str_contains($sitemap, $baseUrl . $path), 'Sitemap includes canonical public information page: ' . $path);
     }
-    $assert(!str_contains($sitemap, $baseUrl . '/contact-details'), 'Sitemap excludes redirected contact-details URL');
+    $assert(!preg_match('~<loc>' . preg_quote($baseUrl, '~') . '/contact</loc>~', $sitemap), 'Sitemap excludes the redirected /contact alias');
 }
 
 fwrite(STDOUT, "PASS: {$checks} Phase 4 SEO and content regression checks.\n");

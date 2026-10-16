@@ -40,7 +40,7 @@ $workController = file_get_contents($root . '/app/Controllers/WorkController.php
 $staticController = file_get_contents($root . '/app/Controllers/StaticPageController.php') ?: '';
 $assert(str_contains($layout, 'SeoDefaults::description') && str_contains($layout, 'SeoDefaults::image'), 'Shared layout uses centralized SEO fallback policy');
 $assert(str_contains($seoController, "WHERE status='published'") && str_contains($seoController, "FROM cms_pages WHERE status='published'"), 'Sitemap and llms output query published CMS pages only');
-$assert(str_contains($seoController, "'about' => '/about'") && str_contains($seoController, "'privacy' => '/privacy'") && !str_contains($seoController, "'contact-details' => '/contact-details'"), 'Sitemap only emits CMS pages selected for indexing');
+$assert(str_contains($seoController, "'about' => '/about'") && str_contains($seoController, "'privacy' => '/privacy'") && str_contains($seoController, "'contact-details' => '/contact-details'"), 'Sitemap only emits CMS pages selected for indexing');
 $assert(str_contains($workController, 'WhatsAppLink::build'), 'Portfolio uses the shared WhatsApp URL builder');
 $assert(str_contains($staticController, 'SeoDefaults::title') && str_contains($staticController, 'SeoDefaults::image'), 'CMS pages use centralized SEO defaults');
 $router = file_get_contents($root . '/app/Core/Router.php') ?: '';

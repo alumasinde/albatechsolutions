@@ -59,7 +59,7 @@ $assert($ratio('#052e16', '#25d366') >= 7.0, 'Dark text on WhatsApp green is AAA
 $appCss = (string) file_get_contents($root . '/public/assets/css/app.css');
 $assert(!preg_match('/^\s*@import\b/m', $appCss), 'app.css has no @import (avoids a serial CSS request chain)');
 $layout = (string) file_get_contents($root . '/resources/views/layouts/main.php');
-$assert(str_contains($layout, "View::asset('css/tokens.css')"), 'Layout links tokens.css directly');
+$assert(str_contains($layout, "View::asset('css/bundle.css')"), 'Layout links the bundled public CSS');
 $assert(!preg_match('/isset\(\s*\$service\s*\)/', $layout), 'Layout never derives page schema from a plain $service (loop-variable leak)');
 $assert(str_contains($layout, '$schemaService'), 'Layout reads the explicit $schemaService flag');
 $assert(!str_contains($layout, "fill='%23155eef'"), 'Layout no longer ships the off-brand inline favicon');

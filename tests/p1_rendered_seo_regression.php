@@ -8,12 +8,14 @@ use AlbaTech\Core\View;
 
 require dirname(__DIR__) . '/app/Core/Env.php';
 require dirname(__DIR__) . '/app/Core/Database.php';
+AlbaTech\Core\Env::load(dirname(__DIR__) . '/.env');
 require dirname(__DIR__) . '/app/Core/Response.php';
 require dirname(__DIR__) . '/app/Core/View.php';
 require dirname(__DIR__) . '/app/Core/SiteUrl.php';
 require dirname(__DIR__) . '/app/Core/SeoDefaults.php';
 require dirname(__DIR__) . '/app/Core/WhatsAppLink.php';
 require dirname(__DIR__) . '/app/Repositories/SiteSettingsRepository.php';
+require dirname(__DIR__) . '/app/Repositories/CmsRepository.php';
 require dirname(__DIR__) . '/app/Repositories/ServiceRepository.php';
 require dirname(__DIR__) . '/app/Controllers/GuideController.php';
 
@@ -27,7 +29,7 @@ $assert = static function (bool $condition, string $message) use (&$checks): voi
 };
 
 $base = SiteUrl::base();
-$articles = GuideController::articles();
+$articles = GuideController::articlesMeta();
 $renderedPages = [];
 $renderedPages['/guides'] = View::render('pages/guides', [
     'pageTitle' => 'Practical Business & Website Guides in Kenya | AlbaTech Solutions',

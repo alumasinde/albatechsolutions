@@ -26,10 +26,11 @@ $assert(!str_contains($layout, 'rel="preload" as="image"'), 'CMS-configurable he
 $home = file_get_contents(__DIR__ . '/../resources/views/pages/home.php');
 $assert(str_contains($home, 'fetchpriority="high"'), 'Hero image should carry high fetch priority on the image element.');
 $assert(str_contains($home, 'loading="eager" fetchpriority="high"'), 'Homepage hero image should load eagerly with high priority.');
-$assert(str_contains($home, 'width="400" height="300"'), 'Homepage hero image should declare dimensions to reduce layout shift.');
+$assert(str_contains($home, 'width="1200" height="630"'), 'Homepage hero image should declare dimensions to reduce layout shift.');
 $assert(str_contains($workCss, 'aspect-ratio:16/10'), 'Portfolio card images should reserve an aspect-ratio box.');
 $assert(str_contains($appCss, 'prefers-reduced-motion'), 'Motion-sensitive behaviour should be covered in the public stylesheet.');
-$assert(str_contains($layout, 'View::asset(\'css/app.css\')'), 'Public CSS should use versioned asset URLs.');
+$assert(str_contains($layout, "View::asset('css/bundle.css')"), 'Public pages should load the single versioned CSS bundle.');
+$assert(filesize($root . '/public/assets/css/bundle.css') > 0, 'bundle.css must be built and non-empty.');
 
 if ($failures) {
     fwrite(STDERR, "P2 performance regression: FAIL\n");

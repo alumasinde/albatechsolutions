@@ -14,6 +14,8 @@
     }
   },
   "scripts": {
+    "test": "php bin/run-tests.php",
+    "build:css": "php bin/build-css.php",
     "serve": [
         "Composer\\Config::disableProcessTimeout",
         "php -S albatechsolution.test:8000 -t public"
@@ -22,7 +24,7 @@
         "Composer\\Config::disableProcessTimeout",
         "php -S 0.0.0.0:8000 -t public"
     ]
-},
+  },
   "config": {
     "sort-packages": true,
     "optimize-autoloader": true

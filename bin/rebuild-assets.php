@@ -19,7 +19,7 @@ echo "\n";
 
 // 3. Optimize images (if source exists)
 echo "3. Optimizing images...\n";
-if (file_exists(__DIR__ . '/../public/assets/images/albatech-social-card-original.png')) {
+if (file_exists(__DIR__ . '/../public/assets/images/albatech-social-card.png')) {
     require __DIR__ . '/optimize-images.php';
 } else {
     echo "  Original social card not found, skipping image optimization\n";

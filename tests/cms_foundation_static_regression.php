@@ -12,8 +12,10 @@ $controller = file_get_contents($root . '/app/Controllers/CmsAdminController.php
 foreach (['cms_pages','site_navigation','site_ctas','home_hero_title','home_meta_description','home_social_image'] as $needle) $assert(str_contains($migration, $needle), 'Migration contains ' . $needle);
 foreach (['/admin/cms','/admin/cms/homepage','/admin/cms/pages','/admin/cms/navigation','/admin/cms/ctas'] as $route) $assert(str_contains($routes, $route), 'Route registered: ' . $route);
 foreach (['home_hero_title','home_services_title','home_process_title','home_why_title','home_areas_title','home_cta_title'] as $key) $assert(str_contains($home, $key), 'Homepage renders editable field ' . $key);
-$assert(str_contains($layout, 'site_navigation WHERE is_enabled=1'), 'Shared layout loads enabled navigation from database');
-$assert(str_contains($layout, 'site_ctas WHERE is_enabled=1'), 'Shared layout loads enabled CTAs from database');
+$cmsRepository = file_get_contents($root . '/app/Repositories/CmsRepository.php') ?: '';
+$assert(str_contains($cmsRepository, 'site_navigation WHERE is_enabled=1'), 'Enabled navigation loads from database via CmsRepository');
+$assert(str_contains($cmsRepository, 'site_ctas WHERE is_enabled=1'), 'Enabled CTAs load from database via CmsRepository');
+$assert(str_contains($layout, 'CmsRepository'), 'Layout reads navigation and CTAs through the cached CmsRepository');
 $assert(str_contains($admin, 'Save homepage') && str_contains($admin, 'Website pages') && str_contains($admin, 'Navigation') && str_contains($admin, 'Reusable calls to action'), 'Admin CMS sections are present');
 $assert(str_contains($controller, 'verifyCsrf') && str_contains($controller, 'requirePermission(\'settings.manage\')'), 'CMS writes require CSRF and settings permission');
 $assert(str_contains($controller, 'validImageReference') && str_contains($controller, 'validInternalOrHttpsUrl'), 'Image and link inputs are validated');
