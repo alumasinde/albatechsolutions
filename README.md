@@ -123,7 +123,7 @@ The public brand primary (`--color-primary`) and accent (`--color-accent`) are u
 
 ## UI colour audit
 
-See [`UI-COLOUR-AUDIT.md`](UI-COLOUR-AUDIT.md) for the latest audit of colour/background token usage and browser validation checklist.
+See [`docs/UI-COLOUR-AUDIT.md`](docs/UI-COLOUR-AUDIT.md) for the latest audit of colour/background token usage and browser validation checklist.
 
 
 ## WhatsApp and email enquiry configuration
@@ -162,3 +162,12 @@ Set the destination in **Admin → Settings → Contact email** (preferred) or *
 ## Portfolio / Our Work
 
 The portfolio is managed from **Admin → Our Work**. Apply migration `007_work_projects.sql` with `php bin/migrate.php`, then sign in with an administrator account that has the `work.manage` permission. Add a title, active service category, description, and cover image; optional client names should only be published with permission, and live links must be HTTP(S). Draft and archived projects remain private. Mark a published project as featured to include it in the homepage carousel. Sort order uses lower numbers first. Public routes are `/work` and `/work/{slug}`. The `/work` page supports category filtering using `?category=category-slug`. Project cover uploads accept JPG, PNG, and WebP up to 8 MB; when PHP GD WebP support is available, uploads are resized to a maximum 1800px edge and converted to WebP. The carousel pauses on hover, focus, touch/pointer interaction, and hidden browser tabs; users can pause/play it, and reduced-motion preferences disable autoplay by default.
+
+
+## Production performance
+
+### OPcache
+Apply `deploy/php-opcache.ini` on the production server (copy into the PHP `conf.d` directory or mirror the values in the PHP-FPM pool). Because `opcache.validate_timestamps=0`, PHP must be reloaded after every deployment (`systemctl reload php-fpm` or an `opcache_reset()` deploy hook); without the reload the previous release keeps serving.
+
+### Self-hosted Font Awesome
+Font Awesome 6.5.2 CSS and webfonts are served from `public/assets/vendor/fontawesome/` (no CDN request). The URL carries a `?v=<mtime>` version, and `.htaccess` applies immutable caching to CSS. If icons ever need updating, replace the files in that folder and rebuild nothing else; the CSP already allows same-origin fonts and styles only.
