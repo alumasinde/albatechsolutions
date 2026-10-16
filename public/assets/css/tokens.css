@@ -141,21 +141,13 @@
   --color-transparent: transparent;
 
   /* Shared component and decorative colors */
-  --color-header-glass: rgb(255 255 255 / 0.96);
-  --color-overlay-light: rgb(255 255 255 / 0.2);
-  --color-accent-glow: rgb(255 183 43 / 0.14);
   --color-primary-glow: rgb(7 140 153 / 0.12);
-  --color-primary-shadow: rgb(7 140 153 / 0.22);
-  --color-surface-gradient-end: #F2F7F7;
-  --color-surface-gradient-soft: #F8FBFB;
-  --color-surface-gradient-blue: #EDF4F4;
   --color-print-border: #EDF0F4;
   --color-white: #FFFFFF;
   --color-black: #000000;
 
   /* Shared shadows: shadow color remains centralized here */
   --shadow-soft: 0 5px 20px rgb(15 23 42 / 0.03);
-  --shadow-medium: 0 12px 28px rgb(15 23 42 / 0.1);
   --shadow-raised: 0 14px 34px rgb(15 23 42 / 0.08);
   --shadow-deep: 0 24px 70px rgb(15 23 42 / 0.09);
   --shadow-admin: 0 3px 7px rgb(16 35 63 / 0.09);

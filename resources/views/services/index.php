@@ -38,18 +38,18 @@ use AlbaTech\Core\View;
                 <span><i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i> Mobile-friendly solutions</span>
             </div>
         </div>
-        <div class="services-hero__visual" aria-hidden="true">
-            <div class="service-visual-card service-visual-card--main">
-                <span class="service-visual-card__icon"><i class="fa-solid fa-laptop-code" aria-hidden="true"></i></span>
-                <span class="service-visual-card__label">Your next step</span>
-                <strong>From idea<br>to done.</strong>
-                <div class="service-visual-card__line"><span></span></div>
+        <?php if ($categories !== []): ?>
+        <div class="services-hero__visual">
+            <div class="service-visual-card">
+                <span class="service-visual-card__label">Browse by category</span>
+                <ul class="service-visual-list">
+                    <?php foreach ($categories as $category): $serviceCount = count($category['services'] ?? []); ?>
+                        <li><a href="#category-<?= View::escape($category['slug']) ?>"><?= View::escape($category['name']) ?><?php if ($serviceCount > 0): ?><span><?= $serviceCount ?></span><?php endif; ?></a></li>
+                    <?php endforeach; ?>
+                </ul>
             </div>
-            <div class="service-visual-chip service-visual-chip--top">Web & digital presence</div>
-            <div class="service-visual-chip service-visual-chip--bottom">Business assistance</div>
-            <div class="service-visual-dot service-visual-dot--one"></div>
-            <div class="service-visual-dot service-visual-dot--two"></div>
         </div>
+        <?php endif; ?>
     </div>
 </section>
 

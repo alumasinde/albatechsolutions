@@ -117,15 +117,15 @@ $ctaItems = is_array($ctaItems ?? null) ? $ctaItems : [];
       <p><?= View::escape($homeContent['home_process_description'] ?? 'You do not need to know the technical details. Tell us the outcome you want, and we can work through the options together.') ?></p>
     </div>
     <div class="process-grid">
-      <article class="process-card"><span class="process-card__number">01</span><span class="process-card__icon"><i class="fa-regular fa-comments" aria-hidden="true"></i></span>
+      <article class="process-card"><span class="process-card__number">01</span>
         <h3><?= View::escape($homeContent['home_step1_title'] ?? 'Tell us what you need') ?></h3>
         <p><?= View::escape($homeContent['home_step1_description'] ?? 'Describe the task, challenge or idea in your own words.') ?></p>
       </article>
-      <article class="process-card"><span class="process-card__number">02</span><span class="process-card__icon"><i class="fa-solid fa-clipboard-list" aria-hidden="true"></i></span>
+      <article class="process-card"><span class="process-card__number">02</span>
         <h3><?= View::escape($homeContent['home_step2_title'] ?? 'Agree on the plan') ?></h3>
         <p><?= View::escape($homeContent['home_step2_description'] ?? 'We confirm the scope, price and expected next steps before work begins.') ?></p>
       </article>
-      <article class="process-card"><span class="process-card__number">03</span><span class="process-card__icon"><i class="fa-solid fa-laptop-file" aria-hidden="true"></i></span>
+      <article class="process-card"><span class="process-card__number">03</span>
         <h3><?= View::escape($homeContent['home_step3_title'] ?? 'Move forward with clarity') ?></h3>
         <p><?= View::escape($homeContent['home_step3_description'] ?? 'Know what happens next and what information or action is needed from you.') ?></p>
       </article>
