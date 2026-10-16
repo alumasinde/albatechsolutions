@@ -29,8 +29,8 @@ final class WorkController
         $stmt = $pdo->prepare($sql); $stmt->execute($params);
         $base = SiteUrl::base();
         Response::html(View::render('work/index', [
-            'pageTitle' => 'Our Work | AlbaTech Solutions',
-            'metaDescription' => 'Explore selected digital projects and practical solutions from AlbaTech Solutions in Kenya.',
+            'pageTitle' => 'Our Work | Websites & Business Projects in Kenya | AlbaTech Solutions',
+            'metaDescription' => 'Selected website, business systems and digital projects delivered by AlbaTech Solutions for clients across Kenya.',
             'canonicalUrl' => $base . '/work',
             'metaImage' => $base . '/assets/images/albatech-social-card.png',
             'projects' => $stmt->fetchAll(), 'categories' => $categories, 'selectedCategory' => $categorySlug,

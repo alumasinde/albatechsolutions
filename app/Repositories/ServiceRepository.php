@@ -6,6 +6,7 @@ namespace AlbaTech\Repositories;
 
 use AlbaTech\Core\Database;
 use PDO;
+use Throwable;
 
 final class ServiceRepository
 {
@@ -98,6 +99,42 @@ final class ServiceRepository
         );
         $statement->execute(['published' => 'published', 'category_status' => 'active']);
         return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /** @return array<string, string> Enquiry form options keyed by slug; falls back to the starter list if the catalogue is unavailable. */
+    public function enquiryOptions(): array
+    {
+        $options = [];
+        try {
+            $statement = Database::connection()->prepare(
+                "SELECT s.slug, s.name FROM services s
+                 INNER JOIN service_categories c ON c.id = s.category_id
+                 WHERE s.status = :published AND c.status = :category_status
+                 ORDER BY s.sort_order ASC, s.name ASC"
+            );
+            $statement->execute(['published' => 'published', 'category_status' => 'active']);
+            foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                $slug = trim((string) $row['slug']);
+                if ($slug !== '') $options[$slug] = (string) $row['name'];
+            }
+        } catch (Throwable $e) {
+            error_log('[AlbaTech enquiry options] ' . $e->getMessage());
+            $options = [];
+        }
+
+        if ($options === []) {
+            $options = [
+                'website-design' => 'Website Design',
+                'landing-page' => 'Landing Page',
+                'google-business' => 'Google Business Profile',
+                'kra-returns' => 'KRA Returns Filing',
+                'business-registration' => 'Business Registration',
+                'cv-writing' => 'CV Writing',
+            ];
+        }
+
+        $options['other'] = 'Something else';
+        return $options;
     }
 
     public function findPublishedBySlug(string $slug): ?array

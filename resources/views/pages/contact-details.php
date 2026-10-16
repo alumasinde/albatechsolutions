@@ -9,14 +9,12 @@ $contactPhone = trim((string) ($contactSettings['business_phone'] ?? ''));
 $contactPhoneHref = preg_replace('/[^0-9+]/', '', $contactPhone);
 $contactLocation = trim((string) ($contactSettings['business_address'] ?? 'Nairobi, Kenya'));
 $contactLocation = $contactLocation !== '' ? $contactLocation : 'Kenya';
-$contactWhatsApp = preg_replace('/\\D+/', '', (string) ($contactSettings['whatsapp_number'] ?? ''));
 $contactWhatsAppUrl = WhatsAppLink::build($contactSettings);
 $contactHours = trim((string) ($contactSettings['contact_hours'] ?? 'Monday–Friday, 8:00 am–5:00 pm'));
 $contactResponseTime = trim((string) ($contactSettings['contact_response_time'] ?? 'Within one business day'));
 $contactCity = trim((string) ($contactSettings['business_city'] ?? 'Nairobi, Kenya'));
 $contactServiceArea = trim((string) ($contactSettings['service_area'] ?? 'Nationwide — fully online'));
 $helpEmail = trim((string) ($contactSettings['support_email'] ?? ''));
-$contactTabs = ['All', 'WhatsApp', 'Email', 'Location'];
 ?>
 <?php if (isset($breadcrumbs) && is_array($breadcrumbs) && !empty($breadcrumbs)): ?>
 <nav class="breadcrumb-nav" aria-label="Breadcrumb">

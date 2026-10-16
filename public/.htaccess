@@ -19,6 +19,8 @@ DirectoryIndex index.php
 </IfModule>
 <IfModule mod_mime.c>
     AddType application/manifest+json .webmanifest
+    AddType font/woff2 .woff2
+    AddType font/ttf .ttf
 </IfModule>
 <IfModule mod_expires.c>
     ExpiresActive On
@@ -31,12 +33,14 @@ DirectoryIndex index.php
     ExpiresByType image/webp "access plus 1 year"
     ExpiresByType image/avif "access plus 1 year"
     ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType font/ttf "access plus 1 year"
 </IfModule>
 
-# View::asset() appends a file-mtime version query, so changed assets receive
-# a new URL. Immutable caching is therefore safe for these versioned assets.
+# View::asset() appends a file-mtime version query to bundled CSS/JS, so changed
+# files receive a new URL. Immutable caching is safe for those; images (including
+# uploads with fixed names) keep the Expires policy above without "immutable".
 <IfModule mod_headers.c>
-    <FilesMatch "\.(css|js|png|jpe?g|gif|svg|webp|avif|woff2)$">
+    <FilesMatch "\.(css|js|woff2)$">
         Header set Cache-Control "public, max-age=31536000, immutable"
     </FilesMatch>
 </IfModule>

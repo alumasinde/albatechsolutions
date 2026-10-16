@@ -9,8 +9,14 @@ use Throwable;
 
 final class SiteUrl
 {
+    private static ?string $cached = null;
+
     public static function base(): string
     {
+        if (self::$cached !== null) {
+            return self::$cached;
+        }
+
         $settings = [];
         try {
             $settings = (new SiteSettingsRepository())->publicValues();
@@ -41,13 +47,13 @@ final class SiteUrl
             || !in_array(strtolower((string) ($parts['scheme'] ?? '')), ['http', 'https'], true)
             || empty($parts['host'])
         ) {
-            return 'https://albatechsolutions.co.ke';
+            return self::$cached = 'https://albatechsolutions.co.ke';
         }
 
         // Canonical URLs must point to the site's origin, not a URL with query/fragment.
         $scheme = strtolower((string) $parts['scheme']);
         $host = strtolower((string) $parts['host']);
         $port = isset($parts['port']) ? ':' . (int) $parts['port'] : '';
-        return $scheme . '://' . $host . $port;
+        return self::$cached = $scheme . '://' . $host . $port;
     }
 }

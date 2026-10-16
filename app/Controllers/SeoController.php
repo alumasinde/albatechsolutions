@@ -56,7 +56,7 @@ final class SeoController
         }
 
 
-        foreach (GuideController::articles() as $slug => $article) {
+        foreach (GuideController::articlesMeta() as $slug => $article) {
             $guideUrl = ['loc' => $baseUrl . '/guides/' . rawurlencode((string) $slug), 'priority' => '0.7', 'changefreq' => 'monthly'];
             $guideDate = (string) ($article['updated'] ?? '');
             if (preg_match('/^\\d{4}-\\d{2}-\\d{2}$/', $guideDate) === 1) {
@@ -173,7 +173,7 @@ final class SeoController
         }
         $lines[] = '';
         $lines[] = '## Guides';
-        foreach (GuideController::articles() as $slug => $article) {
+        foreach (GuideController::articlesMeta() as $slug => $article) {
             $lines[] = '- [' . $article['title'] . '](' . $baseUrl . '/guides/' . $slug . '): ' . $article['summary'];
         }
         $lines = array_merge($lines, [

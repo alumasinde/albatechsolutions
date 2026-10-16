@@ -310,7 +310,11 @@ final class AdminController
             AdminSecurity::flash('error', 'Your session expired. Try again.');
             Response::redirect('/admin/settings');
         }
-        $allowed = ['site_name', 'site_url', 'default_author', 'default_meta_title', 'default_meta_description', 'default_meta_keywords', 'default_social_image', 'whatsapp_number', 'contact_email', 'business_phone', 'business_address', 'business_city', 'service_area', 'contact_hours', 'contact_response_time', 'support_email', 'whatsapp_prefill_message'];
+        $contactKeys = ['whatsapp_number', 'contact_email', 'business_phone', 'business_address', 'business_city', 'service_area', 'contact_hours', 'contact_response_time', 'support_email', 'whatsapp_prefill_message', 'business_latitude', 'business_longitude'];
+        $socialKeys = ['social_facebook', 'social_twitter', 'social_linkedin', 'social_instagram'];
+        $analyticsKeys = ['analytics_enabled', 'analytics_provider', 'analytics_domain', 'analytics_script_url'];
+        $allowed = array_merge(['site_name', 'site_url', 'default_author', 'default_meta_title', 'default_meta_description', 'default_social_image'], $contactKeys, $socialKeys, $analyticsKeys, ['footer_description']);
+        $normalized = [];
         $siteUrl = trim((string) $request->input('site_url', ''));
         $defaultSocialImage = trim((string) $request->input('default_social_image', ''));
         $contactEmail = trim((string) $request->input('contact_email', ''));
@@ -335,6 +339,42 @@ final class AdminController
             AdminSecurity::flash('error', 'Enter a valid WhatsApp contact number.');
             Response::redirect('/admin/settings');
         }
+        foreach ($socialKeys as $key) {
+            $socialUrl = trim((string) $request->input($key, ''));
+            if ($socialUrl !== '' && (!filter_var($socialUrl, FILTER_VALIDATE_URL) || preg_match('~^https://~i', $socialUrl) !== 1)) {
+                AdminSecurity::flash('error', 'Social profile links must be full URLs starting with https://.');
+                Response::redirect('/admin/settings');
+            }
+        }
+        $latitude = trim((string) $request->input('business_latitude', ''));
+        $longitude = trim((string) $request->input('business_longitude', ''));
+        if (($latitude === '') !== ($longitude === '')) {
+            AdminSecurity::flash('error', 'Enter both business latitude and longitude, or leave both blank.');
+            Response::redirect('/admin/settings');
+        }
+        if ($latitude !== '' && (!is_numeric($latitude) || (float) $latitude < -90 || (float) $latitude > 90)) {
+            AdminSecurity::flash('error', 'Business latitude must be a number between -90 and 90.');
+            Response::redirect('/admin/settings');
+        }
+        if ($longitude !== '' && (!is_numeric($longitude) || (float) $longitude < -180 || (float) $longitude > 180)) {
+            AdminSecurity::flash('error', 'Business longitude must be a number between -180 and 180.');
+            Response::redirect('/admin/settings');
+        }
+        $analyticsEnabled = (string) $request->input('analytics_enabled', '0');
+        if (!in_array($analyticsEnabled, ['0', '1'], true)) $analyticsEnabled = '0';
+        $normalized['analytics_enabled'] = $analyticsEnabled;
+        $analyticsProvider = trim((string) $request->input('analytics_provider', ''));
+        if (!in_array($analyticsProvider, ['', 'plausible', 'ga4'], true)) $analyticsProvider = '';
+        $normalized['analytics_provider'] = $analyticsProvider;
+        $analyticsScriptUrl = trim((string) $request->input('analytics_script_url', ''));
+        if ($analyticsEnabled === '1' && $analyticsProvider === '') {
+            AdminSecurity::flash('error', 'Choose an analytics provider before enabling analytics.');
+            Response::redirect('/admin/settings');
+        }
+        if ($analyticsEnabled === '1' && ($analyticsScriptUrl === '' || preg_match('~^https://[^\s]+$~i', $analyticsScriptUrl) !== 1)) {
+            AdminSecurity::flash('error', 'Analytics requires an HTTPS script URL (for example https://plausible.io/js/script.js or https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX).');
+            Response::redirect('/admin/settings');
+        }
         foreach ($allowed as $key) {
             if (mb_strlen(trim((string) $request->input($key, ''))) > 2000) {
                 AdminSecurity::flash('error', 'One or more settings are too long. Please shorten the values and try again.');
@@ -343,10 +383,12 @@ final class AdminController
         }
         $pdo = Database::connection();
         $stmt = $pdo->prepare('INSERT INTO site_settings (setting_key, setting_value, value_type, setting_group, is_public, updated_by) VALUES (:key,:value,:type,:group_name,1,:user_id) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value), updated_by=VALUES(updated_by)');
+        $seoKeys = ['default_meta_title', 'default_meta_description', 'default_author', 'default_social_image'];
+        $urlKeys = ['site_url', 'default_social_image', 'analytics_script_url', ...$socialKeys];
         foreach ($allowed as $key) {
-            $value = trim((string) $request->input($key, ''));
-            $group = in_array($key, ['whatsapp_number', 'contact_email', 'business_phone', 'business_address', 'business_city', 'service_area', 'contact_hours', 'contact_response_time', 'support_email', 'whatsapp_prefill_message'], true) ? 'contact' : ((str_contains($key, 'meta') || $key === 'default_author' || $key === 'default_social_image' ? 'seo' : 'branding'));
-            $type = in_array($key, ['contact_email', 'support_email'], true) ? 'email' : (in_array($key, ['site_url', 'default_social_image'], true) ? 'url' : 'string');
+            $value = $normalized[$key] ?? trim((string) $request->input($key, ''));
+            $group = in_array($key, $contactKeys, true) ? 'contact' : (in_array($key, $seoKeys, true) || str_contains($key, 'meta') ? 'seo' : (str_starts_with($key, 'social_') ? 'social' : (str_starts_with($key, 'analytics_') ? 'analytics' : 'branding')));
+            $type = in_array($key, ['contact_email', 'support_email'], true) ? 'email' : (in_array($key, $urlKeys, true) ? 'url' : (in_array($key, ['business_latitude', 'business_longitude'], true) ? 'number' : 'string'));
             $stmt->execute(['key' => $key, 'value' => $value, 'type' => $type, 'group_name' => $group, 'user_id' => $user['id']]);
         }
         $this->audit('settings.updated', 'site_settings', null, ['keys' => $allowed]);

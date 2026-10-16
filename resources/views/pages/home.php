@@ -82,7 +82,7 @@ $ctaItems = is_array($ctaItems ?? null) ? $ctaItems : [];
 </section>
 
 
-<?php if (!empty($featuredProjects)): ?>
+<?php if (!empty($featuredProjects)): $needsWorkCarousel = true; ?>
   <section class="section home-work-section" aria-labelledby="home-work-title">
     <div class="container">
       <div class="section-heading section-heading--split">
@@ -91,8 +91,7 @@ $ctaItems = is_array($ctaItems ?? null) ? $ctaItems : [];
         </div>
         <p><?= View::escape($homeContent['home_work_description'] ?? 'Explore selected projects and practical solutions from AlbaTech Solutions.') ?></p>
       </div>
-      <div class="work-carousel" data-work-carousel aria-roledescription="carousel" aria-label="Featured projects">
-        <div class="work-carousel__viewport">
+      <div class="work-carousel" data-work-carousel aria-roledescription="carousel" aria-label="Featured projects">        <div class="work-carousel__viewport">
           <div class="work-carousel__track" data-carousel-track>
             <?php foreach ($featuredProjects as $project): ?><article class="work-card work-carousel__slide" data-carousel-slide><a class="work-card__image-link" href="/work/<?= rawurlencode($project['slug']) ?>"><img class="work-card__image" src="/<?= View::escape(ltrim($project['cover_image'], '/')) ?>" alt="<?= View::escape($project['title']) ?>" width="600" height="400" loading="lazy" decoding="async"><span class="work-card__category"><?= View::escape($project['category_name']) ?></span></a>
                 <div class="work-card__body">
@@ -136,20 +135,20 @@ $ctaItems = is_array($ctaItems ?? null) ? $ctaItems : [];
 
 <section class="section home-why-section">
   <div class="container home-why-grid">
-    <div class="home-why-copy"><span class="section-kicker"><?= View::escape($homeContent['home_why_kicker'] ?? 'The AlbaTech approach') ?></span>
-      <h2><?= View::escape($homeContent['home_why_title'] ?? 'Technology should make life easier, not more complicated.') ?></h2>
-      <p><?= View::escape($homeContent['home_why_description'] ?? 'We focus on practical solutions, plain language and realistic expectations. Whether you are building a business presence or need help with a digital task, we start by understanding what you are trying to achieve.') ?></p><a class="text-link" href="/about">Learn about AlbaTech <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+    <div class="home-why-copy"><span class="section-kicker"><?= View::escape($homeContent['home_why_kicker'] ?? 'Why AlbaTech') ?></span>
+      <h2><?= View::escape($homeContent['home_why_title'] ?? 'Practical help, without the unnecessary complexity.') ?></h2>
+      <p><?= View::escape($homeContent['home_why_description'] ?? 'Get clear guidance, sensible options and support focused on the outcome you need.') ?></p><a class="text-link" href="/about">Learn about AlbaTech <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
     </div>
     <div class="home-why-points">
       <div class="why-point"><span class="why-point__icon"><i class="fa-solid fa-list-check" aria-hidden="true"></i></span>
         <div>
-          <h3><?= View::escape($homeContent['home_why1_title'] ?? 'Practical, not complicated') ?></h3>
-          <p><?= View::escape($homeContent['home_why1_description'] ?? 'Recommendations that fit the task and your situation.') ?></p>
+          <h3><?= View::escape($homeContent['home_why1_title'] ?? 'Clear communication') ?></h3>
+          <p><?= View::escape($homeContent['home_why1_description'] ?? 'Understand the options and what each step involves.') ?></p>
         </div>
       </div>
       <div class="why-point"><span class="why-point__icon"><i class="fa-solid fa-receipt" aria-hidden="true"></i></span>
         <div>
-          <h3><?= View::escape($homeContent['home_why2_title'] ?? 'Transparent expectations') ?></h3>
+          <h3><?= View::escape($homeContent['home_why2_title'] ?? 'Know the scope') ?></h3>
           <p><?= View::escape($homeContent['home_why2_description'] ?? 'Understand the scope and charges before agreeing to proceed.') ?></p>
         </div>
       </div>
@@ -208,9 +207,9 @@ $ctaItems = is_array($ctaItems ?? null) ? $ctaItems : [];
 
 <section class="home-cta">
   <div class="container home-cta__inner">
-    <div><span class="eyebrow eyebrow--light"><?= View::escape($homeContent['home_cta_kicker'] ?? 'Talk to us') ?></span>
-      <h2><?= View::escape($homeContent['home_cta_title'] ?? 'Have a task in mind?') ?></h2>
-      <p><?= View::escape($homeContent['home_cta_description'] ?? 'Tell us what you are trying to do. We will help you work out a sensible next step.') ?></p>
+    <div><span class="eyebrow eyebrow--light"><?= View::escape($homeContent['home_cta_kicker'] ?? 'Let us talk') ?></span>
+      <h2><?= View::escape($homeContent['home_cta_title'] ?? 'Not sure where to start?') ?></h2>
+      <p><?= View::escape($homeContent['home_cta_description'] ?? 'Tell us what you are trying to achieve. We will help you understand the next step.') ?></p>
     </div><a class="button button--accent" href="<?= View::escape($whatsAppUrl ?? '/get-help') ?>"><?php if (!empty($hasWhatsApp)): ?><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Start a WhatsApp chat<?php else: ?><i class="fa-regular fa-envelope" aria-hidden="true"></i> Send an enquiry<?php endif; ?></a>
   </div>
 </section>

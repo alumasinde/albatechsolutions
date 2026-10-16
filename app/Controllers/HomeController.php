@@ -40,8 +40,7 @@ final class HomeController
             'canonicalUrl' => $baseUrl . '/',
             'appName' => $appName,
             'homeContent' => $settings,
-            'navigationItems' => $this->navigation('header'),
-            'ctaItems' => $this->ctas(),
+            'ctaItems' => (new \AlbaTech\Repositories\CmsRepository())->ctas(),
             'featuredServices' => $this->services->featuredServices(6),
             'featuredProjects' => $featuredProjects,
             'whatsAppUrl' => $whatsAppUrl,
@@ -50,15 +49,5 @@ final class HomeController
                 ['name' => 'Home', 'url' => '/'],
             ],
         ]));
-    }
-
-    private function navigation(string $placement): array
-    {
-        try { $stmt = \AlbaTech\Core\Database::connection()->prepare('SELECT label,url,open_new_tab FROM site_navigation WHERE placement=:placement AND is_enabled=1 ORDER BY sort_order,id'); $stmt->execute(['placement'=>$placement]); return $stmt->fetchAll(); } catch (\Throwable $e) { return []; }
-    }
-
-    private function ctas(): array
-    {
-        try { $rows = \AlbaTech\Core\Database::connection()->query('SELECT cta_key,label,url,placement,style_class FROM site_ctas WHERE is_enabled=1')->fetchAll(); $out=[]; foreach ($rows as $row) $out[$row['cta_key']]=$row; return $out; } catch (\Throwable $e) { return []; }
     }
 }

@@ -116,17 +116,6 @@ if ($lat !== '' && $lng !== '' && is_numeric($lat) && is_numeric($lng)) {
     ];
 }
 
-// Add opening hours if available
-$openingHours = trim((string) ($siteSettings['opening_hours'] ?? ''));
-if ($openingHours !== '') {
-    $localBusinessSchema['openingHoursSpecification'] = [
-        '@type' => 'OpeningHoursSpecification',
-        'dayOfWeek' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-        'opens' => '09:00',
-        'closes' => '17:00',
-    ];
-}
-
 // Add sameAs social links
 $sameAs = [];
 $socialLinks = [
@@ -237,11 +226,12 @@ $footerLocation = trim((string) ($siteSettings['business_address'] ?? 'Nairobi, 
 if ($footerLocation === '') $footerLocation = 'Kenya';
 
 $headerNavigation = []; $footerExploreNavigation = []; $footerInfoNavigation = []; $layoutCtas = [];
-try {
-    $navRows = \AlbaTech\Core\Database::connection()->query('SELECT label,url,placement,open_new_tab FROM site_navigation WHERE is_enabled=1 ORDER BY sort_order,id')->fetchAll();
-    foreach ($navRows as $navRow) { if ($navRow['placement']==='header') $headerNavigation[]=$navRow; elseif ($navRow['placement']==='footer_explore') $footerExploreNavigation[]=$navRow; elseif ($navRow['placement']==='footer_information') $footerInfoNavigation[]=$navRow; }
-    foreach (\AlbaTech\Core\Database::connection()->query('SELECT cta_key,label,url,placement,style_class FROM site_ctas WHERE is_enabled=1')->fetchAll() as $ctaRow) $layoutCtas[$ctaRow['cta_key']]=$ctaRow;
-} catch (\Throwable $e) { error_log('[AlbaTech layout CMS] '.$e->getMessage()); }
+$cms = new \AlbaTech\Repositories\CmsRepository();
+$navByPlacement = $cms->navigationByPlacement();
+$headerNavigation = $navByPlacement['header'] ?? [];
+$footerExploreNavigation = $navByPlacement['footer_explore'] ?? [];
+$footerInfoNavigation = $navByPlacement['footer_information'] ?? [];
+$layoutCtas = $cms->ctas();
 if (!$headerNavigation) $headerNavigation = [['label'=>'Home','url'=>'/','open_new_tab'=>0],['label'=>'Services','url'=>'/services','open_new_tab'=>0],['label'=>'Guides','url'=>'/guides','open_new_tab'=>0],['label'=>'About','url'=>'/about','open_new_tab'=>0],['label'=>'Contact','url'=>'/get-help','open_new_tab'=>0]];
 if (!$footerExploreNavigation) $footerExploreNavigation = [['label'=>'Our services','url'=>'/services','open_new_tab'=>0],['label'=>'Guides & resources','url'=>'/guides','open_new_tab'=>0],['label'=>'About us','url'=>'/about','open_new_tab'=>0]];
 if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy','url'=>'/privacy','open_new_tab'=>0],['label'=>'Terms of service','url'=>'/terms','open_new_tab'=>0],['label'=>'Make an enquiry','url'=>'/get-help','open_new_tab'=>0]];
@@ -301,10 +291,7 @@ if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy',
     <meta name="twitter:image" content="<?= View::escape($finalImage) ?>">
     <meta name="twitter:image:alt" content="<?= View::escape($siteName . ' — practical digital services in Kenya') ?>">
 
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
-
-    <!-- The hero image is CMS-configurable. Its <img fetchpriority="high"> is the source of truth;
+    <!-- The hero image is CMS-configurable. Its eager, high-priority image element in the page is the source of truth;
          avoid preloading a hardcoded fallback URL when an administrator may choose another image. -->
 
     <!-- Favicons -->
@@ -315,8 +302,8 @@ if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy',
     <link rel="apple-touch-icon" sizes="192x192" href="/assets/images/favicon-192x192.png">
 
     <link rel="stylesheet" href="<?= View::escape(View::asset('css/bundle.css')) ?>">
-    <!-- SVG sprite is the primary icon system. Font Awesome remains temporarily for legacy solid/regular icons and brand marks until all legacy icons are migrated. -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <!-- SVG sprite is the primary icon system. Font Awesome (self-hosted subset) remains for legacy solid/regular icons and brand marks until all legacy icons are migrated. -->
+    <link rel="stylesheet" href="<?= View::escape(View::asset('vendor/fontawesome/css/all.min.css')) ?>">
 
     <?php
     // Analytics tracking (Plausible or GA4)
@@ -365,7 +352,7 @@ if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy',
             href="/"
             aria-label="<?= View::escape($siteName) ?> home"
         >
-            <img src="/assets/images/albatech-logo.png" alt="<?= View::escape($siteName) ?>" class="brand-logo" width="180" height="180">
+            <img src="<?= View::escape(View::asset('images/albatech-logo.png')) ?>" alt="<?= View::escape($siteName) ?>" class="brand-logo" width="180" height="180">
         </a>
 
         <button
@@ -384,71 +371,6 @@ if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy',
         </nav>
     </div>
 </header>
-
-<script nonce="<?= View::escape($cspNonce ?? '') ?>">
-(function() {
-    const menuToggle = document.getElementById('mobile-menu-toggle');
-    const siteNav = document.getElementById('site-nav');
-
-    if (!menuToggle || !siteNav) return;
-
-    const menuIcon = menuToggle.querySelector('svg');
-
-    menuToggle.addEventListener('click', function() {
-        const isOpen = siteNav.classList.toggle('is-open');
-        menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-        if (menuIcon) {
-            const use = menuIcon.querySelector('use');
-            if (use) {
-                use.setAttribute('href', isOpen ? '/assets/images/icons.svg#icon-xmark' : '/assets/images/icons.svg#icon-bars');
-            }
-        }
-    });
-
-    // Close menu when clicking a link
-    siteNav.querySelectorAll('a').forEach(function(link) {
-        link.addEventListener('click', function() {
-            siteNav.classList.remove('is-open');
-            menuToggle.setAttribute('aria-expanded', 'false');
-            if (menuIcon) {
-                const use = menuIcon.querySelector('use');
-                if (use) {
-                    use.setAttribute('href', '/assets/images/icons.svg#icon-bars');
-                }
-            }
-        });
-    });
-
-    // Close menu when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!siteNav.contains(e.target) && !menuToggle.contains(e.target)) {
-            siteNav.classList.remove('is-open');
-            menuToggle.setAttribute('aria-expanded', 'false');
-            if (menuIcon) {
-                const use = menuIcon.querySelector('use');
-                if (use) {
-                    use.setAttribute('href', '/assets/images/icons.svg#icon-bars');
-                }
-            }
-        }
-    });
-
-    // Close menu on escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && siteNav.classList.contains('is-open')) {
-            siteNav.classList.remove('is-open');
-            menuToggle.setAttribute('aria-expanded', 'false');
-            if (menuIcon) {
-                const use = menuIcon.querySelector('use');
-                if (use) {
-                    use.setAttribute('href', '/assets/images/icons.svg#icon-bars');
-                }
-            }
-            menuToggle.focus();
-        }
-    });
-})();
-</script>
 
 <main id="main-content">
     <?= $content ?? '' ?>
@@ -492,6 +414,9 @@ if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy',
 </div>
 <?php endif; ?>
 
+<script src="<?= View::escape(View::asset('js/site.js')) ?>" defer></script>
+<?php if (!empty($needsWorkCarousel)): ?>
 <script src="<?= View::escape(View::asset('js/work-carousel.js')) ?>" defer></script>
+<?php endif; ?>
 </body>
 </html>

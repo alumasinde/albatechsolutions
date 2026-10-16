@@ -110,30 +110,27 @@ $hasWhatsApp = strlen($whatsAppNumber) >= 8 && strlen($whatsAppNumber) <= 15 && 
 
                     <div class="form-group">
                         <label for="enquiry-service">What do you need help with?</label>
+                        <?php
+                        $serviceOptions = is_array($enquiryServices ?? null) ? $enquiryServices : ['other' => 'Something else'];
+                        $selectedService = '';
+                        if ($serviceSlug !== '') {
+                            if (isset($serviceOptions[$serviceSlug])) {
+                                $selectedService = $serviceSlug;
+                            } else {
+                                foreach (array_keys($serviceOptions) as $optionKey) {
+                                    if ($optionKey !== 'other' && (str_contains($serviceSlug, (string) $optionKey) || str_contains((string) $optionKey, $serviceSlug))) {
+                                        $selectedService = (string) $optionKey;
+                                        break;
+                                    }
+                                }
+                                if ($selectedService === '') $selectedService = 'other';
+                            }
+                        }
+                        ?>
                         <select id="enquiry-service" name="service">
                             <option value="">Choose a service or describe your need</option>
-                            <option value="website-design">Website Design</option>
-                            <option value="landing-page">Landing Page</option>
-                            <option value="google-business">Google Business Profile</option>
-                            <option value="kra-returns">KRA Returns Filing</option>
-                            <option value="business-registration">Business Registration</option>
-                            <option value="cv-writing">CV Writing</option>
-                            <option value="other">Something else</option>
+                            <?php foreach ($serviceOptions as $optionKey => $optionLabel): ?><option value="<?= View::escape($optionKey) ?>"<?= $selectedService === (string) $optionKey ? ' selected' : '' ?>><?= View::escape($optionLabel) ?></option><?php endforeach; ?>
                         </select>
-                        <?php if ($serviceSlug !== ''): ?>
-                        <script nonce="<?= View::escape($cspNonce ?? '') ?>">
-                        document.addEventListener('DOMContentLoaded', function() {
-                            const select = document.getElementById('enquiry-service');
-                            const slug = '<?= View::escape($serviceSlug) ?>';
-                            if (slug.includes('website') || slug.includes('landing')) select.value = 'website-design';
-                            else if (slug.includes('google')) select.value = 'google-business';
-                            else if (slug.includes('kra')) select.value = 'kra-returns';
-                            else if (slug.includes('registration')) select.value = 'business-registration';
-                            else if (slug.includes('cv')) select.value = 'cv-writing';
-                            else select.value = 'other';
-                        });
-                        </script>
-                        <?php endif; ?>
                     </div>
 
                     <div class="form-group">

@@ -14,9 +14,9 @@ use Throwable;
 
 final class StaticPageController
 {
-    public function about(): void { $this->render('about', 'pages/about', 'About AlbaTech Solutions', 'Learn how AlbaTech Solutions helps people and businesses with practical web design, online presence and digital assistance in Kenya.', 'about', [], ['name' => 'About', 'url' => '/about']); }
-    public function getHelp(): void { $this->render('get-help', 'pages/get-help', 'Get Assistance', 'Tell AlbaTech Solutions what you need help with and explore available services.', 'get-help', ['csrf' => AdminSecurity::csrfToken()], ['name' => 'Contact', 'url' => '/get-help']); }
-    public function contactDetails(): void { $this->render('contact-details', 'pages/contact-details', 'Contact & Location', 'Find AlbaTech Solutions contact information and service-area details.', 'contact-details', [], ['name' => 'Contact Details', 'url' => '/contact-details']); }
+    public function about(): void { $this->render('about', 'pages/about', 'About AlbaTech Solutions | Digital Services in Nairobi, Kenya', 'Learn how AlbaTech Solutions helps businesses and individuals across Kenya with practical website design, business registration support and online visibility.', 'about', [], ['name' => 'About', 'url' => '/about']); }
+    public function getHelp(): void { $this->render('get-help', 'pages/get-help', 'Get Help with a Website or Business Service in Kenya', 'Send an enquiry or start a WhatsApp chat about website design, business registration, KRA returns and other digital services in Kenya.', 'get-help', ['csrf' => AdminSecurity::csrfToken(), 'enquiryServices' => (new \AlbaTech\Repositories\ServiceRepository())->enquiryOptions()], ['name' => 'Contact', 'url' => '/get-help']); }
+    public function contactDetails(): void { $this->render('contact-details', 'pages/contact-details', 'Contact & Location | AlbaTech Solutions Kenya', 'WhatsApp, phone and email details for AlbaTech Solutions in Nairobi, with nationwide remote support across Kenya.', 'contact-details', [], ['name' => 'Contact Details', 'url' => '/contact-details']); }
     public function terms(): void { $this->render('terms', 'pages/terms', 'Terms of Service', 'Read the terms that apply when using AlbaTech Solutions services and website.', 'terms', [], ['name' => 'Terms', 'url' => '/terms']); }
     public function privacy(): void { $this->render('privacy', 'pages/privacy', 'Privacy Policy', 'Learn how AlbaTech Solutions handles enquiries and personal information.', 'privacy', [], ['name' => 'Privacy', 'url' => '/privacy']); }
 

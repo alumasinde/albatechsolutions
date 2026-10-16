@@ -8,7 +8,7 @@ namespace AlbaTech\Core;
 final class SeoDefaults
 {
     public const SOCIAL_IMAGE = '/assets/images/albatech-social-card.png';
-    public const DESCRIPTION = 'Website design, online business presence and practical digital assistance for people and businesses in Kenya.';
+    public const DESCRIPTION = 'Website design, business registration, KRA filing help and practical digital services for businesses in Nairobi and across Kenya. Clear pricing, WhatsApp support, no unnecessary complexity.';
 
     public static function title(string $candidate, string $fallback): string
     {

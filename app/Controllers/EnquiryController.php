@@ -11,21 +11,12 @@ use AlbaTech\Core\RateLimiter;
 use AlbaTech\Core\Request;
 use AlbaTech\Core\Response;
 use AlbaTech\Core\SmtpMailer;
+use AlbaTech\Repositories\ServiceRepository;
 use AlbaTech\Repositories\SiteSettingsRepository;
 use Throwable;
 
 final class EnquiryController
 {
-    private const SERVICES = [
-        'website-design' => 'Website Design',
-        'landing-page' => 'Landing Page',
-        'google-business' => 'Google Business Profile',
-        'kra-returns' => 'KRA Returns Filing',
-        'business-registration' => 'Business Registration',
-        'cv-writing' => 'CV Writing',
-        'other' => 'Something else',
-    ];
-
     public function submit(Request $request): void
     {
         if ($request->method() !== 'POST') {
@@ -70,7 +61,7 @@ final class EnquiryController
             Response::redirect('/get-help?sent=0', 303);
         }
 
-        $serviceName = self::SERVICES[$serviceKey] ?? ($serviceKey === '' ? 'Not specified' : 'Other');
+        $serviceName = (new ServiceRepository())->enquiryOptions()[$serviceKey] ?? ($serviceKey === '' ? 'Not specified' : 'Other');
         $settings = (new SiteSettingsRepository())->publicValues();
         $recipient = trim((string) ($settings['contact_email'] ?? ''));
         if (!filter_var($recipient, FILTER_VALIDATE_EMAIL)) {
