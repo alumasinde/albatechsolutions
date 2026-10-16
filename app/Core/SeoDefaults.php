@@ -16,6 +16,16 @@ final class SeoDefaults
         return $candidate !== '' ? $candidate : self::clean($fallback, 255);
     }
 
+    /** Title with the brand suffix, guarding against stored meta_titles that already include it. */
+    public static function brandedTitle(string $candidate, string $fallback): string
+    {
+        $title = self::title($candidate, $fallback);
+        if (preg_match('/\bAlbaTech Solutions\s*$/iu', $title) === 1) {
+            return $title;
+        }
+        return self::clean($title . ' | AlbaTech Solutions', 255);
+    }
+
     public static function description(string $candidate, string $fallback = self::DESCRIPTION): string
     {
         $candidate = self::clean($candidate, 320);

@@ -42,8 +42,8 @@ $assert = static function (bool $condition, string $message) use (&$checks, &$fa
 };
 
 $assert($cmsCount >= 5, 'Seeded database contains the five standard CMS pages');
-$assert($guideCount >= 4, 'Seeded database contains the four published guide records');
-$assert($serviceCount >= 1, 'Database has at least one published service to exercise dynamic sitemap URLs');
+$assert($guideCount >= 6, 'Seeded database contains the six published guide records');
+$assert($serviceCount >= 10, 'Database has the ten published catalogue services');
 $assert($projectCount >= 0, 'Portfolio query is available');
 
 $base = SiteUrl::base();

@@ -62,7 +62,7 @@ final class ServiceController
         }
 
         Response::html(View::render('services/show', [
-            'pageTitle' => SeoDefaults::title((string) ($service['meta_title'] ?? ''), (string) $service['name']) . ' | AlbaTech Solutions',
+            'pageTitle' => SeoDefaults::brandedTitle((string) ($service['meta_title'] ?? ''), (string) $service['name']),
             'metaDescription' => SeoDefaults::description($description, (string) ($service['short_description'] ?? 'Explore this service from AlbaTech Solutions.')),
             'canonicalUrl' => $baseUrl . '/services/' . rawurlencode($service['slug']),
             'metaImage' => SeoDefaults::image('', $baseUrl),

@@ -102,7 +102,7 @@ final class GuideController
 
         $baseUrl = SiteUrl::base();
         Response::html(View::render('pages/guide-article', [
-            'pageTitle' => SeoDefaults::title((string) $article['meta_title'], (string) $article['title']) . ' | AlbaTech Solutions',
+            'pageTitle' => SeoDefaults::brandedTitle((string) $article['meta_title'], (string) $article['title']),
             'metaDescription' => SeoDefaults::description((string) $article['meta_description'], (string) $article['summary']),
             'canonicalUrl' => $baseUrl . '/guides/' . rawurlencode($slug),
             'metaImage' => SeoDefaults::image('', $baseUrl),
