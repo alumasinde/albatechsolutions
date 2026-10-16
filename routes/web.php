@@ -17,6 +17,37 @@ use AlbaTech\Core\Response;
 /** @var \AlbaTech\Core\Application $app */
 $app->router()->get('/', [new HomeController(), 'index']);
 $app->router()->get('/services', [new ServiceController(), 'index']);
+
+// 301s for URLs the previous production site had indexed, so they keep their
+// authority after v2 launches. Must be registered before /services/{slug}.
+$legacyServiceTargets = [
+    'website-design-development' => '/services/website-design',
+    'website-design-kenya' => '/services/website-design',
+    'ntsa-services' => '/services/ntsa-smart-dl-assistance',
+    'sha-registration' => '/services/sha-registration-help-in-kenya',
+    'ecitizen-services' => '/services/ecitizen-application-assistance',
+    'kra-pin-registration' => '/services/kra-returns-filing',
+    'tax-compliance' => '/services/kra-returns-filing',
+    'kra-nil-return' => '/services/kra-returns-filing',
+    'cr12-application' => '/services/business-registration',
+    'cr12-applications' => '/services/business-registration',
+];
+$legacyServiceFallbacks = [
+    'nssf-services', 'domain-registration', 'web-hosting', 'business-email-setup',
+    'it-support', 'computer-repair', 'networking', 'cctv-installation', 'wifi-networking',
+    'software-development', 'graphic-design', 'digital-marketing',
+];
+foreach ($legacyServiceTargets as $legacySlug => $legacyTarget) {
+    $app->router()->get('/services/' . $legacySlug, static function () use ($legacyTarget): void { Response::redirect($legacyTarget, 301); });
+}
+foreach ($legacyServiceFallbacks as $legacySlug) {
+    $app->router()->get('/services/' . $legacySlug, static function (): void { Response::redirect('/services', 301); });
+}
+$app->router()->get('/blog', static function (): void { Response::redirect('/guides', 301); });
+$app->router()->get('/blog/how-to-apply-for-a-kenyan-passport-in-2026', static function (): void { Response::redirect('/guides/how-to-apply-for-a-passport-in-kenya', 301); });
+$app->router()->get('/blog/{slug}', static function (): void { Response::redirect('/guides', 301); });
+$app->router()->get('/faqs', static function (): void { Response::redirect('/get-help', 301); });
+
 $app->router()->get('/services/{slug}', [new ServiceController(), 'show']);
 $work = new WorkController();
 $app->router()->get('/work', [$work, 'index']);
