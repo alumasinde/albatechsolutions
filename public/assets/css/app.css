@@ -3651,12 +3651,12 @@ button,
 .section { padding-block: clamp(2.5rem, 4vw, 4rem); }
 .section-heading { margin-bottom: clamp(1.5rem, 3vw, 2.5rem); }
 .section-heading h2 {
-  max-width: 19ch;
+  max-width: auto;
   margin-block: .45rem 0;
   letter-spacing: -.035em;
   text-wrap: balance;
 }
-.section-heading p { max-width: 58ch; color: var(--color-text-muted); }
+.section-heading p { max-width: 78ch; text-align:center; color: var(--color-text-muted); }
 .section-kicker, .eyebrow {
   color: var(--color-secondary);
   font-weight: 750;
