@@ -54,7 +54,7 @@ $html = View::render('pages/guide-article', [
     'pageTitle' => $article['meta_title'] . ' | AlbaTech Solutions',
     'metaDescription' => $article['meta_description'],
     'canonicalUrl' => $baseUrl . '/guides/how-much-does-a-website-cost-in-kenya',
-    'metaImage' => $baseUrl . '/assets/images/albatech-social-card.png',
+    'metaImage' => $baseUrl . '/assets/images/albatech-social-card.jpg',
     'guideArticle' => $article,
     'guideSlug' => 'how-much-does-a-website-cost-in-kenya',
 ]);
@@ -69,7 +69,7 @@ if (preg_match('~<script type="application/ld\+json"[^>]*>(.*?)</script>~s', $ht
 } else {
     $assert(false, 'JSON-LD script block exists');
 }
-$assert(is_file(dirname(__DIR__) . '/public/assets/images/albatech-social-card.png'), 'Social preview image asset exists');
+$assert(is_file(dirname(__DIR__) . '/public/assets/images/albatech-social-card.jpg'), 'Social preview image asset exists');
 $assert(is_file(dirname(__DIR__) . '/public/assets/images/albatech-logo.png'), 'Structured-data logo asset exists');
 foreach (['pages/terms', 'pages/privacy', 'pages/contact-details'] as $view) {
     $legalHtml = View::render($view, ['pageTitle' => 'AlbaTech Solutions | ' . basename($view), 'metaDescription' => 'Public information for AlbaTech Solutions.', 'canonicalUrl' => $baseUrl . '/' . basename($view)]);

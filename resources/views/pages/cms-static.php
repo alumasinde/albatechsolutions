@@ -35,3 +35,25 @@ use AlbaTech\Core\View;
         <div class="section-footer-link"><a class="button button--primary" href="/get-help">Tell us what you need</a></div>
     </div>
 </section>
+<?php
+$founderName = trim((string) ($founderName ?? ''));
+$founderTitle = trim((string) ($founderTitle ?? ''));
+$founderBio = trim((string) ($founderBio ?? ''));
+$founderLinkedin = trim((string) ($founderLinkedin ?? ''));
+?>
+<?php if ($founderName !== ''): ?>
+<section class="section section--tint">
+    <div class="container">
+        <div class="founder-card">
+            <div>
+                <span class="section-kicker">Who you work with</span>
+                <h2>Meet <?= View::escape($founderName) ?></h2>
+                <?php if ($founderTitle !== ''): ?><p class="founder-role"><?= View::escape($founderTitle) ?></p><?php endif; ?>
+                <?php if ($founderBio !== ''): ?><p><?= nl2br(View::escape($founderBio), false) ?></p><?php endif; ?>
+                <?php if ($founderLinkedin !== '' && filter_var($founderLinkedin, FILTER_VALIDATE_URL)): ?><p><a class="text-link" href="<?= View::escape($founderLinkedin) ?>" target="_blank" rel="noopener">Connect on LinkedIn</a></p><?php endif; ?>
+            </div>
+            <a class="button button--primary" href="/get-help">Talk to <?= View::escape(explode(' ', $founderName)[0]) ?></a>
+        </div>
+    </div>
+</section>
+<?php endif; ?>

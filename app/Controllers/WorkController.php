@@ -29,10 +29,10 @@ final class WorkController
         $stmt = $pdo->prepare($sql); $stmt->execute($params);
         $base = SiteUrl::base();
         Response::html(View::render('work/index', [
-            'pageTitle' => 'Our Work | Websites & Business Projects in Kenya | AlbaTech Solutions',
+            'pageTitle' => 'Our Work | Kenya Website Projects | AlbaTech Solutions',
             'metaDescription' => 'Selected website, business systems and digital projects delivered by AlbaTech Solutions for clients across Kenya.',
             'canonicalUrl' => $base . '/work',
-            'metaImage' => $base . '/assets/images/albatech-social-card.png',
+            'metaImage' => $base . '/assets/images/albatech-social-card.jpg',
             'projects' => $stmt->fetchAll(), 'categories' => $categories, 'selectedCategory' => $categorySlug,
             'breadcrumbs' => [
                 ['name' => 'Home', 'url' => '/'],

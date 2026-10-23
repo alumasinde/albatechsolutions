@@ -54,9 +54,16 @@ final class EnquiryController
             Response::redirect('/get-help?sent=0', 303);
         }
 
+        $phoneDigits = preg_replace('/\D+/', '', $phone) ?? '';
+        $phoneValid = $phone !== ''
+            && preg_match('/^[+0-9() .-]+$/', $phone) === 1
+            && strlen($phoneDigits) >= 8
+            && strlen($phoneDigits) <= 15;
+        $emailValid = $senderEmail === '' || (filter_var($senderEmail, FILTER_VALIDATE_EMAIL) && strlen($senderEmail) <= 254);
+
         if ($name === '' || mb_strlen($name) > 100 || preg_match('/[\r\n\0]/', $name)
-            || !filter_var($senderEmail, FILTER_VALIDATE_EMAIL) || strlen($senderEmail) > 254
-            || mb_strlen($phone) > 30 || preg_match('/[\r\n\0]/', $phone)
+            || !$phoneValid || mb_strlen($phone) > 30 || preg_match('/[\r\n\0]/', $phone)
+            || !$emailValid
             || mb_strlen($message) < 5 || mb_strlen($message) > 5000) {
             Response::redirect('/get-help?sent=0', 303);
         }
@@ -79,8 +86,8 @@ final class EnquiryController
         $safeName = str_replace(["\r", "\n"], ' ', $name);
         $body = "A new website enquiry was submitted.\n\n"
             . "Name: {$safeName}\n"
-            . "Email: {$senderEmail}\n"
-            . "Phone: " . ($phone !== '' ? $phone : 'Not provided') . "\n"
+            . "Phone / WhatsApp: {$phone}\n"
+            . "Email: " . ($senderEmail !== '' ? $senderEmail : 'Not provided') . "\n"
             . "Service: {$serviceName}\n\n"
             . "Message:\n{$message}\n\n"
             . "Received: " . date(DATE_RFC2822) . "\n"

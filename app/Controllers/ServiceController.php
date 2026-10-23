@@ -29,8 +29,8 @@ final class ServiceController
 
         $baseUrl = SiteUrl::base();
         Response::html(View::render('services/index', [
-            'pageTitle' => SeoDefaults::title('', 'Website Design, Business Registration & Digital Services in Kenya | AlbaTech Solutions'),
-            'metaDescription' => SeoDefaults::description('', 'Professional website design, business registration, KRA returns filing, and digital assistance services in Kenya. Clear pricing and practical solutions.'),
+            'pageTitle' => SeoDefaults::title('', 'Website & Business Services in Kenya | AlbaTech Solutions'),
+            'metaDescription' => SeoDefaults::description('', 'Website design, landing pages, Google Business Profile setup, business registration and KRA filing help for businesses in Kenya.'),
             'canonicalUrl' => $baseUrl . '/services',
             'metaImage' => SeoDefaults::image('', $baseUrl),
             'categories' => $categories,
@@ -61,6 +61,21 @@ final class ServiceController
             $description = trim((string) ($service['short_description'] ?? 'Explore this service from AlbaTech Solutions.'));
         }
 
+        $pricingType = (string) ($service['pricing_type'] ?? '');
+        $pricingAmount = $service['pricing_amount'] ?? null;
+        $pricingAnswer = 'Pricing depends on your requirements. We review what you need and confirm the scope and price in writing before you commit.';
+        if (in_array($pricingType, ['fixed', 'starting_at'], true) && $pricingAmount !== null && $pricingAmount !== '' && is_numeric($pricingAmount)) {
+            $amount = number_format((float) $pricingAmount, ((float) $pricingAmount == (int) $pricingAmount) ? 0 : 2);
+            $pricingAnswer = ($pricingType === 'starting_at' ? 'The service starts from KSh ' : 'The price is KSh ') . $amount . '. The final cost depends on scope and options, and we confirm it in writing before work begins.';
+        }
+
+        $faqItems = [
+            ['question' => 'How is pricing confirmed?', 'answer' => $pricingAnswer],
+            ['question' => 'How long does it take?', 'answer' => 'Turnaround depends on the specific requirement and, for government processes, on the relevant authority. We confirm an expected timeline before starting and tell you if anything changes.'],
+            ['question' => 'Do I need to visit an office?', 'answer' => 'Most work is handled remotely by WhatsApp, phone and email. If an official step requires you to appear in person, such as biometrics or document collection, we tell you before you start.'],
+            ['question' => 'Is AlbaTech Solutions a government agency?', 'answer' => 'No. AlbaTech Solutions is an independent service provider. Government fees are paid to the relevant authority, and decisions, requirements and processing times remain with that authority.'],
+        ];
+
         Response::html(View::render('services/show', [
             'pageTitle' => SeoDefaults::brandedTitle((string) ($service['meta_title'] ?? ''), (string) $service['name']),
             'metaDescription' => SeoDefaults::description($description, (string) ($service['short_description'] ?? 'Explore this service from AlbaTech Solutions.')),
@@ -69,6 +84,7 @@ final class ServiceController
             'metaRobots' => 'index, follow, max-image-preview:large',
             'service' => $service,
             'schemaService' => $service,
+            'faqItems' => $faqItems,
             'relatedProjects' => (new \AlbaTech\Repositories\WorkRepository())->relatedToCategory((int)$service['category_id'], 0, 3),
             'breadcrumbs' => [
                 ['name' => 'Home', 'url' => '/'],

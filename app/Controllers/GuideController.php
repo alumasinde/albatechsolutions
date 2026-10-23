@@ -9,6 +9,7 @@ use AlbaTech\Core\Response;
 use AlbaTech\Core\SiteUrl;
 use AlbaTech\Core\View;
 use AlbaTech\Core\SeoDefaults;
+use AlbaTech\Repositories\SiteSettingsRepository;
 
 final class GuideController
 {
@@ -74,8 +75,8 @@ final class GuideController
         $articles = self::articlesMeta();
         $baseUrl = SiteUrl::base();
         Response::html(View::render('pages/guides', [
-            'pageTitle' => SeoDefaults::title('', 'Practical Business & Website Guides for Kenya | AlbaTech Solutions'),
-            'metaDescription' => SeoDefaults::description('', 'Practical guides for Kenyan small businesses on website costs in Kenya, domains and hosting, preparing a business website, and improving local online visibility in Nairobi and across Kenya.'),
+            'pageTitle' => SeoDefaults::title('', 'Business & Website Guides for Kenya | AlbaTech Solutions'),
+            'metaDescription' => SeoDefaults::description('', 'Practical guides on business registration, KRA returns, eTIMS, passports, website costs and online visibility for Kenyan businesses and individuals.'),
             'canonicalUrl' => $baseUrl . '/guides',
             'metaImage' => SeoDefaults::image('', $baseUrl),
             'guideArticles' => $articles,
@@ -101,13 +102,15 @@ final class GuideController
         }
 
         $baseUrl = SiteUrl::base();
+        $settings = (new SiteSettingsRepository())->publicValues();
         Response::html(View::render('pages/guide-article', [
-            'pageTitle' => SeoDefaults::brandedTitle((string) $article['meta_title'], (string) $article['title']),
+            'pageTitle' => SeoDefaults::title((string) $article['meta_title'], (string) $article['title']),
             'metaDescription' => SeoDefaults::description((string) $article['meta_description'], (string) $article['summary']),
             'canonicalUrl' => $baseUrl . '/guides/' . rawurlencode($slug),
             'metaImage' => SeoDefaults::image('', $baseUrl),
             'guideArticle' => $article,
             'guideSlug' => $slug,
+            'founderName' => trim((string) ($settings['founder_name'] ?? '')),
             'breadcrumbs' => [
                 ['name' => 'Home', 'url' => '/'],
                 ['name' => 'Guides', 'url' => '/guides'],

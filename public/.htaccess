@@ -4,6 +4,15 @@ DirectoryIndex index.php
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
+    # One canonical production origin: HTTPS and no www. Host-scoped so local
+    # development hosts are never redirected.
+    RewriteCond %{HTTP_HOST} ^(?:www\.)?albatechsolutions\.co\.ke$ [NC]
+    RewriteCond %{HTTPS} !=on
+    RewriteRule ^ https://albatechsolutions.co.ke%{REQUEST_URI} [R=301,L]
+
+    RewriteCond %{HTTP_HOST} ^www\.albatechsolutions\.co\.ke$ [NC]
+    RewriteRule ^ https://albatechsolutions.co.ke%{REQUEST_URI} [R=301,L]
+
     # Serve existing files and directories directly.
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d

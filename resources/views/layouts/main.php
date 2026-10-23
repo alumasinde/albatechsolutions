@@ -41,6 +41,16 @@ $serviceData = isset($schemaService) && is_array($schemaService) ? $schemaServic
 $guideData = isset($guideArticle) && is_array($guideArticle) ? $guideArticle : null;
 $projectData = isset($schemaProject) && is_array($schemaProject) ? $schemaProject : null;
 
+$founderName = trim((string) ($siteSettings['founder_name'] ?? ''));
+$founderTitle = trim((string) ($siteSettings['founder_title'] ?? ''));
+$founderBio = trim((string) ($siteSettings['founder_bio'] ?? ''));
+$founderLinkedin = trim((string) ($siteSettings['founder_linkedin'] ?? ''));
+$founderId = $siteUrl . '/about#founder';
+$schemaPageType = (string) ($schemaPageType ?? 'WebPage');
+if (!in_array($schemaPageType, ['WebPage', 'ContactPage', 'AboutPage', 'CollectionPage'], true)) {
+    $schemaPageType = 'WebPage';
+}
+
 $organizationId = $siteUrl . '/#organization';
 $websiteId = $siteUrl . '/#website';
 $localBusinessId = $siteUrl . '/#localbusiness';
@@ -136,6 +146,27 @@ if (!empty($sameAs)) {
 
 $structuredGraph[] = $localBusinessSchema;
 
+if ($founderName !== '') {
+    $personSchema = [
+        '@type' => 'Person',
+        '@id' => $founderId,
+        'name' => $founderName,
+        'url' => $siteUrl . '/about',
+        'worksFor' => ['@id' => $organizationId],
+    ];
+    if ($founderTitle !== '') {
+        $personSchema['jobTitle'] = $founderTitle;
+    }
+    if ($founderBio !== '') {
+        $personSchema['description'] = $founderBio;
+    }
+    if ($founderLinkedin !== '' && filter_var($founderLinkedin, FILTER_VALIDATE_URL) && preg_match('~^https://~i', $founderLinkedin) === 1) {
+        $personSchema['sameAs'] = [$founderLinkedin];
+    }
+    $structuredGraph[] = $personSchema;
+    $structuredGraph[0]['founder'] = ['@id' => $founderId];
+}
+
 // Add BreadcrumbList if provided by controller
 if (isset($breadcrumbs) && is_array($breadcrumbs) && !empty($breadcrumbs)) {
     $breadcrumbList = [
@@ -160,7 +191,7 @@ if ($guideData !== null && $canonicalUrl !== '') {
         'headline' => (string) ($guideData['title'] ?? $pageTitle),
         'description' => $metaDescription,
         'mainEntityOfPage' => ['@type' => 'WebPage', '@id' => $canonicalUrl],
-        'author' => ['@type' => 'Organization', '@id' => $organizationId],
+        'author' => $founderName !== '' ? ['@id' => $founderId] : ['@type' => 'Organization', '@id' => $organizationId],
         'publisher' => ['@id' => $organizationId],
         'image' => [$metaImage],
         'inLanguage' => 'en-KE',
@@ -177,7 +208,7 @@ if ($guideData !== null && $canonicalUrl !== '') {
         'name' => (string) ($projectData['title'] ?? $pageTitle),
         'description' => $metaDescription,
         'url' => $canonicalUrl,
-        'author' => ['@type' => 'Organization', '@id' => $organizationId],
+        'author' => $founderName !== '' ? ['@id' => $founderId] : ['@type' => 'Organization', '@id' => $organizationId],
         'publisher' => ['@id' => $organizationId],
         'image' => [$metaImage],
         'inLanguage' => 'en-KE',
@@ -195,7 +226,7 @@ if ($guideData !== null && $canonicalUrl !== '') {
 } elseif ($serviceData !== null && $canonicalUrl !== '') {
     $serviceName = trim((string) ($serviceData['name'] ?? $siteName));
     $serviceDescription = trim((string) ($serviceData['meta_description'] ?? $serviceData['short_description'] ?? $metaDescription));
-    $structuredGraph[] = [
+    $serviceSchema = [
         '@type' => 'Service',
         '@id' => $canonicalUrl . '#service',
         'name' => $serviceName !== '' ? $serviceName : $siteName,
@@ -204,9 +235,21 @@ if ($guideData !== null && $canonicalUrl !== '') {
         'provider' => ['@id' => $organizationId],
         'areaServed' => ['@type' => 'Country', 'name' => 'Kenya'],
     ];
+    $pricingType = (string) ($serviceData['pricing_type'] ?? '');
+    $pricingAmount = $serviceData['pricing_amount'] ?? null;
+    if (in_array($pricingType, ['fixed', 'starting_at'], true) && $pricingAmount !== null && $pricingAmount !== '' && is_numeric($pricingAmount)) {
+        $serviceSchema['offers'] = [
+            '@type' => 'Offer',
+            'url' => $canonicalUrl,
+            'price' => (float) $pricingAmount,
+            'priceCurrency' => 'KES',
+            'availability' => 'https://schema.org/InStock',
+        ];
+    }
+    $structuredGraph[] = $serviceSchema;
 } elseif ($canonicalUrl !== '') {
-    $structuredGraph[] = [
-        '@type' => 'WebPage',
+    $webPageSchema = [
+        '@type' => $schemaPageType,
         '@id' => $canonicalUrl . '#webpage',
         'url' => $canonicalUrl,
         'name' => $pageTitle,
@@ -215,6 +258,33 @@ if ($guideData !== null && $canonicalUrl !== '') {
         'about' => ['@id' => $organizationId],
         'inLanguage' => 'en-KE',
     ];
+    if ($schemaPageType === 'ContactPage') {
+        $webPageSchema['mainEntity'] = ['@id' => $organizationId];
+    }
+    $structuredGraph[] = $webPageSchema;
+}
+
+if (!empty($faqItems) && is_array($faqItems) && $canonicalUrl !== '') {
+    $faqEntities = [];
+    foreach ($faqItems as $faqItem) {
+        $questionText = trim((string) ($faqItem['question'] ?? ''));
+        $answerText = trim((string) ($faqItem['answer'] ?? ''));
+        if ($questionText === '' || $answerText === '') {
+            continue;
+        }
+        $faqEntities[] = [
+            '@type' => 'Question',
+            'name' => $questionText,
+            'acceptedAnswer' => ['@type' => 'Answer', 'text' => $answerText],
+        ];
+    }
+    if (!empty($faqEntities)) {
+        $structuredGraph[] = [
+            '@type' => 'FAQPage',
+            '@id' => $canonicalUrl . '#faq',
+            'mainEntity' => $faqEntities,
+        ];
+    }
 }
 
 $structuredData = $structuredData ?? ['@context' => 'https://schema.org', '@graph' => $structuredGraph];
@@ -279,10 +349,15 @@ if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy',
     <?php endif; ?>
 
     <?php
-    $defaultImage = $siteUrl . '/assets/images/albatech-social-card.png';
+    $defaultImage = $siteUrl . SeoDefaults::SOCIAL_IMAGE;
     $finalImage = $metaImage !== '' ? $metaImage : $defaultImage;
     ?>
     <meta property="og:image" content="<?= View::escape($finalImage) ?>">
+    <?php if ($finalImage === $defaultImage): ?>
+        <meta property="og:image:type" content="image/jpeg">
+        <meta property="og:image:width" content="1200">
+        <meta property="og:image:height" content="630">
+    <?php endif; ?>
     <meta property="og:image:alt" content="<?= View::escape($siteName . ' — practical digital services in Kenya') ?>">
 
     <meta name="twitter:card" content="summary_large_image">

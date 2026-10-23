@@ -67,9 +67,9 @@ $hasWhatsApp = strlen($whatsAppNumber) >= 8 && strlen($whatsAppNumber) <= 15 && 
             <div class="enquiry-form-wrapper">
                 <span class="section-kicker">Send an enquiry</span>
                 <h2>Quick enquiry form</h2>
-                <p class="contact-intro">Fill in your details and we'll help you work out the next step. Your information is safe with us.</p>
+                <p class="contact-intro">Fill in your details and continue in WhatsApp, or send the enquiry by email. A phone number is all we need to reply; email is optional.</p>
 
-                <?php if (($_GET['sent'] ?? '') === '1'): ?><div class="form-success" role="status">Your enquiry has been sent successfully. We will respond using the contact details you provided.</div><?php elseif (($_GET['sent'] ?? '') === '0'): ?><div class="form-error" role="alert">We could not send your enquiry right now. Please try again later or use the direct contact details.</div><?php endif; ?>
+                <?php if (($_GET['sent'] ?? '') === '1'): ?><div class="form-success" role="status">Your enquiry has been sent. We will reply on WhatsApp or by phone.</div><?php elseif (($_GET['sent'] ?? '') === '0'): ?><div class="form-error" role="alert">We could not send your enquiry right now. Please try again later or use the direct contact details.</div><?php endif; ?>
                 <form class="enquiry-form" id="enquiryForm" method="post" action="/get-help">
                     <input type="hidden" name="_csrf" value="<?= View::escape($csrf ?? '') ?>">
                     <div class="form-honeypot" aria-hidden="true"><label>Leave this field empty<input type="text" name="website_url" tabindex="-1" autocomplete="off"></label></div>
@@ -86,25 +86,25 @@ $hasWhatsApp = strlen($whatsAppNumber) >= 8 && strlen($whatsAppNumber) <= 15 && 
                     </div>
 
                     <div class="form-group">
-                        <label for="enquiry-email">Email address <span class="required">*</span></label>
-                        <input
-                            type="email"
-                            id="enquiry-email"
-                            name="email"
-                            required
-                            placeholder="e.g., john@example.com"
-                            autocomplete="email"
-                        >
-                    </div>
-
-                    <div class="form-group">
-                        <label for="enquiry-phone">Phone number (optional)</label>
+                        <label for="enquiry-phone">WhatsApp or phone number <span class="required">*</span></label>
                         <input
                             type="tel"
                             id="enquiry-phone"
                             name="phone"
+                            required
                             placeholder="e.g., 0712 345 678"
                             autocomplete="tel"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="enquiry-email">Email address (optional)</label>
+                        <input
+                            type="email"
+                            id="enquiry-email"
+                            name="email"
+                            placeholder="e.g., john@example.com"
+                            autocomplete="email"
                         >
                     </div>
 
@@ -236,6 +236,22 @@ $hasWhatsApp = strlen($whatsAppNumber) >= 8 && strlen($whatsAppNumber) <= 15 && 
     </div>
 </section>
 
+<?php if (!empty($faqItems)): ?>
+<section class="section section--tint">
+    <div class="container faq-section">
+        <div class="section-heading"><span class="eyebrow">Common questions</span><h2>Before you send an enquiry</h2></div>
+        <div class="faq-list">
+            <?php foreach ($faqItems as $item): ?>
+                <details class="faq-item">
+                    <summary><?= View::escape($item['question']) ?></summary>
+                    <p><?= View::escape($item['answer']) ?></p>
+                </details>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+<?php endif; ?>
+
 <script nonce="<?= View::escape($cspNonce ?? '') ?>">
 (function() {
     const form = document.getElementById('enquiryForm');
@@ -248,16 +264,20 @@ $hasWhatsApp = strlen($whatsAppNumber) >= 8 && strlen($whatsAppNumber) <= 15 && 
         const name = String(data.get('name') || '').trim();
         const email = String(data.get('email') || '').trim();
         const phone = String(data.get('phone') || '').trim();
+        const serviceSelect = form.querySelector('#enquiry-service');
         const service = String(data.get('service') || '').trim();
+        const serviceLabel = service !== '' && serviceSelect && serviceSelect.selectedOptions[0]
+            ? serviceSelect.selectedOptions[0].textContent.trim()
+            : '';
         const message = String(data.get('message') || '').trim();
         const number = '<?= View::escape($whatsAppNumber) ?>';
         if (!/^\d{8,15}$/.test(number) || number.startsWith('0')) {
             window.location.href = '/get-help';
             return;
         }
-        let body = 'Hi AlbaTech Solutions,\n\nName: ' + name + '\nEmail: ' + email;
-        if (phone) body += '\nPhone: ' + phone;
-        if (service) body += '\nService interest: ' + service;
+        let body = 'Hi AlbaTech Solutions,\n\nName: ' + name + '\nPhone: ' + phone;
+        if (email) body += '\nEmail: ' + email;
+        if (serviceLabel) body += '\nService interest: ' + serviceLabel;
         body += '\n\nMessage:\n' + message;
         const url = 'https://wa.me/' + number + '?text=' + encodeURIComponent(body);
         const opened = window.open(url, '_blank');

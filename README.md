@@ -96,7 +96,7 @@ These checks cover scalar request handling, path normalization, and login limite
 - Canonical URLs use the configured public `site_url` setting, with `APP_URL` as a fallback. Confirm the production setting is `https://albatechsolutions.co.ke` before launch.
 - `/sitemap.xml` lists public core pages, published service slugs and individual guide articles. `/robots.txt` points crawlers to the sitemap and disallows the admin and health routes. `/llms.txt` provides a concise index of public content and pricing caveats.
 - The Guides library includes practical articles on website costs in Kenya, domains and hosting, website preparation, local online visibility and business-registration preparation.
-- The shared layout emits Organization and WebSite JSON-LD, plus Service or Article schema when relevant. Social previews use `/assets/images/albatech-social-card.png`.
+- The shared layout emits Organization and WebSite JSON-LD, plus Service or Article schema when relevant. Social previews use the 1200 × 630 `/assets/images/albatech-social-card.jpg`.
 
 Run the Phase 4 regression checks with:
 

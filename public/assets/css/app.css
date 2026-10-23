@@ -1843,6 +1843,65 @@ p {
   color: var(--color-text-muted);
 }
 
+.founder-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-6);
+  align-items: center;
+  padding: var(--space-8);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.founder-card h2 {
+  margin: 0 0 var(--space-1);
+  color: var(--color-text-strong);
+}
+
+.founder-card p {
+  color: var(--color-text-muted);
+}
+
+.founder-role {
+  margin-bottom: var(--space-4);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+@media (max-width: 720px) {
+  .founder-card {
+    grid-template-columns: 1fr;
+    padding: var(--space-6);
+  }
+}
+
+.faq-section {
+  max-width: var(--container-width-narrow);
+}
+
+.faq-list {
+  margin-top: var(--space-6);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.faq-item {
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.faq-item summary {
+  cursor: pointer;
+  color: var(--color-text-strong);
+  font-weight: 600;
+}
+
+.faq-item p {
+  margin: var(--space-3) 0 0;
+  color: var(--color-text-muted);
+}
+
 .about-focus-grid {
   grid-template-columns: 1fr;
 }

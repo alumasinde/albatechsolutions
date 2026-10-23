@@ -25,12 +25,12 @@ $article = is_array($guideArticle ?? null) ? $guideArticle : [];
 <article class="guide-article">
     <header class="guide-article__hero">
         <div class="container guide-article__hero-inner">
-            <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/guides">Guides</a><span aria-hidden="true">/</span><span><?= View::escape($article['category'] ?? 'Article') ?></span></nav>
             <span class="eyebrow"><?= View::escape($article['category'] ?? 'Guide') ?></span>
             <h1><?= View::escape($article['title'] ?? 'Guide') ?></h1>
             <p class="guide-article__intro"><?= View::escape($article['intro'] ?? '') ?></p>
+            <?php $bylineName = trim((string) ($founderName ?? '')) ?: 'AlbaTech Solutions'; ?>
             <div class="guide-article__byline">
-                <span>Prepared by <?= View::escape($article['author'] ?? 'AlbaTech Solutions') ?></span>
+                <span>Prepared by <?php if ($bylineName !== 'AlbaTech Solutions'): ?><a href="/about#founder"><?= View::escape($bylineName) ?></a><?php else: ?><?= View::escape($bylineName) ?><?php endif; ?></span>
                 <?php $publishedDate = (string) ($article['published'] ?? ''); ?>
                 <?php $updatedDate = (string) ($article['updated'] ?? ''); ?>
                 <?php if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $publishedDate) === 1): ?>

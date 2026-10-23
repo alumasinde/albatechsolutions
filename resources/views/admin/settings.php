@@ -40,7 +40,16 @@ $get = static fn(string $key, string $fallback = '') => View::escape($settings[$
                 <p>Used where a page does not provide its own metadata.</p>
             </div>
         </div>
-        <div class="form-grid"><label class="field full">Default SEO title<input name="default_meta_title" maxlength="255" value="<?= $get('default_meta_title', 'AlbaTech Solutions | Practical Digital Services in Kenya') ?>"><small>Fallback title for pages that do not define their own title.</small></label><label class="field full">Default author metadata<input name="default_author" value="<?= $get('default_author', 'Albert Masinde') ?>"><small>This is metadata, not public page copy.</small></label><label class="field full">Default social-sharing image URL<input type="text" name="default_social_image" maxlength="500" value="<?= $get('default_social_image', '/assets/images/albatech-social-card.png') ?>"><small>Use a public HTTPS image URL or a site-relative path. Recommended dimensions: 1200 × 630.</small></label><label class="field full">Default meta description<textarea name="default_meta_description" rows="3" maxlength="320"><?= $get('default_meta_description') ?></textarea></label></div>
+        <div class="form-grid"><label class="field full">Default SEO title<input name="default_meta_title" maxlength="255" value="<?= $get('default_meta_title', 'AlbaTech Solutions | Practical Digital Services in Kenya') ?>"><small>Fallback title for pages that do not define their own title.</small></label><label class="field full">Default author metadata<input name="default_author" value="<?= $get('default_author', 'Albert Masinde') ?>"><small>This is metadata, not public page copy.</small></label><label class="field full">Default social-sharing image URL<input type="text" name="default_social_image" maxlength="500" value="<?= $get('default_social_image', '/assets/images/albatech-social-card.jpg') ?>"><small>Use a public HTTPS image URL or a site-relative path. Recommended dimensions: 1200 × 630.</small></label><label class="field full">Default meta description<textarea name="default_meta_description" rows="3" maxlength="320"><?= $get('default_meta_description') ?></textarea></label></div>
+    </section>
+    <section class="panel editor-section">
+        <div class="section-heading"><span><i class="fa-solid fa-user-tie"></i></span>
+            <div>
+                <h3>Founder &amp; authorship</h3>
+                <p>Shown on the About page and used as the author in guide bylines and structured data.</p>
+            </div>
+        </div>
+        <div class="form-grid"><label class="field">Founder name<input name="founder_name" maxlength="190" value="<?= $get('founder_name', 'Albert Masinde') ?>"></label><label class="field">Role / title<input name="founder_title" maxlength="190" value="<?= $get('founder_title', 'Founder, AlbaTech Solutions') ?>"></label><label class="field full">Short bio<textarea name="founder_bio" rows="4" maxlength="2000"><?= $get('founder_bio') ?></textarea><small>Keep this factual. It appears publicly on the About page.</small></label><label class="field full">LinkedIn profile<input type="url" name="founder_linkedin" maxlength="500" value="<?= $get('founder_linkedin') ?>" placeholder="https://www.linkedin.com/in/yourprofile"><small>Optional. Must start with https://.</small></label></div>
     </section>
     <section class="panel editor-section">
         <div class="section-heading"><span><i class="fa-solid fa-share-nodes"></i></span>

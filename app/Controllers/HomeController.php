@@ -34,7 +34,7 @@ final class HomeController
         } catch (\Throwable $e) { error_log('[AlbaTech Work] Featured projects unavailable: ' . $e->getMessage()); }
 
         Response::html(View::render('pages/home', [
-            'pageTitle' => SeoDefaults::title((string) ($settings['home_meta_title'] ?? ''), 'Website Design & Business Registration in Nairobi | AlbaTech Solutions'),
+            'pageTitle' => SeoDefaults::title((string) ($settings['home_meta_title'] ?? ''), 'Website Design & Business Registration in Kenya | AlbaTech'),
             'metaDescription' => SeoDefaults::description((string) ($settings['home_meta_description'] ?? ''), (string) ($settings['default_meta_description'] ?? SeoDefaults::DESCRIPTION)),
             'metaImage' => SeoDefaults::image((string) ($settings['home_social_image'] ?? $settings['default_social_image'] ?? $settings['home_hero_image'] ?? ''), $baseUrl),
             'canonicalUrl' => $baseUrl . '/',

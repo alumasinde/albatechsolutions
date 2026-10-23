@@ -313,7 +313,8 @@ final class AdminController
         $contactKeys = ['whatsapp_number', 'contact_email', 'business_phone', 'business_address', 'business_city', 'service_area', 'contact_hours', 'contact_response_time', 'support_email', 'whatsapp_prefill_message', 'business_latitude', 'business_longitude'];
         $socialKeys = ['social_facebook', 'social_twitter', 'social_linkedin', 'social_instagram'];
         $analyticsKeys = ['analytics_enabled', 'analytics_provider', 'analytics_domain', 'analytics_script_url'];
-        $allowed = array_merge(['site_name', 'site_url', 'default_author', 'default_meta_title', 'default_meta_description', 'default_social_image'], $contactKeys, $socialKeys, $analyticsKeys, ['footer_description']);
+        $founderKeys = ['founder_name', 'founder_title', 'founder_bio', 'founder_linkedin'];
+        $allowed = array_merge(['site_name', 'site_url', 'default_author', 'default_meta_title', 'default_meta_description', 'default_social_image'], $founderKeys, $contactKeys, $socialKeys, $analyticsKeys, ['footer_description']);
         $normalized = [];
         $siteUrl = trim((string) $request->input('site_url', ''));
         $defaultSocialImage = trim((string) $request->input('default_social_image', ''));
@@ -328,7 +329,7 @@ final class AdminController
             Response::redirect('/admin/settings');
         }
         if ($defaultSocialImage !== '' && (str_starts_with($defaultSocialImage, '//') || (preg_match('~^https://[^\s]+$~i', $defaultSocialImage) !== 1 && !preg_match('~^/(?!/)\S*$~', $defaultSocialImage)))) {
-            AdminSecurity::flash('error', 'Default social image must be an HTTPS URL or a site-relative path such as /assets/images/albatech-social-card.png.');
+            AdminSecurity::flash('error', 'Default social image must be an HTTPS URL or a site-relative path such as /assets/images/albatech-social-card.jpg.');
             Response::redirect('/admin/settings');
         }
         if ($contactEmail !== '' && !filter_var($contactEmail, FILTER_VALIDATE_EMAIL)) {
@@ -360,6 +361,11 @@ final class AdminController
             AdminSecurity::flash('error', 'Business longitude must be a number between -180 and 180.');
             Response::redirect('/admin/settings');
         }
+        $founderLinkedin = trim((string) $request->input('founder_linkedin', ''));
+        if ($founderLinkedin !== '' && (!filter_var($founderLinkedin, FILTER_VALIDATE_URL) || preg_match('~^https://~i', $founderLinkedin) !== 1)) {
+            AdminSecurity::flash('error', 'The founder LinkedIn link must be a full URL starting with https://.');
+            Response::redirect('/admin/settings');
+        }
         $analyticsEnabled = (string) $request->input('analytics_enabled', '0');
         if (!in_array($analyticsEnabled, ['0', '1'], true)) $analyticsEnabled = '0';
         $normalized['analytics_enabled'] = $analyticsEnabled;
@@ -384,7 +390,7 @@ final class AdminController
         $pdo = Database::connection();
         $stmt = $pdo->prepare('INSERT INTO site_settings (setting_key, setting_value, value_type, setting_group, is_public, updated_by) VALUES (:key,:value,:type,:group_name,1,:user_id) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value), updated_by=VALUES(updated_by)');
         $seoKeys = ['default_meta_title', 'default_meta_description', 'default_author', 'default_social_image'];
-        $urlKeys = ['site_url', 'default_social_image', 'analytics_script_url', ...$socialKeys];
+        $urlKeys = ['site_url', 'default_social_image', 'analytics_script_url', 'founder_linkedin', ...$socialKeys];
         foreach ($allowed as $key) {
             $value = $normalized[$key] ?? trim((string) $request->input($key, ''));
             $group = in_array($key, $contactKeys, true) ? 'contact' : (in_array($key, $seoKeys, true) || str_contains($key, 'meta') ? 'seo' : (str_starts_with($key, 'social_') ? 'social' : (str_starts_with($key, 'analytics_') ? 'analytics' : 'branding')));

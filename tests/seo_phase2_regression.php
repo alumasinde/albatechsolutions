@@ -26,7 +26,7 @@ $assert(SeoDefaults::title('', 'Fallback title') === 'Fallback title', 'SEO titl
 $assert(SeoDefaults::title('  Custom <b>title</b>  ', 'Fallback') === 'Custom title', 'SEO titles are trimmed and stripped of tags');
 $assert(strlen(SeoDefaults::description(str_repeat('a', 400))) === 320, 'Meta descriptions are capped at 320 characters');
 $assert(SeoDefaults::image('/uploads/social.jpg', 'https://example.test') === 'https://example.test/uploads/social.jpg', 'Relative social images become absolute canonical-origin URLs');
-$assert(SeoDefaults::image('//evil.test/image.png', 'https://example.test') === 'https://example.test/assets/images/albatech-social-card.png', 'Protocol-relative social image URLs are rejected');
+$assert(SeoDefaults::image('//evil.test/image.png', 'https://example.test') === 'https://example.test/assets/images/albatech-social-card.jpg', 'Protocol-relative social image URLs are rejected');
 $assert(WhatsAppLink::build(['whatsapp_number' => '254712345678', 'site_name' => 'AlbaTech', 'whatsapp_prefill_message' => 'Hello there']) === 'https://wa.me/254712345678?text=Hello%20there', 'WhatsApp builder uses the configured number and message');
 $assert(WhatsAppLink::build(['whatsapp_number' => '0712345678']) === '/get-help', 'Invalid local-format WhatsApp number falls back safely');
 

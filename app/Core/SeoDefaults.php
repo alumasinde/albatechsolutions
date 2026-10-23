@@ -7,7 +7,7 @@ namespace AlbaTech\Core;
 /** Central SEO fallback policy shared by page controllers and the HTML layout. */
 final class SeoDefaults
 {
-    public const SOCIAL_IMAGE = '/assets/images/albatech-social-card.png';
+    public const SOCIAL_IMAGE = '/assets/images/albatech-social-card.jpg';
     public const DESCRIPTION = 'Website design, business registration, KRA filing help and practical digital services for businesses in Nairobi and across Kenya. Clear pricing, WhatsApp support, no unnecessary complexity.';
 
     public static function title(string $candidate, string $fallback): string

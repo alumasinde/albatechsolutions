@@ -31,11 +31,15 @@ $legacyServiceTargets = [
     'kra-nil-return' => '/services/kra-returns-filing',
     'cr12-application' => '/services/business-registration',
     'cr12-applications' => '/services/business-registration',
+    'domain-registration' => '/services/website-design',
+    'web-hosting' => '/services/website-design',
+    'business-email-setup' => '/services/website-design',
+    'software-development' => '/services/website-design',
+    'graphic-design' => '/services/website-design',
+    'digital-marketing' => '/services/google-business-profile-setup',
 ];
 $legacyServiceFallbacks = [
-    'nssf-services', 'domain-registration', 'web-hosting', 'business-email-setup',
-    'it-support', 'computer-repair', 'networking', 'cctv-installation', 'wifi-networking',
-    'software-development', 'graphic-design', 'digital-marketing',
+    'nssf-services', 'it-support', 'computer-repair', 'networking', 'cctv-installation', 'wifi-networking',
 ];
 foreach ($legacyServiceTargets as $legacySlug => $legacyTarget) {
     $app->router()->get('/services/' . $legacySlug, static function () use ($legacyTarget): void { Response::redirect($legacyTarget, 301); });
@@ -43,6 +47,7 @@ foreach ($legacyServiceTargets as $legacySlug => $legacyTarget) {
 foreach ($legacyServiceFallbacks as $legacySlug) {
     $app->router()->get('/services/' . $legacySlug, static function (): void { Response::redirect('/services', 301); });
 }
+$app->router()->get('/privacy-policy', static function (): void { Response::redirect('/privacy', 301); });
 $app->router()->get('/blog', static function (): void { Response::redirect('/guides', 301); });
 $app->router()->get('/blog/how-to-apply-for-a-kenyan-passport-in-2026', static function (): void { Response::redirect('/guides/how-to-apply-for-a-passport-in-kenya', 301); });
 $app->router()->get('/blog/{slug}', static function (): void { Response::redirect('/guides', 301); });

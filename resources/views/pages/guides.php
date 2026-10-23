@@ -22,8 +22,8 @@ use AlbaTech\Core\View; ?>
 <section class="page-intro guide-intro">
     <div class="container">
         <span class="eyebrow">Guides & resources</span>
-        <h1>Practical Digital Guides and Tech Tips for Kenya</h1>
-        <p>Learn how to build a business website, choose web hosting, improve your online presence and use digital services. Get simple, practical advice for Kenyan businesses, entrepreneurs and job seekers.</p>
+        <h1>Practical Guides for Kenyan Businesses and Individuals</h1>
+        <p>Straightforward guides on business registration, KRA filing, eTIMS, passports, websites and online visibility. Written for people who want to understand the actual steps and costs before paying anyone for help.</p>
     </div>
 </section>
 <section class="section guide-library">
