@@ -20,8 +20,10 @@ final class SeoController
         $baseUrl = SiteUrl::base();
         $urls = [
             ['loc' => $baseUrl . '/', 'priority' => '1.0', 'changefreq' => 'weekly'],
-            ['loc' => $baseUrl . '/services', 'priority' => '0.9', 'changefreq' => 'weekly'],
-            ['loc' => $baseUrl . '/work', 'priority' => '0.8', 'changefreq' => 'weekly'],
+            ['loc' => $baseUrl . '/products', 'priority' => '0.9', 'changefreq' => 'weekly'],
+            ['loc' => $baseUrl . '/work', 'priority' => '0.9', 'changefreq' => 'weekly'],
+            ['loc' => $baseUrl . '/solutions', 'priority' => '0.9', 'changefreq' => 'weekly'],
+            ['loc' => $baseUrl . '/services', 'priority' => '0.8', 'changefreq' => 'weekly'],
             ['loc' => $baseUrl . '/guides', 'priority' => '0.8', 'changefreq' => 'weekly'],
         ];
 
@@ -84,11 +86,11 @@ final class SeoController
         }
 
         try {
-            $projects = \AlbaTech\Core\Database::connection()->query("SELECT slug, updated_at FROM work_projects WHERE status='published' ORDER BY updated_at DESC")->fetchAll();
+            $projects = \AlbaTech\Core\Database::connection()->query("SELECT slug, kind, updated_at FROM work_projects WHERE status='published' ORDER BY updated_at DESC")->fetchAll();
             foreach ($projects as $project) {
                 $slug = trim((string)($project['slug'] ?? ''));
                 if ($slug !== '' && preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug) === 1) {
-                    $entry = ['loc' => $baseUrl . '/work/' . rawurlencode($slug), 'priority' => '0.7', 'changefreq' => 'monthly'];
+                    $entry = ['loc' => $baseUrl . (($project['kind'] ?? 'project') === 'product' ? '/products/' : '/work/') . rawurlencode($slug), 'priority' => ($project['kind'] ?? 'project') === 'product' ? '0.8' : '0.7', 'changefreq' => 'monthly'];
                     $updatedRaw = trim((string) ($project['updated_at'] ?? ''));
                     $updated = $updatedRaw !== '' ? strtotime($updatedRaw) : false;
                     if ($updated !== false) $entry['lastmod'] = date('Y-m-d', $updated);
@@ -143,12 +145,16 @@ final class SeoController
         $lines = [
             '# AlbaTech Solutions',
             '',
-            '> Practical website, online presence and digital assistance for people and businesses in Kenya.',
+            '> Nairobi software studio and compliance desk: client business systems, websites and its own products, plus help with KRA, eTIMS, eCitizen and business registration in Kenya.',
             '',
             '## Main pages',
-            '- [Home](' . $baseUrl . '/): Overview of AlbaTech Solutions.',
+            '- [Home](' . $baseUrl . '/): Overview of AlbaTech Solutions, its products and client work.',
+            '- [Products](' . $baseUrl . '/products): Software products built and run by AlbaTech, with their current status.',
+            '- [Client work](' . $baseUrl . '/work): Delivered client projects and case studies.',
+            '- [Solutions](' . $baseUrl . '/solutions): Booking, property, visitor, stock and custom internal systems for businesses.',
             '- [Services](' . $baseUrl . '/services): Public service catalogue and pricing information.',
-            '- [Our Work](' . $baseUrl . '/work): Published portfolio projects and case studies.',
+            '- [SME Launchpad](' . $baseUrl . '/services/sme-launchpad): Business registration, KRA and eTIMS setup, domain, website and Google Business Profile in one package.',
+            '- [Compliance help](' . $baseUrl . '/services/kra-ecitizen-help): KRA returns, eTIMS, BRS, eCitizen, SHA and NTSA assistance.',
             '- [Guides](' . $baseUrl . '/guides): Practical articles and checklists.',
         ];
         $cmsRoutes = [

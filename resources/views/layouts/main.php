@@ -10,6 +10,7 @@ use AlbaTech\Repositories\SiteSettingsRepository;
 $siteSettings = (new SiteSettingsRepository())->publicValues();
 $siteName = trim((string) ($siteSettings['site_name'] ?? $appName ?? Env::get('APP_NAME', 'AlbaTech Solutions')));
 if ($siteName === '') $siteName = 'AlbaTech Solutions';
+$googleVerification = trim((string) ($siteSettings['google_site_verification'] ?? ''));
 
 $pageTitle = SeoDefaults::title((string) ($pageTitle ?? ''), (string) ($siteSettings['default_meta_title'] ?? $siteName));
 
@@ -40,6 +41,7 @@ $author = trim((string) ($author ?? $siteSettings['default_author'] ?? 'AlbaTech
 $serviceData = isset($schemaService) && is_array($schemaService) ? $schemaService : null;
 $guideData = isset($guideArticle) && is_array($guideArticle) ? $guideArticle : null;
 $projectData = isset($schemaProject) && is_array($schemaProject) ? $schemaProject : null;
+$productData = isset($schemaProduct) && is_array($schemaProduct) ? $schemaProduct : null;
 
 $founderName = trim((string) ($siteSettings['founder_name'] ?? ''));
 $founderTitle = trim((string) ($siteSettings['founder_title'] ?? ''));
@@ -223,6 +225,23 @@ if ($guideData !== null && $canonicalUrl !== '') {
         $projectSchema['genre'] = (string) $projectData['category_name'];
     }
     $structuredGraph[] = $projectSchema;
+} elseif ($productData !== null && $canonicalUrl !== '') {
+    $productSchema = [
+        '@type' => 'SoftwareApplication',
+        '@id' => $canonicalUrl . '#software',
+        'name' => (string) ($productData['title'] ?? $pageTitle),
+        'description' => $metaDescription,
+        'url' => $canonicalUrl,
+        'applicationCategory' => 'BusinessApplication',
+        'publisher' => ['@id' => $organizationId],
+        'image' => [$metaImage],
+        'inLanguage' => 'en-KE',
+    ];
+    $platform = trim((string) ($productData['platform'] ?? ''));
+    if ($platform !== '') {
+        $productSchema['operatingSystem'] = $platform;
+    }
+    $structuredGraph[] = $productSchema;
 } elseif ($serviceData !== null && $canonicalUrl !== '') {
     $serviceName = trim((string) ($serviceData['name'] ?? $siteName));
     $serviceDescription = trim((string) ($serviceData['meta_description'] ?? $serviceData['short_description'] ?? $metaDescription));
@@ -302,8 +321,16 @@ $headerNavigation = $navByPlacement['header'] ?? [];
 $footerExploreNavigation = $navByPlacement['footer_explore'] ?? [];
 $footerInfoNavigation = $navByPlacement['footer_information'] ?? [];
 $layoutCtas = $cms->ctas();
-if (!$headerNavigation) $headerNavigation = [['label'=>'Home','url'=>'/','open_new_tab'=>0],['label'=>'Services','url'=>'/services','open_new_tab'=>0],['label'=>'Guides','url'=>'/guides','open_new_tab'=>0],['label'=>'About','url'=>'/about','open_new_tab'=>0],['label'=>'Contact','url'=>'/get-help','open_new_tab'=>0]];
-if (!$footerExploreNavigation) $footerExploreNavigation = [['label'=>'Our services','url'=>'/services','open_new_tab'=>0],['label'=>'Guides & resources','url'=>'/guides','open_new_tab'=>0],['label'=>'About us','url'=>'/about','open_new_tab'=>0]];
+if (!$headerNavigation) $headerNavigation = [['label'=>'Work','url'=>'/work','open_new_tab'=>0],['label'=>'Products','url'=>'/products','open_new_tab'=>0],['label'=>'Solutions','url'=>'/solutions','open_new_tab'=>0],['label'=>'Services','url'=>'/services','open_new_tab'=>0],['label'=>'Guides','url'=>'/guides','open_new_tab'=>0],['label'=>'Contact','url'=>'/get-help','open_new_tab'=>0]];
+
+$currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+$currentPath = rtrim($currentPath, '/') ?: '/';
+$navIsActive = static function (string $url) use ($currentPath): bool {
+    $path = parse_url($url, PHP_URL_PATH) ?: '/';
+    $path = rtrim($path, '/') ?: '/';
+    return $path === '/' ? $currentPath === '/' : ($currentPath === $path || str_starts_with($currentPath, $path . '/'));
+};
+if (!$footerExploreNavigation) $footerExploreNavigation = [['label'=>'Our work','url'=>'/work','open_new_tab'=>0],['label'=>'Products','url'=>'/products','open_new_tab'=>0],['label'=>'Solutions','url'=>'/solutions','open_new_tab'=>0],['label'=>'Services','url'=>'/services','open_new_tab'=>0],['label'=>'Guides','url'=>'/guides','open_new_tab'=>0],['label'=>'About us','url'=>'/about','open_new_tab'=>0]];
 if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy','url'=>'/privacy','open_new_tab'=>0],['label'=>'Terms of service','url'=>'/terms','open_new_tab'=>0],['label'=>'Make an enquiry','url'=>'/get-help','open_new_tab'=>0]];
 
 ?>
@@ -325,6 +352,9 @@ if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy',
     <?php endif; ?>
 
     <meta name="robots" content="<?= View::escape($metaRobots) ?>">
+    <?php if ($googleVerification !== '' && preg_match('/^[A-Za-z0-9_-]{8,120}$/', $googleVerification) === 1): ?>
+        <meta name="google-site-verification" content="<?= View::escape($googleVerification) ?>">
+    <?php endif; ?>
     <meta name="color-scheme" content="light">
     <meta name="theme-color" content="#078C99">
 
@@ -358,13 +388,13 @@ if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy',
         <meta property="og:image:width" content="1200">
         <meta property="og:image:height" content="630">
     <?php endif; ?>
-    <meta property="og:image:alt" content="<?= View::escape($siteName . ' — practical digital services in Kenya') ?>">
+    <meta property="og:image:alt" content="<?= View::escape($siteName . ' — software and websites for Kenyan businesses') ?>">
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="<?= View::escape($pageTitle) ?>">
     <meta name="twitter:description" content="<?= View::escape($metaDescription) ?>">
     <meta name="twitter:image" content="<?= View::escape($finalImage) ?>">
-    <meta name="twitter:image:alt" content="<?= View::escape($siteName . ' — practical digital services in Kenya') ?>">
+    <meta name="twitter:image:alt" content="<?= View::escape($siteName . ' — software and websites for Kenyan businesses') ?>">
 
     <!-- The hero image is CMS-configurable. Its eager, high-priority image element in the page is the source of truth;
          avoid preloading a hardcoded fallback URL when an administrator may choose another image. -->
@@ -381,26 +411,25 @@ if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy',
     <link rel="stylesheet" href="<?= View::escape(View::asset('vendor/fontawesome/css/all.min.css')) ?>">
 
     <?php
-    // Analytics tracking (Plausible or GA4)
-    $analyticsEnabled = !empty($siteSettings['analytics_enabled']) && $siteSettings['analytics_enabled'] === '1';
+    // Analytics: Plausible is cookieless and loads immediately; GA4 waits for consent.
+    $analyticsEnabled = ($siteSettings['analytics_enabled'] ?? '') === '1';
     $analyticsProvider = trim((string) ($siteSettings['analytics_provider'] ?? ''));
     $analyticsDomain = trim((string) ($siteSettings['analytics_domain'] ?? ''));
     $analyticsScriptUrl = trim((string) ($siteSettings['analytics_script_url'] ?? ''));
+    $ga4Active = $analyticsEnabled && $analyticsProvider === 'ga4' && $analyticsScriptUrl !== '';
+    $consentRequired = ($siteSettings['analytics_consent_enabled'] ?? '1') !== '0';
 
     if ($analyticsEnabled && $analyticsProvider === 'plausible' && $analyticsDomain !== '' && $analyticsScriptUrl !== ''):
     ?>
         <script defer data-domain="<?= View::escape($analyticsDomain) ?>" src="<?= View::escape($analyticsScriptUrl) ?>"></script>
-    <?php
-    elseif ($analyticsEnabled && $analyticsProvider === 'ga4' && $analyticsScriptUrl !== ''):
-    ?>
-        <script async src="<?= View::escape($analyticsScriptUrl) ?>"></script>
+    <?php elseif ($ga4Active): ?>
         <script nonce="<?= View::escape($cspNonce ?? '') ?>">
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            <?php if ($analyticsDomain !== ''): ?>
-            gtag('config', '<?= View::escape($analyticsDomain) ?>');
-            <?php endif; ?>
+            window.albaAnalytics = {
+                provider: 'ga4',
+                scriptUrl: <?= json_encode($analyticsScriptUrl, JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>,
+                measurementId: <?= json_encode($analyticsDomain, JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>,
+                consentRequired: <?= $consentRequired ? 'true' : 'false' ?>
+            };
         </script>
     <?php endif; ?>
 
@@ -421,7 +450,7 @@ if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy',
 <a class="skip-link" href="#main-content">Skip to content</a>
 
 <header class="site-header">
-    <div class="container header-inner">
+    <div class="shell">
         <a
             class="brand"
             href="/"
@@ -442,7 +471,7 @@ if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy',
         </button>
 
         <nav class="site-nav" id="site-nav" aria-label="Main navigation">
-            <?php foreach ($headerNavigation as $nav): ?><a href="<?= View::escape($nav['url']) ?>"<?= !empty($nav['open_new_tab']) ? ' target="_blank" rel="noopener noreferrer"' : '' ?>><?= View::escape($nav['label']) ?></a><?php endforeach; ?>
+            <?php foreach ($headerNavigation as $nav): ?><a href="<?= View::escape($nav['url']) ?>"<?= $navIsActive((string) $nav['url']) ? ' aria-current="page"' : '' ?><?= !empty($nav['open_new_tab']) ? ' target="_blank" rel="noopener noreferrer"' : '' ?>><?= View::escape($nav['label']) ?></a><?php endforeach; ?>
         </nav>
     </div>
 </header>
@@ -451,41 +480,53 @@ if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy',
     <?= $content ?? '' ?>
 </main>
 
-<footer class="site-footer">
-    <div class="container footer-main">
-        <div class="footer-brand-block">
-            <a class="brand" href="/" aria-label="<?= View::escape($siteName) ?> home">AlbaTech <span>Solutions</span></a>
-            <p class="footer-description"><?= View::escape($siteSettings['footer_description'] ?? 'Practical website, online presence and digital assistance for people and businesses in Kenya. Clear scope, straightforward communication and realistic next steps.') ?></p>
-            <?php $footerCta = $layoutCtas['primary_enquiry'] ?? ['label'=>'Tell us what you need','url'=>'/get-help']; ?><a class="footer-contact-cta" href="<?= View::escape($footerCta['url']) ?>"><?= View::escape($footerCta['label']) ?> <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+<footer class="mt-auto border-t border-border bg-surface py-12">
+    <div class="shell grid gap-10 pb-10 md:grid-cols-2 lg:grid-cols-[1.7fr_1fr_1fr_1fr]">
+        <div class="md:col-span-2 lg:col-span-1">
+            <a class="brand" href="/" aria-label="<?= View::escape($siteName) ?> home">AlbaTech <span class="text-primary">Solutions</span></a>
+            <p class="mt-4 mb-4 max-w-sm text-sm leading-relaxed text-footer-text"><?= View::escape($siteSettings['footer_description'] ?? 'A software studio in Nairobi building products and systems for Kenyan businesses, alongside websites and practical digital assistance.') ?></p>
+            <?php $footerCta = $layoutCtas['primary_enquiry'] ?? ['label'=>'Tell us what you need','url'=>'/get-help']; ?><a class="footer-contact-cta inline-flex items-center gap-2 font-bold text-primary hover:text-primary-hover" href="<?= View::escape($footerCta['url']) ?>"><?= View::escape($footerCta['label']) ?> <i class="fa-solid fa-arrow-right text-sm transition-transform duration-150" aria-hidden="true"></i></a>
         </div>
-        <nav class="footer-column" aria-label="Explore">
-            <h2>Explore</h2>
-            <?php foreach ($footerExploreNavigation as $nav): ?><a href="<?= View::escape($nav['url']) ?>"<?= !empty($nav['open_new_tab']) ? ' target="_blank" rel="noopener noreferrer"' : '' ?>><?= View::escape($nav['label']) ?></a><?php endforeach; ?>
+        <nav class="flex flex-col items-start gap-3" aria-label="Explore">
+            <h2 class="text-sm font-extrabold tracking-normal text-ink">Explore</h2>
+            <?php foreach ($footerExploreNavigation as $nav): ?><a class="text-sm leading-normal text-footer-text hover:text-primary" href="<?= View::escape($nav['url']) ?>"<?= !empty($nav['open_new_tab']) ? ' target="_blank" rel="noopener noreferrer"' : '' ?>><?= View::escape($nav['label']) ?></a><?php endforeach; ?>
         </nav>
-        <div class="footer-column">
-            <h2>Contact & location</h2>
-            <p class="footer-location"><i class="fa-solid fa-location-dot" aria-hidden="true"></i><span><?= View::escape($footerLocation) ?></span></p>
-            <?php if ($footerEmail !== '' && filter_var($footerEmail, FILTER_VALIDATE_EMAIL)): ?><a href="mailto:<?= View::escape($footerEmail) ?>"><i class="fa-regular fa-envelope" aria-hidden="true"></i><?= View::escape($footerEmail) ?></a><?php endif; ?>
-            <?php if ($footerPhone !== '' && $footerPhoneHref !== ''): ?><a href="tel:<?= View::escape($footerPhoneHref) ?>"><i class="fa-solid fa-phone" aria-hidden="true"></i><?= View::escape($footerPhone) ?></a><?php endif; ?>
-            <a href="/get-help">All contact details</a>
+        <div class="flex flex-col items-start gap-3">
+            <h2 class="text-sm font-extrabold tracking-normal text-ink">Contact &amp; location</h2>
+            <p class="m-0 inline-flex items-start gap-2 text-sm leading-normal text-footer-text"><i class="fa-solid fa-location-dot mt-1 w-4 text-center text-primary" aria-hidden="true"></i><span><?= View::escape($footerLocation) ?></span></p>
+            <?php if ($footerEmail !== '' && filter_var($footerEmail, FILTER_VALIDATE_EMAIL)): ?><a class="inline-flex items-start gap-2 text-sm leading-normal text-footer-text hover:text-primary" href="mailto:<?= View::escape($footerEmail) ?>"><i class="fa-regular fa-envelope mt-1 w-4 text-center text-primary" aria-hidden="true"></i><?= View::escape($footerEmail) ?></a><?php endif; ?>
+            <?php if ($footerPhone !== '' && $footerPhoneHref !== ''): ?><a class="inline-flex items-start gap-2 text-sm leading-normal text-footer-text hover:text-primary" href="tel:<?= View::escape($footerPhoneHref) ?>"><i class="fa-solid fa-phone mt-1 w-4 text-center text-primary" aria-hidden="true"></i><?= View::escape($footerPhone) ?></a><?php endif; ?>
+            <a class="text-sm leading-normal text-footer-text hover:text-primary" href="/get-help">All contact details</a>
         </div>
-        <nav class="footer-column" aria-label="Information">
-            <h2>Information</h2>
-            <?php foreach ($footerInfoNavigation as $nav): ?><a href="<?= View::escape($nav['url']) ?>"<?= !empty($nav['open_new_tab']) ? ' target="_blank" rel="noopener noreferrer"' : '' ?>><?= View::escape($nav['label']) ?></a><?php endforeach; ?>
+        <nav class="flex flex-col items-start gap-3" aria-label="Information">
+            <h2 class="text-sm font-extrabold tracking-normal text-ink">Information</h2>
+            <?php foreach ($footerInfoNavigation as $nav): ?><a class="text-sm leading-normal text-footer-text hover:text-primary" href="<?= View::escape($nav['url']) ?>"<?= !empty($nav['open_new_tab']) ? ' target="_blank" rel="noopener noreferrer"' : '' ?>><?= View::escape($nav['label']) ?></a><?php endforeach; ?>
         </nav>
     </div>
-    <div class="container footer-bottom">
-        <p>&copy; <?= date('Y') ?> <?= View::escape($siteName) ?>. All rights reserved.</p>
-        <div class="footer-legal"><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/get-help">Contact details</a></div>
-        <p class="footer-independent-note">AlbaTech Solutions is an independent service provider, not a government agency. Official decisions remain with the relevant authority.</p>
+    <div class="shell flex flex-col gap-3 border-t border-border pt-5 text-xs text-muted">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p class="m-0">&copy; <?= date('Y') ?> <?= View::escape($siteName) ?>. All rights reserved.</p>
+            <div class="flex flex-wrap gap-4"><a class="text-footer-text hover:text-primary" href="/privacy">Privacy</a><a class="text-footer-text hover:text-primary" href="/terms">Terms</a><a class="text-footer-text hover:text-primary" href="/get-help">Contact details</a><?php if ($ga4Active && $consentRequired): ?><a class="text-footer-text hover:text-primary" href="#cookie-settings" data-consent-settings>Cookie settings</a><?php endif; ?></div>
+        </div>
+        <p class="m-0 leading-normal">AlbaTech Solutions is an independent service provider, not a government agency. Official decisions remain with the relevant authority.</p>
     </div>
 </footer>
 
 <?php if (str_starts_with($whatsAppUrl, 'https://wa.me/')): ?>
-<div class="whatsapp-float">
-  <a class="whatsapp-float__trigger" href="<?= View::escape($whatsAppUrl) ?>" target="_blank" rel="noopener noreferrer" aria-label="Open WhatsApp chat with AlbaTech Solutions">
-    <i class="fa-brands fa-whatsapp" aria-hidden="true"></i><span></span>
-  </a>
+<a class="whatsapp-float" href="<?= View::escape($whatsAppUrl) ?>" target="_blank" rel="noopener noreferrer" aria-label="Chat with AlbaTech Solutions on WhatsApp">
+  <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
+</a>
+<?php endif; ?>
+
+<?php if ($ga4Active && $consentRequired): ?>
+<div id="consent-banner" class="fixed inset-x-0 bottom-0 z-[60] p-4 sm:p-6" hidden>
+  <div class="mx-auto flex max-w-3xl flex-col gap-4 rounded-xl border border-border bg-surface p-4 shadow-card sm:flex-row sm:items-center sm:justify-between sm:p-5">
+    <span class="block text-sm leading-relaxed text-muted">We use Google Analytics to see which pages help people. It only loads if you accept. <a href="/privacy" class="underline">Privacy policy</a></span>
+    <div class="flex shrink-0 gap-2">
+      <button type="button" data-consent="denied" class="inline-flex min-h-11 items-center justify-center rounded-md border border-border-strong bg-surface px-4 text-sm font-semibold text-ink hover:bg-surface-muted">Decline</button>
+      <button type="button" data-consent="granted" class="inline-flex min-h-11 items-center justify-center rounded-md bg-primary px-4 text-sm font-semibold text-white hover:bg-primary-hover">Accept analytics</button>
+    </div>
+  </div>
 </div>
 <?php endif; ?>
 

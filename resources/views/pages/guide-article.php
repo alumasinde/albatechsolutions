@@ -1,36 +1,30 @@
-<?php 
-use AlbaTech\Core\View; 
+<?php
+use AlbaTech\Core\View;
 
 $article = is_array($guideArticle ?? null) ? $guideArticle : [];
 
 ?>
 <?php if (isset($breadcrumbs) && is_array($breadcrumbs) && !empty($breadcrumbs)): ?>
-<nav class="breadcrumb-nav" aria-label="Breadcrumb">
-  <div class="container">
-    <ol class="breadcrumb-list" itemscope itemtype="https://schema.org/BreadcrumbList">
-      <?php foreach ($breadcrumbs as $index => $crumb): ?>
-        <li class="breadcrumb-item<?= ($index === count($breadcrumbs) - 1) ? ' breadcrumb-item--current' : '' ?>" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-          <?php if (!empty($crumb['url']) && $index < count($breadcrumbs) - 1): ?>
-            <a href="<?= View::escape($crumb['url']) ?>" itemprop="item"><span itemprop="name"><?= View::escape($crumb['name']) ?></span></a>
-          <?php else: ?>
-            <span itemprop="name"><?= View::escape($crumb['name']) ?></span>
-          <?php endif; ?>
-          <meta itemprop="position" content="<?= $index + 1 ?>">
-        </li>
-      <?php endforeach; ?>
+<nav class="breadcrumbs shell" aria-label="Breadcrumb">
+    <ol>
+        <?php foreach ($breadcrumbs as $index => $crumb): $isLast = $index === count($breadcrumbs) - 1; ?>
+            <li>
+                <?php if (!$isLast && !empty($crumb['url'])): ?><a href="<?= View::escape($crumb['url']) ?>"><?= View::escape($crumb['name']) ?></a><?php else: ?><span aria-current="page"><?= View::escape($crumb['name']) ?></span><?php endif; ?>
+            </li>
+        <?php endforeach; ?>
     </ol>
-  </div>
 </nav>
 <?php endif; ?>
+
 <article class="guide-article">
-    <header class="guide-article__hero">
-        <div class="container guide-article__hero-inner">
-            <span class="eyebrow"><?= View::escape($article['category'] ?? 'Guide') ?></span>
-            <h1><?= View::escape($article['title'] ?? 'Guide') ?></h1>
-            <p class="guide-article__intro"><?= View::escape($article['intro'] ?? '') ?></p>
+    <header class="border-b border-border bg-surface">
+        <div class="shell py-12 md:py-16">
+            <span class="kicker"><?= View::escape($article['category'] ?? 'Guide') ?></span>
+            <h1 class="max-w-3xl"><?= View::escape($article['title'] ?? 'Guide') ?></h1>
+            <p class="mt-4 max-w-3xl text-lg leading-relaxed"><?= View::escape($article['intro'] ?? '') ?></p>
             <?php $bylineName = trim((string) ($founderName ?? '')) ?: 'AlbaTech Solutions'; ?>
-            <div class="guide-article__byline">
-                <span>Prepared by <?php if ($bylineName !== 'AlbaTech Solutions'): ?><a href="/about#founder"><?= View::escape($bylineName) ?></a><?php else: ?><?= View::escape($bylineName) ?><?php endif; ?></span>
+            <div class="mt-5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted">
+                <span>Prepared by <?php if ($bylineName !== 'AlbaTech Solutions'): ?><a class="font-semibold text-primary" href="/about#founder"><?= View::escape($bylineName) ?></a><?php else: ?><?= View::escape($bylineName) ?><?php endif; ?></span>
                 <?php $publishedDate = (string) ($article['published'] ?? ''); ?>
                 <?php $updatedDate = (string) ($article['updated'] ?? ''); ?>
                 <?php if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $publishedDate) === 1): ?>
@@ -42,26 +36,38 @@ $article = is_array($guideArticle ?? null) ? $guideArticle : [];
             </div>
         </div>
     </header>
-    <div class="container guide-article__layout">
-        <div class="guide-article__body">
+    <div class="shell grid items-start gap-12 py-12 lg:grid-cols-[minmax(0,1fr)_320px] lg:py-16">
+        <div>
             <?php if (!empty($article['content_html'])): ?>
-                <div class="guide-rich-content"><?= $article['content_html'] /* Sanitized by GuideAdminController before persistence. */ ?></div>
+                <div class="prose-page guide-rich-content"><?= $article['content_html'] /* Sanitized by GuideAdminController before persistence. */ ?></div>
             <?php else: ?>
-            <?php foreach (($article['sections'] ?? []) as $section): ?>
-                <section class="guide-article__section">
-                    <h2><?= View::escape($section['heading'] ?? '') ?></h2>
-                    <?php foreach (($section['paragraphs'] ?? []) as $paragraph): ?><p><?= View::escape($paragraph) ?></p><?php endforeach; ?>
-                    <?php if (!empty($section['bullets']) && is_array($section['bullets'])): ?><ul><?php foreach ($section['bullets'] as $bullet): ?><li><?= View::escape($bullet) ?></li><?php endforeach; ?></ul><?php endif; ?>
-                    <?php if (!empty($section['link']) && is_array($section['link'])): ?><p><a class="text-link" href="<?= View::escape($section['link'][0] ?? '/services') ?>"><?= View::escape($section['link'][1] ?? 'Learn more') ?> <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a></p><?php endif; ?>
-                </section>
-            <?php endforeach; ?>
+                <?php foreach (($article['sections'] ?? []) as $section): ?>
+                    <section class="mb-8">
+                        <h2><?= View::escape($section['heading'] ?? '') ?></h2>
+                        <?php foreach (($section['paragraphs'] ?? []) as $paragraph): ?><p class="mt-3"><?= View::escape($paragraph) ?></p><?php endforeach; ?>
+                        <?php if (!empty($section['bullets']) && is_array($section['bullets'])): ?><ul class="mt-3 space-y-1.5 pl-5"><?php foreach ($section['bullets'] as $bullet): ?><li class="list-disc text-muted"><?= View::escape($bullet) ?></li><?php endforeach; ?></ul><?php endif; ?>
+                        <?php if (!empty($section['link']) && is_array($section['link'])): ?><p class="mt-4"><a class="link-arrow text-sm" href="<?= View::escape($section['link'][0] ?? '/services') ?>"><?= View::escape($section['link'][1] ?? 'Learn more') ?> <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a></p><?php endif; ?>
+                    </section>
+                <?php endforeach; ?>
             <?php endif; ?>
-            <aside class="guide-article__disclaimer"><i class="fa-solid fa-circle-info" aria-hidden="true"></i><p>Guides provide general information and may not cover every situation. Confirm current requirements with the relevant official source before making decisions or submitting applications.</p></aside>
-            <div class="guide-article__back"><a class="text-link" href="/guides"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to all guides</a></div>
+            <aside class="notice mt-10"><i class="fa-solid fa-circle-info" aria-hidden="true"></i><p>Guides provide general information and may not cover every situation. Confirm current requirements with the relevant official source before making decisions or submitting applications.</p></aside>
+            <div class="mt-8"><a class="link-arrow text-sm" href="/guides"><i class="fa-solid fa-arrow-left text-xs" aria-hidden="true"></i> Back to all guides</a></div>
         </div>
-        <aside class="guide-article__sidebar">
-            <div class="guide-article__sidebar-card"><span class="section-kicker">Need a hand?</span><h2>Let's work out the next step.</h2><p>Tell us what you need and ask about the services currently available.</p><a class="button button--whatsapp" href="/get-help">Make an enquiry</a></div>
-            <div class="guide-article__sidebar-links"><h2>More resources</h2><a href="/services">Explore services</a><a href="/about">About AlbaTech Solutions</a><a href="/get-help">Contact</a></div>
+        <aside class="grid gap-5 lg:sticky lg:top-24">
+            <div class="card p-6">
+                <span class="kicker">Need a hand?</span>
+                <h2 class="text-xl">Let's work out the next step.</h2>
+                <p class="mt-2 text-sm">Tell us what you need and ask about the services currently available.</p>
+                <a class="btn btn-whatsapp mt-5 w-full" href="/get-help">Make an enquiry</a>
+            </div>
+            <nav class="card p-5" aria-label="More resources">
+                <h2 class="text-base font-extrabold tracking-normal text-ink">More resources</h2>
+                <div class="mt-3 flex flex-col gap-2">
+                    <a class="text-sm font-semibold text-primary hover:text-primary-hover" href="/services">Explore services</a>
+                    <a class="text-sm font-semibold text-primary hover:text-primary-hover" href="/about">About AlbaTech Solutions</a>
+                    <a class="text-sm font-semibold text-primary hover:text-primary-hover" href="/get-help">Contact</a>
+                </div>
+            </nav>
         </aside>
     </div>
 </article>

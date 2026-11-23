@@ -1,63 +1,76 @@
 <?php
 
 /**
- * Bundle and minify CSS files.
- * Combines tokens.css and app.css into a single minified bundle.css.
+ * Build the public stylesheet with the Tailwind CLI.
+ *
+ * Source:   resources/css/tailwind.css
+ * Output:   public/assets/css/bundle.css (committed; production needs no Node)
  *
  * Usage:
  *   php bin/build-css.php            build and write bundle.css
- *   php bin/build-css.php --check    exit 1 if bundle.css is missing or stale (for CI/tests)
+ *   php bin/build-css.php --check    exit 1 if bundle.css is missing, empty or older than its sources
  */
 
-$cssDir = __DIR__ . '/../public/assets/css';
-$files = [
-    'tokens.css',
-    'app.css',
-    'work.css',
-];
-$outputFile = $cssDir . '/bundle.css';
-
-$minifyCss = static function (string $css): string {
-    // Remove comments
-    $css = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $css);
-    // Remove whitespace around colons, semicolons, braces
-    $css = preg_replace('/\s*([{}:;,])\s*/', '$1', $css);
-    // Remove trailing semicolons
-    $css = preg_replace('/;}/', '}', $css);
-    // Collapse remaining whitespace
-    $css = preg_replace('/\s+/', ' ', $css);
-    return trim((string) $css);
-};
-
-$build = static function () use ($cssDir, $files, $minifyCss): string {
-    $combined = '';
-    foreach ($files as $file) {
-        $path = $cssDir . '/' . $file;
-        if (is_file($path)) $combined .= file_get_contents($path) . "\n";
-    }
-    return $minifyCss($combined);
-};
+$root = dirname(__DIR__);
+$source = $root . '/resources/css/tailwind.css';
+$output = $root . '/public/assets/css/bundle.css';
+$cli = $root . '/node_modules/.bin/tailwindcss';
 
 $isCheck = in_array('--check', $argv ?? [], true);
-$expected = $build();
+
+$build = static function () use ($root, $source, $output, $cli): int {
+    if (!is_file($cli)) {
+        fwrite(STDERR, "Tailwind CLI not found. Run: npm install\n");
+        return 1;
+    }
+
+    $command = escapeshellarg($cli)
+        . ' -i ' . escapeshellarg($source)
+        . ' -o ' . escapeshellarg($output)
+        . ' --minify';
+
+    passthru($command, $exitCode);
+
+    return $exitCode === 0 && is_file($output) && filesize($output) > 0 ? 0 : 1;
+};
 
 if ($isCheck) {
-    $current = is_file($outputFile) ? (string) file_get_contents($outputFile) : '';
-    if ($current === $expected) {
-        echo "bundle.css is current.\n";
-        exit(0);
+    if (!is_file($output) || filesize($output) === 0) {
+        fwrite(STDERR, "bundle.css is missing or empty. Run: npm run build:tailwind\n");
+        exit(1);
     }
-    fwrite(STDERR, "bundle.css is STALE or missing. Run: php bin/build-css.php\n");
+
+    $css = (string) file_get_contents($output);
+    $markers = [
+        '--color-primary:#078c99' => 'brand colour token',
+        '.btn-primary' => 'button component',
+        '.site-nav' => 'site navigation',
+        '.prose-page' => 'long-form content styles',
+        '.contact-filter__button' => 'contact filter component',
+        '.work-carousel__track' => 'work carousel',
+        'aspect-ratio:16/10' => 'media aspect ratio',
+        'prefers-reduced-motion' => 'reduced motion support',
+    ];
+
+    $missing = [];
+    foreach ($markers as $needle => $label) {
+        if (!str_contains($css, $needle)) $missing[] = $label;
+    }
+
+    if ($missing !== []) {
+        fwrite(STDERR, "bundle.css is out of date (missing: " . implode(', ', $missing) . "). Run: npm run build:tailwind\n");
+        exit(1);
+    }
+
+    echo "bundle.css is current.\n";
+    exit(0);
+}
+
+echo "Building public stylesheet with Tailwind...\n";
+if ($build() !== 0) {
+    fwrite(STDERR, "Build failed. Run: npm install && npm run build:tailwind\n");
     exit(1);
 }
 
-echo "Bundling CSS files...\n";
-foreach ($files as $file) {
-    if (is_file($cssDir . '/' . $file)) echo "  Added: $file\n";
-    else echo "  Warning: $file not found, skipping\n";
-}
-
-file_put_contents($outputFile, $expected);
-$minifiedSize = strlen($expected);
-echo "Bundle saved to: $outputFile\n";
-echo "Minified size: " . round($minifiedSize / 1024, 2) . " KB\n";
+echo "Bundle saved to: " . $output . "\n";
+echo "Minified size: " . round(filesize($output) / 1024, 2) . " KB\n";

@@ -26,9 +26,27 @@ Migration files use a three-digit prefix and descriptive name, e.g. `000_auth.sq
 - `app/Core`: environment loading, routing, PDO, request/response, view rendering.
 - `app/Controllers`: HTTP controllers.
 - `app/Repositories`: SQL queries.
-- `resources/views`: PHP templates only; CSS belongs in `public/assets/css/`.
-- `public/assets/css/tokens.css`: brand design tokens declared under `:root`.
+- `resources/views`: PHP templates only.
+- `public/assets/css/tokens.css`: brand design tokens for the admin panel.
+- `resources/css/tailwind.css`: public design system (theme, base layer, components, utilities).
+- `public/assets/css/bundle.css`: compiled Tailwind output loaded by the public site.
 - `routes/web.php`: public route definitions.
+
+## Tailwind and asset builds
+
+The public site is fully Tailwind v4. `resources/css/tailwind.css` is the single entry point: it declares the brand palette in `@theme`, a hand-written base layer (preflight is deliberately omitted because the design predates it), reusable components such as `.btn`, `.card`, `.section`, `.site-nav` and `.prose-page`, and then imports the Tailwind utilities layer. Utilities are used for page-level layout; components carry anything reused across pages.
+
+`public/assets/css/bundle.css` is the compiled, minified stylesheet linked by `layouts/main.php`. It is committed, so production servers do not need Node. The admin panel keeps its own `tokens.css` + `admin.css` and never loads the public bundle.
+
+```powershell
+npm install
+npm run build:tailwind   # minified build, commit the output
+npm run watch:tailwind   # during UI work
+php bin/build-css.php    # same build via the PHP entry point
+php bin/build-css.php --check   # verify the committed artifact
+```
+
+Class names must exist in `resources/css/tailwind.css` or be reachable Tailwind utilities; `@source` scans `resources/views/**/*.php` and `public/assets/js/**/*.js`, so utilities used only in templates are picked up automatically.
 
 ## Phase 2 service catalogue
 
@@ -106,6 +124,25 @@ php tests/seo_phase4_regression.php
 
 These tests check source/rendered metadata and sitemap output. They do not replace validation with Google Search Console, Rich Results Test, social-sharing debuggers or a production browser request. Article guidance is general information; confirm current official requirements before acting on government-related processes.
 
+
+## Analytics and Search Console
+
+Apply migration `database/migrations/025_search_console_and_analytics_consent.sql`, then open **Admin → Settings**.
+
+- **Default SEO → Google Search Console verification token** outputs `<meta name="google-site-verification">` on public pages (main layout only, not admin). Only paste the token from the HTML-tag method; DNS verification needs no meta tag.
+- **Analytics → Provider** supports Plausible (cookieless, loads immediately) or GA4. For GA4, set the measurement ID (`G-…`) and the `https://www.googletagmanager.com/gtag/js?id=G-…` script URL.
+- **Consent before GA4 loads** defaults to *Required*: GA4 does not load and sets no cookies until the visitor accepts the banner. The footer keeps a **Cookie settings** link for changing the choice. Plausible is unaffected. If you disable consent, GA4 loads on first paint with `analytics_storage` granted.
+
+Conversion events are sent from `public/assets/js/site.js` once analytics is active:
+
+| Event | Trigger |
+|---|---|
+| `generate_lead` | Visitor lands on `/get-help?sent=1` after a successful enquiry (once per session) |
+| `whatsapp_click` | Any link to `wa.me` |
+| `contact_click` | `tel:` and `mailto:` links (`method` parameter) |
+| `cta_click` | Primary buttons, the footer enquiry CTA, or any `data-analytics-cta` link |
+
+Verify firing in GA4 **Admin → DebugView** with `APP_ENV=local`, and confirm the production property excludes staging/internal traffic. Search Console still needs the property added and the sitemap submitted; the meta token only verifies ownership.
 
 ## Contact page, WhatsApp widget and legal content update
 

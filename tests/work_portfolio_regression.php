@@ -12,6 +12,6 @@ $checks['homepage featured carousel']=str_contains($home,'data-work-carousel') &
 $checks['carousel pause and reduced motion']=str_contains($js,'prefers-reduced-motion') && str_contains($js,'data-carousel-toggle') && str_contains($js,'visibilitychange');
 $checks['service related work']=str_contains($service,'Related work');
 $checks['SEO sitemap projects']=str_contains($sitemap,"'/work/'");
-$checks['client project enquiry']=str_contains(file_get_contents($root.'/resources/views/work/show.php'),'Request a Similar Project');
+$checks['client project enquiry']=str_contains(file_get_contents($root.'/resources/views/work/show.php'),'Request a similar project');
 foreach($checks as $name=>$pass) echo ($pass?'PASS':'FAIL').': '.$name."\n";
 if(in_array(false,$checks,true)) exit(1); echo 'PASS: '.count($checks).' portfolio regression checks.'."\n";

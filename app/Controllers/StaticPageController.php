@@ -58,7 +58,8 @@ final class StaticPageController
         if (!empty($breadcrumbItem)) {
             $breadcrumbs[] = $breadcrumbItem;
         }
-        if ($page && $slug !== 'get-help') {
+        if ($page && $slug !== 'get-help' && mb_strlen(trim((string) ($page['body_content'] ?? ''))) >= 300) {
+            // Shorter bodies are the one-line seed placeholders; those pages keep their designed templates.
             Response::html(View::render('pages/cms-static', [
                 'pageTitle' => SeoDefaults::title((string)($page['meta_title'] ?? ''), (string)($page['title'] ?? $title) . ' | AlbaTech Solutions'),
                 'metaDescription' => SeoDefaults::description((string)($page['meta_description'] ?? ''), (string)($page['intro'] ?? '') ?: $description),

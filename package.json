@@ -1,0 +1,14 @@
+{
+  "name": "albatechsolutions",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lightweight, database-driven PHP website for AlbaTech Solutions.",
+  "scripts": {
+    "build:tailwind": "tailwindcss -i ./resources/css/tailwind.css -o ./public/assets/css/bundle.css --minify",
+    "watch:tailwind": "tailwindcss -i ./resources/css/tailwind.css -o ./public/assets/css/bundle.css --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.5",
+    "tailwindcss": "^4.3.5"
+  }
+}

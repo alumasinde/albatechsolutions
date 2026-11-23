@@ -19,7 +19,7 @@ final class ServiceRepository
         $sql = 'SELECT c.id, c.name, c.slug, c.description,
                        s.id AS service_id, s.name AS service_name, s.slug AS service_slug,
                        s.short_description, s.pricing_type, s.pricing_amount,
-                       s.pricing_label, s.is_featured
+                       s.pricing_label, s.turnaround, s.is_featured
                 FROM service_categories c
                 INNER JOIN services s
                   ON s.category_id = c.id AND s.status = :published
@@ -54,6 +54,7 @@ final class ServiceRepository
                     'pricing_type' => $row['pricing_type'],
                     'pricing_amount' => $row['pricing_amount'],
                     'pricing_label' => $row['pricing_label'],
+                    'turnaround' => $row['turnaround'],
                     'is_featured' => (bool) $row['is_featured'],
                 ];
             }
@@ -70,7 +71,7 @@ final class ServiceRepository
     {
         $limit = max(1, min($limit, 12));
         $sql = 'SELECT s.id, s.name, s.slug, s.short_description,
-                       s.pricing_type, s.pricing_amount, s.pricing_label,
+                       s.pricing_type, s.pricing_amount, s.pricing_label, s.turnaround,
                        c.name AS category_name, c.slug AS category_slug
                 FROM services s
                 INNER JOIN service_categories c ON c.id = s.category_id
@@ -86,6 +87,40 @@ final class ServiceRepository
             'category_status' => 'active',
         ]);
 
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /** Published services in the software and business systems category. */
+    public function solutions(int $limit = 8): array
+    {
+        return $this->publishedInCategory('software-business-systems', $limit);
+    }
+
+    /** Published government and compliance assistance services (KRA, eTIMS, BRS, eCitizen, SHA, NTSA). */
+    public function complianceServices(int $limit = 12): array
+    {
+        return $this->publishedInCategory('government-business-assistance', $limit);
+    }
+
+    private function publishedInCategory(string $categorySlug, int $limit): array
+    {
+        $limit = max(1, min(12, $limit));
+        $sql = "SELECT s.id, s.name, s.slug, s.short_description,
+                       s.pricing_type, s.pricing_amount, s.pricing_label, s.turnaround,
+                       c.name AS category_name, c.slug AS category_slug
+                FROM services s
+                INNER JOIN service_categories c ON c.id = s.category_id
+                WHERE s.status = :published
+                  AND c.status = :category_status
+                  AND c.slug = :category_slug
+                ORDER BY s.sort_order ASC, s.name ASC
+                LIMIT {$limit}";
+        $statement = Database::connection()->prepare($sql);
+        $statement->execute([
+            'published' => 'published',
+            'category_status' => 'active',
+            'category_slug' => $categorySlug,
+        ]);
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 

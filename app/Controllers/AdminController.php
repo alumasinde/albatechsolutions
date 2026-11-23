@@ -134,7 +134,7 @@ final class AdminController
         $amount = $amountInput !== '' && is_numeric($amountInput) && (float) $amountInput >= 0 ? number_format((float) $amountInput, 2, '.', '') : null;
         $errors = [];
         if ($name === '' || mb_strlen($name) > 180) $errors[] = 'Enter a service name of up to 180 characters.';
-        foreach (['short_description' => 500, 'description' => 12000, 'who_for' => 5000, 'what_included' => 5000, 'what_needed' => 5000, 'meta_title' => 255, 'meta_description' => 320] as $field => $limit) {
+        foreach (['short_description' => 500, 'description' => 12000, 'who_for' => 5000, 'what_included' => 5000, 'what_needed' => 5000, 'meta_title' => 255, 'meta_description' => 320, 'turnaround' => 80] as $field => $limit) {
             if (mb_strlen(trim((string) $request->input($field, ''))) > $limit) $errors[] = ucfirst(str_replace('_', ' ', $field)) . ' is too long (maximum ' . $limit . ' characters).';
         }
         if ($slug === '' || mb_strlen($slug) > 200) $errors[] = 'Enter a valid URL slug.';
@@ -167,6 +167,7 @@ final class AdminController
             'pricing_type' => $pricingType,
             'pricing_amount' => $amount,
             'pricing_label' => $pricingType === 'quote' ? 'Contact for price' : null,
+            'turnaround' => trim((string) $request->input('turnaround', '')) ?: null,
             'meta_title' => trim((string) $request->input('meta_title', '')) ?: null,
             'meta_description' => trim((string) $request->input('meta_description', '')) ?: null,
             'status' => $status,
@@ -183,12 +184,12 @@ final class AdminController
                     Response::redirect('/admin/services');
                 }
                 $data['id'] = $id;
-                $sql = 'UPDATE services SET category_id=:category_id, name=:name, slug=:slug, short_description=:short_description, description=:description, who_for=:who_for, what_included=:what_included, what_needed=:what_needed, pricing_type=:pricing_type, pricing_amount=:pricing_amount, pricing_label=:pricing_label, meta_title=:meta_title, meta_description=:meta_description, status=:status, is_featured=:is_featured, sort_order=:sort_order WHERE id=:id';
+                $sql = 'UPDATE services SET category_id=:category_id, name=:name, slug=:slug, short_description=:short_description, description=:description, who_for=:who_for, what_included=:what_included, what_needed=:what_needed, pricing_type=:pricing_type, pricing_amount=:pricing_amount, pricing_label=:pricing_label, turnaround=:turnaround, meta_title=:meta_title, meta_description=:meta_description, status=:status, is_featured=:is_featured, sort_order=:sort_order WHERE id=:id';
                 $pdo->prepare($sql)->execute($data);
                 $this->audit('service.updated', 'service', (string) $id, ['name' => $name]);
                 AdminSecurity::flash('success', 'Service updated successfully.');
             } else {
-                $sql = 'INSERT INTO services (category_id,name,slug,short_description,description,who_for,what_included,what_needed,pricing_type,pricing_amount,pricing_label,meta_title,meta_description,status,is_featured,sort_order) VALUES (:category_id,:name,:slug,:short_description,:description,:who_for,:what_included,:what_needed,:pricing_type,:pricing_amount,:pricing_label,:meta_title,:meta_description,:status,:is_featured,:sort_order)';
+                $sql = 'INSERT INTO services (category_id,name,slug,short_description,description,who_for,what_included,what_needed,pricing_type,pricing_amount,pricing_label,turnaround,meta_title,meta_description,status,is_featured,sort_order) VALUES (:category_id,:name,:slug,:short_description,:description,:who_for,:what_included,:what_needed,:pricing_type,:pricing_amount,:pricing_label,:turnaround,:meta_title,:meta_description,:status,:is_featured,:sort_order)';
                 $pdo->prepare($sql)->execute($data);
                 $newId = (int) $pdo->lastInsertId();
                 $this->audit('service.created', 'service', (string) $newId, ['name' => $name]);
@@ -312,9 +313,9 @@ final class AdminController
         }
         $contactKeys = ['whatsapp_number', 'contact_email', 'business_phone', 'business_address', 'business_city', 'service_area', 'contact_hours', 'contact_response_time', 'support_email', 'whatsapp_prefill_message', 'business_latitude', 'business_longitude'];
         $socialKeys = ['social_facebook', 'social_twitter', 'social_linkedin', 'social_instagram'];
-        $analyticsKeys = ['analytics_enabled', 'analytics_provider', 'analytics_domain', 'analytics_script_url'];
+        $analyticsKeys = ['analytics_enabled', 'analytics_provider', 'analytics_domain', 'analytics_script_url', 'analytics_consent_enabled'];
         $founderKeys = ['founder_name', 'founder_title', 'founder_bio', 'founder_linkedin'];
-        $allowed = array_merge(['site_name', 'site_url', 'default_author', 'default_meta_title', 'default_meta_description', 'default_social_image'], $founderKeys, $contactKeys, $socialKeys, $analyticsKeys, ['footer_description']);
+        $allowed = array_merge(['site_name', 'site_url', 'default_author', 'default_meta_title', 'default_meta_description', 'default_social_image', 'google_site_verification'], $founderKeys, $contactKeys, $socialKeys, $analyticsKeys, ['footer_description']);
         $normalized = [];
         $siteUrl = trim((string) $request->input('site_url', ''));
         $defaultSocialImage = trim((string) $request->input('default_social_image', ''));
@@ -366,9 +367,18 @@ final class AdminController
             AdminSecurity::flash('error', 'The founder LinkedIn link must be a full URL starting with https://.');
             Response::redirect('/admin/settings');
         }
+        $googleVerification = trim((string) $request->input('google_site_verification', ''));
+        if ($googleVerification !== '' && preg_match('/^[A-Za-z0-9_-]{8,120}$/', $googleVerification) !== 1) {
+            AdminSecurity::flash('error', 'The Search Console verification token should contain only letters, numbers, hyphens and underscores.');
+            Response::redirect('/admin/settings');
+        }
+        $normalized['google_site_verification'] = $googleVerification;
         $analyticsEnabled = (string) $request->input('analytics_enabled', '0');
         if (!in_array($analyticsEnabled, ['0', '1'], true)) $analyticsEnabled = '0';
         $normalized['analytics_enabled'] = $analyticsEnabled;
+        $analyticsConsent = (string) $request->input('analytics_consent_enabled', '1');
+        if (!in_array($analyticsConsent, ['0', '1'], true)) $analyticsConsent = '1';
+        $normalized['analytics_consent_enabled'] = $analyticsConsent;
         $analyticsProvider = trim((string) $request->input('analytics_provider', ''));
         if (!in_array($analyticsProvider, ['', 'plausible', 'ga4'], true)) $analyticsProvider = '';
         $normalized['analytics_provider'] = $analyticsProvider;
@@ -389,7 +399,7 @@ final class AdminController
         }
         $pdo = Database::connection();
         $stmt = $pdo->prepare('INSERT INTO site_settings (setting_key, setting_value, value_type, setting_group, is_public, updated_by) VALUES (:key,:value,:type,:group_name,1,:user_id) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value), updated_by=VALUES(updated_by)');
-        $seoKeys = ['default_meta_title', 'default_meta_description', 'default_author', 'default_social_image'];
+        $seoKeys = ['default_meta_title', 'default_meta_description', 'default_author', 'default_social_image', 'google_site_verification'];
         $urlKeys = ['site_url', 'default_social_image', 'analytics_script_url', 'founder_linkedin', ...$socialKeys];
         foreach ($allowed as $key) {
             $value = $normalized[$key] ?? trim((string) $request->input($key, ''));
@@ -429,6 +439,6 @@ final class AdminController
 
     private function emptyService(): array
     {
-        return ['id' => '', 'category_id' => '', 'name' => '', 'slug' => '', 'short_description' => '', 'description' => '', 'who_for' => '', 'what_included' => '', 'what_needed' => '', 'pricing_type' => 'quote', 'pricing_amount' => '', 'meta_title' => '', 'meta_description' => '', 'status' => 'draft', 'is_featured' => 0, 'sort_order' => 0];
+        return ['id' => '', 'category_id' => '', 'name' => '', 'slug' => '', 'short_description' => '', 'description' => '', 'who_for' => '', 'what_included' => '', 'what_needed' => '', 'pricing_type' => 'quote', 'pricing_amount' => '', 'turnaround' => '', 'meta_title' => '', 'meta_description' => '', 'status' => 'draft', 'is_featured' => 0, 'sort_order' => 0];
     }
 }

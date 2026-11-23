@@ -29,20 +29,25 @@ final class HomeController
         $hasWhatsApp = str_starts_with($whatsAppUrl, 'https://wa.me/');
 
         $featuredProjects = [];
+        $featuredProducts = [];
         try {
-            $featuredProjects = (new \AlbaTech\Repositories\WorkRepository())->featured(8);
-        } catch (\Throwable $e) { error_log('[AlbaTech Work] Featured projects unavailable: ' . $e->getMessage()); }
+            $workRepository = new \AlbaTech\Repositories\WorkRepository();
+            $featuredProjects = $workRepository->featured(4);
+            $featuredProducts = $workRepository->products(3);
+        } catch (\Throwable $e) { error_log('[AlbaTech Work] Featured work unavailable: ' . $e->getMessage()); }
 
         Response::html(View::render('pages/home', [
-            'pageTitle' => SeoDefaults::title((string) ($settings['home_meta_title'] ?? ''), 'Website Design & Business Registration in Kenya | AlbaTech'),
+            'pageTitle' => SeoDefaults::title((string) ($settings['home_meta_title'] ?? ''), 'Software Company in Nairobi | AlbaTech Solutions'),
             'metaDescription' => SeoDefaults::description((string) ($settings['home_meta_description'] ?? ''), (string) ($settings['default_meta_description'] ?? SeoDefaults::DESCRIPTION)),
             'metaImage' => SeoDefaults::image((string) ($settings['home_social_image'] ?? $settings['default_social_image'] ?? $settings['home_hero_image'] ?? ''), $baseUrl),
             'canonicalUrl' => $baseUrl . '/',
             'appName' => $appName,
             'homeContent' => $settings,
             'ctaItems' => (new \AlbaTech\Repositories\CmsRepository())->ctas(),
-            'featuredServices' => $this->services->featuredServices(6),
+            'complianceServices' => $this->services->complianceServices(7),
             'featuredProjects' => $featuredProjects,
+            'featuredProducts' => $featuredProducts,
+            'solutions' => $this->services->solutions(5),
             'whatsAppUrl' => $whatsAppUrl,
             'hasWhatsApp' => $hasWhatsApp,
             'breadcrumbs' => [

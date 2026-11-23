@@ -19,21 +19,14 @@ $mailFallback = trim((string) Env::get('MAIL_TO', ''));
 $serviceSlug = trim((string) ($_GET['service'] ?? ''));
 ?>
 <?php if (isset($breadcrumbs) && is_array($breadcrumbs) && !empty($breadcrumbs)): ?>
-<nav class="breadcrumb-nav" aria-label="Breadcrumb">
-  <div class="container">
-    <ol class="breadcrumb-list" itemscope itemtype="https://schema.org/BreadcrumbList">
-      <?php foreach ($breadcrumbs as $index => $crumb): ?>
-        <li class="breadcrumb-item<?= ($index === count($breadcrumbs) - 1) ? ' breadcrumb-item--current' : '' ?>" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-          <?php if (!empty($crumb['url']) && $index < count($breadcrumbs) - 1): ?>
-            <a href="<?= View::escape($crumb['url']) ?>" itemprop="item"><span itemprop="name"><?= View::escape($crumb['name']) ?></span></a>
-          <?php else: ?>
-            <span itemprop="name"><?= View::escape($crumb['name']) ?></span>
-          <?php endif; ?>
-          <meta itemprop="position" content="<?= $index + 1 ?>">
-        </li>
-      <?php endforeach; ?>
+<nav class="breadcrumbs shell" aria-label="Breadcrumb">
+    <ol>
+        <?php foreach ($breadcrumbs as $index => $crumb): $isLast = $index === count($breadcrumbs) - 1; ?>
+            <li>
+                <?php if (!$isLast && !empty($crumb['url'])): ?><a href="<?= View::escape($crumb['url']) ?>"><?= View::escape($crumb['name']) ?></a><?php else: ?><span aria-current="page"><?= View::escape($crumb['name']) ?></span><?php endif; ?>
+            </li>
+        <?php endforeach; ?>
     </ol>
-  </div>
 </nav>
 <?php endif; ?>
 <?php
@@ -52,197 +45,151 @@ $hasEmail = ($contactEmail !== '' && filter_var($contactEmail, FILTER_VALIDATE_E
 $hasPhone = $contactPhoneHref !== '' && strlen(preg_replace('/\D+/', '', $contactPhoneHref)) >= 7;
 $hasWhatsApp = strlen($whatsAppNumber) >= 8 && strlen($whatsAppNumber) <= 15 && !str_starts_with($whatsAppNumber, '0');
 ?>
-<section class="contact-hero">
-    <div class="container contact-hero__inner">
-        <span class="eyebrow"><?= View::escape($cmsPage['title'] ?? 'Contact us') ?></span>
-        <h1><?= View::escape($cmsPage['title'] ?? 'Tell us what you need.') ?></h1>
-        <p><?= View::escape($cmsPage['intro'] ?? 'Have a question about a website, an online business service or help with a digital process? Use the form below or reach us directly. We will guide you on what to do next.') ?></p>
+
+<section class="border-b border-border bg-surface">
+    <div class="shell py-12 md:py-16">
+        <span class="kicker"><?= View::escape($cmsPage['title'] ?? 'Contact us') ?></span>
+        <h1 class="max-w-3xl"><?= View::escape($cmsPage['title'] ?? 'Tell us what you need.') ?></h1>
+        <p class="mt-4 max-w-2xl text-lg leading-relaxed"><?= View::escape($cmsPage['intro'] ?? 'Have a question about a website, an online business service or help with a digital process? Use the form below or reach us directly. We will guide you on what to do next.') ?></p>
     </div>
 </section>
 
-<section class="section contact-section">
-    <div class="container">
-        <div class="contact-grid">
-            <!-- Enquiry Form -->
-            <div class="enquiry-form-wrapper">
-                <span class="section-kicker">Send an enquiry</span>
-                <h2>Quick enquiry form</h2>
-                <p class="contact-intro">Fill in your details and continue in WhatsApp, or send the enquiry by email. A phone number is all we need to reply; email is optional.</p>
+<section class="section">
+    <div class="shell grid items-start gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(280px,0.9fr)]">
+        <div class="card p-6 sm:p-8">
+            <span class="kicker">Send an enquiry</span>
+            <h2>Quick enquiry form</h2>
+            <p class="mt-2 text-sm">Fill in your details and continue in WhatsApp, or send the enquiry by email. A phone number is all we need to reply; email is optional.</p>
 
-                <?php if (($_GET['sent'] ?? '') === '1'): ?><div class="form-success" role="status">Your enquiry has been sent. We will reply on WhatsApp or by phone.</div><?php elseif (($_GET['sent'] ?? '') === '0'): ?><div class="form-error" role="alert">We could not send your enquiry right now. Please try again later or use the direct contact details.</div><?php endif; ?>
-                <form class="enquiry-form" id="enquiryForm" method="post" action="/get-help">
-                    <input type="hidden" name="_csrf" value="<?= View::escape($csrf ?? '') ?>">
-                    <div class="form-honeypot" aria-hidden="true"><label>Leave this field empty<input type="text" name="website_url" tabindex="-1" autocomplete="off"></label></div>
-                    <div class="form-group">
-                        <label for="enquiry-name">Your name <span class="required">*</span></label>
-                        <input
-                            type="text"
-                            id="enquiry-name"
-                            name="name"
-                            required
-                            placeholder="e.g., John Kamau"
-                            autocomplete="name"
-                        >
-                    </div>
+            <?php if (($_GET['sent'] ?? '') === '1'): ?><div class="alert alert-success mt-4" role="status">Your enquiry has been sent. We will reply on WhatsApp or by phone.</div><?php elseif (($_GET['sent'] ?? '') === '0'): ?><div class="alert alert-error mt-4" role="alert">We could not send your enquiry right now. Please try again later or use the direct contact details.</div><?php endif; ?>
+            <form class="mt-5" id="enquiryForm" method="post" action="/get-help">
+                <input type="hidden" name="_csrf" value="<?= View::escape($csrf ?? '') ?>">
+                <div class="honeypot" aria-hidden="true"><label>Leave this field empty<input type="text" name="website_url" tabindex="-1" autocomplete="off"></label></div>
+                <div class="field">
+                    <label class="field-label" for="enquiry-name">Your name <span class="required">*</span></label>
+                    <input class="input" type="text" id="enquiry-name" name="name" required placeholder="e.g., John Kamau" autocomplete="name">
+                </div>
 
-                    <div class="form-group">
-                        <label for="enquiry-phone">WhatsApp or phone number <span class="required">*</span></label>
-                        <input
-                            type="tel"
-                            id="enquiry-phone"
-                            name="phone"
-                            required
-                            placeholder="e.g., 0712 345 678"
-                            autocomplete="tel"
-                        >
-                    </div>
+                <div class="field">
+                    <label class="field-label" for="enquiry-phone">WhatsApp or phone number <span class="required">*</span></label>
+                    <input class="input" type="tel" id="enquiry-phone" name="phone" required placeholder="e.g., 0712 345 678" autocomplete="tel">
+                </div>
 
-                    <div class="form-group">
-                        <label for="enquiry-email">Email address (optional)</label>
-                        <input
-                            type="email"
-                            id="enquiry-email"
-                            name="email"
-                            placeholder="e.g., john@example.com"
-                            autocomplete="email"
-                        >
-                    </div>
+                <div class="field">
+                    <label class="field-label" for="enquiry-email">Email address (optional)</label>
+                    <input class="input" type="email" id="enquiry-email" name="email" placeholder="e.g., john@example.com" autocomplete="email">
+                </div>
 
-                    <div class="form-group">
-                        <label for="enquiry-service">What do you need help with?</label>
-                        <?php
-                        $serviceOptions = is_array($enquiryServices ?? null) ? $enquiryServices : ['other' => 'Something else'];
-                        $selectedService = '';
-                        if ($serviceSlug !== '') {
-                            if (isset($serviceOptions[$serviceSlug])) {
-                                $selectedService = $serviceSlug;
-                            } else {
-                                foreach (array_keys($serviceOptions) as $optionKey) {
-                                    if ($optionKey !== 'other' && (str_contains($serviceSlug, (string) $optionKey) || str_contains((string) $optionKey, $serviceSlug))) {
-                                        $selectedService = (string) $optionKey;
-                                        break;
-                                    }
+                <div class="field">
+                    <label class="field-label" for="enquiry-service">What do you need help with?</label>
+                    <?php
+                    $serviceOptions = is_array($enquiryServices ?? null) ? $enquiryServices : ['other' => 'Something else'];
+                    $selectedService = '';
+                    if ($serviceSlug !== '') {
+                        if (isset($serviceOptions[$serviceSlug])) {
+                            $selectedService = $serviceSlug;
+                        } else {
+                            foreach (array_keys($serviceOptions) as $optionKey) {
+                                if ($optionKey !== 'other' && (str_contains($serviceSlug, (string) $optionKey) || str_contains((string) $optionKey, $serviceSlug))) {
+                                    $selectedService = (string) $optionKey;
+                                    break;
                                 }
-                                if ($selectedService === '') $selectedService = 'other';
                             }
+                            if ($selectedService === '') $selectedService = 'other';
                         }
-                        ?>
-                        <select id="enquiry-service" name="service">
-                            <option value="">Choose a service or describe your need</option>
-                            <?php foreach ($serviceOptions as $optionKey => $optionLabel): ?><option value="<?= View::escape($optionKey) ?>"<?= $selectedService === (string) $optionKey ? ' selected' : '' ?>><?= View::escape($optionLabel) ?></option><?php endforeach; ?>
-                        </select>
-                    </div>
+                    }
+                    ?>
+                    <select class="select" id="enquiry-service" name="service">
+                        <option value="">Choose a service or describe your need</option>
+                        <?php foreach ($serviceOptions as $optionKey => $optionLabel): ?><option value="<?= View::escape($optionKey) ?>"<?= $selectedService === (string) $optionKey ? ' selected' : '' ?>><?= View::escape($optionLabel) ?></option><?php endforeach; ?>
+                    </select>
+                </div>
 
-                    <div class="form-group">
-                        <label for="enquiry-message">Your message <span class="required">*</span></label>
-                        <textarea
-                            id="enquiry-message"
-                            name="message"
-                            required
-                            rows="4"
-                            placeholder="Tell us what you're trying to achieve. Be as specific as you can."
-                        ></textarea>
-                    </div>
+                <div class="field">
+                    <label class="field-label" for="enquiry-message">Your message <span class="required">*</span></label>
+                    <textarea class="textarea" id="enquiry-message" name="message" required rows="4" placeholder="Tell us what you're trying to achieve. Be as specific as you can."></textarea>
+                </div>
 
-                    <div class="form-actions">
-                        <?php if ($hasWhatsApp): ?>
-                        <button type="button" class="button button--whatsapp" id="whatsapp-submit">
-                            <i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Continue in WhatsApp
-                        </button>
-                        <?php endif; ?>
-                        <?php if ($hasEmail): ?>
-                        <button type="submit" name="send_method" value="email" class="button button--secondary" id="email-submit">
-                            <i class="fa-regular fa-envelope" aria-hidden="true"></i> Send enquiry by email
-                        </button>
-                        <?php endif; ?>
-                        <?php if (!$hasWhatsApp && !$hasEmail): ?>
-                        <p class="form-error" role="alert">Contact delivery is not configured yet. Please try again later.</p>
-                        <?php endif; ?>
-                    </div>
+                <div class="flex flex-col gap-3 sm:flex-row">
+                    <?php if ($hasWhatsApp): ?>
+                        <button type="button" class="btn btn-whatsapp" id="whatsapp-submit"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Continue in WhatsApp</button>
+                    <?php endif; ?>
+                    <?php if ($hasEmail): ?>
+                        <button type="submit" name="send_method" value="email" class="btn btn-secondary" id="email-submit"><i class="fa-regular fa-envelope" aria-hidden="true"></i> Send enquiry by email</button>
+                    <?php endif; ?>
+                    <?php if (!$hasWhatsApp && !$hasEmail): ?>
+                        <p class="alert alert-error" role="alert">Contact delivery is not configured yet. Please try again later.</p>
+                    <?php endif; ?>
+                </div>
 
-                    <p class="form-notice">
-                        <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
-                        For your safety, never send passwords, PINs, one-time verification codes or M-Pesa credentials in an enquiry.
-                    </p>
-                </form>
+                <p class="mt-5 flex items-start gap-2 text-xs leading-relaxed text-muted"><i class="fa-solid fa-shield-halved mt-0.5 text-primary" aria-hidden="true"></i> For your safety, never send passwords, PINs, one-time verification codes or M-Pesa credentials in an enquiry.</p>
+            </form>
+        </div>
+
+        <aside class="grid gap-4">
+            <div>
+                <span class="kicker">Direct contact</span>
+                <h2>Other ways to reach us</h2>
             </div>
 
-            <!-- Contact Details -->
-            <aside class="contact-details-sidebar">
-                <span class="section-kicker">Direct contact</span>
-                <h2>Other ways to reach us</h2>
-
-                <?php if ($hasWhatsApp): ?>
-                <div class="contact-detail-item">
-                    <span class="contact-detail-icon contact-detail-icon--whatsapp"><i class="fa-brands fa-whatsapp"></i></span>
-                    <div>
-                        <h3>WhatsApp</h3>
-                        <p>Fastest response time</p>
-                        <?php if ($contactHours !== ''): ?>
-                        <p class="contact-detail-meta"><i class="fa-regular fa-clock" aria-hidden="true"></i> <?= View::escape($contactHours) ?></p>
-                        <?php endif; ?>
-                    </div>
+            <?php if ($hasWhatsApp): ?>
+            <div class="card flex gap-4 p-5">
+                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-success-bg text-success"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i></span>
+                <div>
+                    <h3 class="text-base">WhatsApp</h3>
+                    <p class="mt-1 text-sm">Fastest response time</p>
+                    <?php if ($contactHours !== ''): ?><p class="mt-1 text-xs text-subtle"><i class="fa-regular fa-clock mr-1" aria-hidden="true"></i><?= View::escape($contactHours) ?></p><?php endif; ?>
                 </div>
-                <?php endif; ?>
+            </div>
+            <?php endif; ?>
 
-                <?php if ($hasPhone): ?>
-                <div class="contact-detail-item">
-                    <span class="contact-detail-icon"><i class="fa-solid fa-phone"></i></span>
-                    <div>
-                        <h3>Phone</h3>
-                        <p><a href="tel:<?= View::escape($contactPhoneHref) ?>"><?= View::escape($contactPhone) ?></a></p>
-                        <?php if ($contactHours !== ''): ?>
-                        <p class="contact-detail-meta"><i class="fa-regular fa-clock" aria-hidden="true"></i> <?= View::escape($contactHours) ?></p>
-                        <?php endif; ?>
-                    </div>
+            <?php if ($hasPhone): ?>
+            <div class="card flex gap-4 p-5">
+                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary-light text-primary"><i class="fa-solid fa-phone" aria-hidden="true"></i></span>
+                <div>
+                    <h3 class="text-base">Phone</h3>
+                    <p class="mt-1 text-sm"><a class="font-semibold text-primary" href="tel:<?= View::escape($contactPhoneHref) ?>"><?= View::escape($contactPhone) ?></a></p>
+                    <?php if ($contactHours !== ''): ?><p class="mt-1 text-xs text-subtle"><i class="fa-regular fa-clock mr-1" aria-hidden="true"></i><?= View::escape($contactHours) ?></p><?php endif; ?>
                 </div>
-                <?php endif; ?>
+            </div>
+            <?php endif; ?>
 
-                <?php if ($hasEmail): ?>
-                <div class="contact-detail-item">
-                    <span class="contact-detail-icon"><i class="fa-regular fa-envelope"></i></span>
-                    <div>
-                        <h3>Email</h3>
-                        <?php if ($contactEmail !== '' && filter_var($contactEmail, FILTER_VALIDATE_EMAIL)): ?>
-                        <p><a href="mailto:<?= View::escape($contactEmail) ?>"><?= View::escape($contactEmail) ?></a></p>
-                        <?php endif; ?>
-                        <?php if ($helpEmail !== '' && filter_var($helpEmail, FILTER_VALIDATE_EMAIL)): ?>
-                        <p><a href="mailto:<?= View::escape($helpEmail) ?>"><?= View::escape($helpEmail) ?></a></p>
-                        <?php endif; ?>
-                        <?php if ($contactResponseTime !== ''): ?>
-                        <p class="contact-detail-meta"><i class="fa-regular fa-clock" aria-hidden="true"></i> <?= View::escape($contactResponseTime) ?></p>
-                        <?php endif; ?>
-                    </div>
+            <?php if ($hasEmail): ?>
+            <div class="card flex gap-4 p-5">
+                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary-light text-primary"><i class="fa-regular fa-envelope" aria-hidden="true"></i></span>
+                <div>
+                    <h3 class="text-base">Email</h3>
+                    <?php if ($contactEmail !== '' && filter_var($contactEmail, FILTER_VALIDATE_EMAIL)): ?><p class="mt-1 break-all text-sm"><a class="font-semibold text-primary" href="mailto:<?= View::escape($contactEmail) ?>"><?= View::escape($contactEmail) ?></a></p><?php endif; ?>
+                    <?php if ($helpEmail !== '' && filter_var($helpEmail, FILTER_VALIDATE_EMAIL)): ?><p class="mt-1 break-all text-sm"><a class="font-semibold text-primary" href="mailto:<?= View::escape($helpEmail) ?>"><?= View::escape($helpEmail) ?></a></p><?php endif; ?>
+                    <?php if ($contactResponseTime !== ''): ?><p class="mt-1 text-xs text-subtle"><i class="fa-regular fa-clock mr-1" aria-hidden="true"></i><?= View::escape($contactResponseTime) ?></p><?php endif; ?>
                 </div>
-                <?php endif; ?>
+            </div>
+            <?php endif; ?>
 
-                <div class="contact-detail-item">
-                    <span class="contact-detail-icon"><i class="fa-solid fa-location-dot"></i></span>
-                    <div>
-                        <h3>Location</h3>
-                        <p><?= View::escape($contactCity !== '' ? $contactCity : $contactLocation) ?></p>
-                        <?php if ($contactServiceArea !== ''): ?>
-                        <p class="contact-detail-meta"><i class="fa-solid fa-globe" aria-hidden="true"></i> <?= View::escape($contactServiceArea) ?></p>
-                        <?php endif; ?>
-                    </div>
+            <div class="card flex gap-4 p-5">
+                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary-light text-primary"><i class="fa-solid fa-location-dot" aria-hidden="true"></i></span>
+                <div>
+                    <h3 class="text-base">Location</h3>
+                    <p class="mt-1 text-sm"><?= View::escape($contactCity !== '' ? $contactCity : $contactLocation) ?></p>
+                    <?php if ($contactServiceArea !== ''): ?><p class="mt-1 text-xs text-subtle"><i class="fa-solid fa-globe mr-1" aria-hidden="true"></i><?= View::escape($contactServiceArea) ?></p><?php endif; ?>
                 </div>
+            </div>
 
-                <div class="contact-safety-box">
-                    <strong><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Important</strong>
-                    <p>AlbaTech Solutions is an independent service provider, not a government agency. For government-related processes, decisions remain with the relevant authority.</p>
-                </div>
-            </aside>
-        </div>
+            <div class="notice notice-warn">
+                <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                <p><strong>Important</strong> AlbaTech Solutions is an independent service provider, not a government agency. For government-related processes, decisions remain with the relevant authority.</p>
+            </div>
+        </aside>
     </div>
 </section>
 
 <?php if (!empty($faqItems)): ?>
-<section class="section section--tint">
-    <div class="container faq-section">
-        <div class="section-heading"><span class="eyebrow">Common questions</span><h2>Before you send an enquiry</h2></div>
+<section class="section section-tint">
+    <div class="shell">
+        <div class="mb-8 max-w-2xl"><span class="kicker">Common questions</span><h2>Before you send an enquiry</h2></div>
         <div class="faq-list">
             <?php foreach ($faqItems as $item): ?>
-                <details class="faq-item">
+                <details class="faq">
                     <summary><?= View::escape($item['question']) ?></summary>
                     <p><?= View::escape($item['answer']) ?></p>
                 </details>

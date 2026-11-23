@@ -5,7 +5,7 @@ $root = dirname(__DIR__);
 exec(escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($root . '/bin/build-css.php') . ' --check 2>&1', $output, $exitCode);
 if ($exitCode !== 0) {
     fwrite(STDERR, "FAIL: CSS bundle check failed: " . implode("\n", $output) . "\n");
-    fwrite(STDERR, "Fix with: php bin/build-css.php\n");
+    fwrite(STDERR, "Fix with: npm run build:tailwind\n");
     exit(1);
 }
 

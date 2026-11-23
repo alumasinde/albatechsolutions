@@ -41,23 +41,23 @@ $ratio = static function (string $a, string $b) use ($luminance): float {
     [$hi, $lo] = [max($luminance($a), $luminance($b)), min($luminance($a), $luminance($b))];
     return ($hi + 0.05) / ($lo + 0.05);
 };
-$tokens = (string) file_get_contents($root . '/public/assets/css/tokens.css');
-$token = static function (string $name) use ($tokens): string {
-    preg_match('/' . preg_quote($name, '/') . ':\s*(#[0-9a-fA-F]{6})/', $tokens, $m);
+$theme = (string) file_get_contents($root . '/resources/css/tailwind.css');
+$themeToken = static function (string $name) use ($theme): string {
+    preg_match('/' . preg_quote($name, '/') . ':\s*(#[0-9a-fA-F]{6})/', $theme, $m);
     return $m[1] ?? '';
 };
-foreach (['--color-text-muted', '--color-text-subtle', '--color-success', '--color-accent-text'] as $name) {
-    $assert($token($name) !== '', "{$name} is defined in tokens.css");
-    foreach (['#ffffff', '#f8fafc', '#f1f5f9'] as $surface) {
-        $assert($ratio($token($name), $surface) >= 4.5, "{$name} has >= 4.5:1 contrast on {$surface}");
+foreach (['--color-muted', '--color-subtle'] as $name) {
+    $assert($themeToken($name) !== '', "{$name} is defined in the Tailwind theme");
+    foreach (['#ffffff', '#f5fafa', '#edf6f6'] as $surface) {
+        $assert($ratio($themeToken($name), $surface) >= 4.5, "{$name} has >= 4.5:1 contrast on {$surface}");
     }
 }
-$assert($ratio('#ffffff', $token('--color-success')) >= 4.5, 'White text on --color-success background is AA');
-$assert($ratio('#052e16', '#25d366') >= 7.0, 'Dark text on WhatsApp green is AAA');
+$assert($ratio('#ffffff', $themeToken('--color-success')) >= 4.5, 'White text on --color-success background is AA');
+$assert($ratio('#052e16', $themeToken('--color-whatsapp')) >= 7.0, 'Dark text on WhatsApp green is AAA');
 
 // --- CSS / layout structure ---------------------------------------------------------------------
-$appCss = (string) file_get_contents($root . '/public/assets/css/app.css');
-$assert(!preg_match('/^\s*@import\b/m', $appCss), 'app.css has no @import (avoids a serial CSS request chain)');
+$bundleCss = (string) file_get_contents($root . '/public/assets/css/bundle.css');
+$assert(!preg_match('/@import\s+url|@import\s+"/', $bundleCss), 'Compiled bundle contains no runtime @import chain');
 $layout = (string) file_get_contents($root . '/resources/views/layouts/main.php');
 $assert(str_contains($layout, "View::asset('css/bundle.css')"), 'Layout links the bundled public CSS');
 $assert(!preg_match('/isset\(\s*\$service\s*\)/', $layout), 'Layout never derives page schema from a plain $service (loop-variable leak)');
@@ -66,7 +66,7 @@ $assert(!str_contains($layout, "fill='%23155eef'"), 'Layout no longer ships the 
 $assert(str_contains((string) file_get_contents($root . '/app/Controllers/ServiceController.php'), "'schemaService' => \$service"), 'ServiceController declares the service page for schema output');
 
 // --- View::asset cache busting ------------------------------------------------------------------
-$assert(preg_match('~^/assets/css/app\.css\?v=\d+$~', View::asset('css/app.css')) === 1, 'View::asset appends an mtime version');
+$assert(preg_match('~^/assets/css/bundle\.css\?v=\d+$~', View::asset('css/bundle.css')) === 1, 'View::asset appends an mtime version');
 $assert(View::asset('css/does-not-exist.css') === '/assets/css/does-not-exist.css', 'View::asset degrades gracefully for missing files');
 
 // --- Router: HEAD is served by the GET route with no body ---------------------------------------

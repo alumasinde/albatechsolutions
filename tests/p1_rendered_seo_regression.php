@@ -77,9 +77,9 @@ foreach ($renderedPages as $path => $html) {
             continue;
         }
         $pathOnly = parse_url($href, PHP_URL_PATH) ?: '/';
-        $known = $pathOnly === '/' || in_array($pathOnly, ['/services','/work','/about','/guides','/get-help','/terms','/privacy','/sitemap.xml','/robots.txt','/llms.txt'], true)
+        $known = $pathOnly === '/' || in_array($pathOnly, ['/services','/work','/products','/solutions','/about','/guides','/get-help','/terms','/privacy','/sitemap.xml','/robots.txt','/llms.txt'], true)
             || str_starts_with($pathOnly, '/assets/')
-            || preg_match('~^/(?:services|work|guides)/[a-z0-9]+(?:-[a-z0-9]+)*$~', $pathOnly) === 1;
+            || preg_match('~^/(?:services|work|products|guides)/[a-z0-9]+(?:-[a-z0-9]+)*$~', $pathOnly) === 1;
         $assert($known, 'Internal link uses a known public route pattern: ' . $path . ' -> ' . $href);
     }
 

@@ -6,6 +6,9 @@ use AlbaTech\Controllers\AdminController;
 use AlbaTech\Controllers\CmsAdminController;
 use AlbaTech\Controllers\EnquiryController;
 use AlbaTech\Controllers\HomeController;
+use AlbaTech\Controllers\LandingController;
+use AlbaTech\Controllers\ProductController;
+use AlbaTech\Controllers\SolutionsController;
 use AlbaTech\Controllers\GuideController;
 use AlbaTech\Controllers\GuideAdminController;
 use AlbaTech\Controllers\ServiceController;
@@ -53,10 +56,17 @@ $app->router()->get('/blog/how-to-apply-for-a-kenyan-passport-in-2026', static f
 $app->router()->get('/blog/{slug}', static function (): void { Response::redirect('/guides', 301); });
 $app->router()->get('/faqs', static function (): void { Response::redirect('/get-help', 301); });
 
+$landing = new LandingController();
+$app->router()->get('/services/kra-ecitizen-help', [$landing, 'complianceHub']);
+$app->router()->get('/services/sme-launchpad', [$landing, 'smeLaunchpad']);
 $app->router()->get('/services/{slug}', [new ServiceController(), 'show']);
 $work = new WorkController();
 $app->router()->get('/work', [$work, 'index']);
 $app->router()->get('/work/{slug}', [$work, 'show']);
+$products = new ProductController();
+$app->router()->get('/products', [$products, 'index']);
+$app->router()->get('/products/{slug}', [$products, 'show']);
+$app->router()->get('/solutions', [new SolutionsController(), 'index']);
 $app->router()->get('/about', [new StaticPageController(), 'about']);
 $guides = new GuideController();
 $app->router()->get('/guides', [$guides, 'index']);

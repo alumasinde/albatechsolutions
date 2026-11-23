@@ -6,106 +6,101 @@ use AlbaTech\Core\View;
  */
 ?>
 <?php if (isset($breadcrumbs) && is_array($breadcrumbs) && !empty($breadcrumbs)): ?>
-<nav class="breadcrumb-nav" aria-label="Breadcrumb">
-  <div class="container">
-    <ol class="breadcrumb-list" itemscope itemtype="https://schema.org/BreadcrumbList">
-      <?php foreach ($breadcrumbs as $index => $crumb): ?>
-        <li class="breadcrumb-item<?= ($index === count($breadcrumbs) - 1) ? ' breadcrumb-item--current' : '' ?>" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-          <?php if (!empty($crumb['url']) && $index < count($breadcrumbs) - 1): ?>
-            <a href="<?= View::escape($crumb['url']) ?>" itemprop="item"><span itemprop="name"><?= View::escape($crumb['name']) ?></span></a>
-          <?php else: ?>
-            <span itemprop="name"><?= View::escape($crumb['name']) ?></span>
-          <?php endif; ?>
-          <meta itemprop="position" content="<?= $index + 1 ?>">
-        </li>
-      <?php endforeach; ?>
+<nav class="breadcrumbs shell" aria-label="Breadcrumb">
+    <ol>
+        <?php foreach ($breadcrumbs as $index => $crumb): $isLast = $index === count($breadcrumbs) - 1; ?>
+            <li>
+                <?php if (!$isLast && !empty($crumb['url'])): ?><a href="<?= View::escape($crumb['url']) ?>"><?= View::escape($crumb['name']) ?></a><?php else: ?><span aria-current="page"><?= View::escape($crumb['name']) ?></span><?php endif; ?>
+            </li>
+        <?php endforeach; ?>
     </ol>
-  </div>
 </nav>
 <?php endif; ?>
-<section class="services-hero">
-    <div class="container services-hero__inner">
-        <div class="services-hero__copy">
-            <span class="eyebrow">What we can help with</span>
-            <h1>Website Design, Business Registration & Digital Services in Kenya</h1>
-            <p>From getting your business online to navigating selected digital processes, find practical support for the task in front of you.</p>
-            <div class="hero-actions">
-                <a class="button" href="#service-catalogue">Explore services <i class="fa-solid fa-arrow-down" aria-hidden="true"></i></a>
-                <a class="button button--secondary" href="/get-help">Not sure where to start?</a>
+
+<section class="border-b border-border bg-surface">
+    <div class="shell grid items-center gap-10 py-12 md:py-16 lg:grid-cols-[1.1fr_0.9fr]">
+        <div>
+            <span class="kicker">Services</span>
+            <h1>Software, websites and business services for Kenya</h1>
+            <p class="mt-4 max-w-2xl text-lg leading-relaxed">Start with a business system, a website or practical digital assistance. The full catalogue, with scope and pricing information, is below.</p>
+            <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+                <a class="btn btn-primary" href="#service-catalogue">Explore services <i class="fa-solid fa-arrow-down text-sm" aria-hidden="true"></i></a>
+                <a class="btn btn-secondary" href="/solutions">Business systems</a>
             </div>
-            <div class="services-trust-line">
-                <span><i class="fa-solid fa-file-circle-check" aria-hidden="true"></i> Clear scope</span>
-                <span><i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i> Mobile-friendly solutions</span>
+            <div class="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-body">
+                <span class="inline-flex items-center gap-2"><i class="fa-solid fa-file-circle-check text-primary" aria-hidden="true"></i> Clear scope</span>
+                <span class="inline-flex items-center gap-2"><i class="fa-solid fa-mobile-screen-button text-primary" aria-hidden="true"></i> Mobile-friendly solutions</span>
             </div>
         </div>
         <?php if ($categories !== []): ?>
-        <div class="services-hero__visual">
-            <div class="service-visual-card">
-                <span class="service-visual-card__label">Browse by category</span>
-                <nav class="service-visual-nav" aria-label="Service categories">
-                    <?php foreach ($categories as $category): ?>
-                        <a class="service-visual-nav__item" href="#category-<?= View::escape($category['slug']) ?>">
-                            <span class="service-visual-nav__count"><?= count($category['services']) ?></span>
-                            <span class="service-visual-nav__name"><?= View::escape($category['name']) ?></span>
-                            <i class="fa-solid fa-arrow-right service-visual-nav__arrow" aria-hidden="true"></i>
-                        </a>
-                    <?php endforeach; ?>
-                </nav>
-            </div>
-        </div>
+        <aside class="card p-5 sm:p-6" aria-label="Browse by category">
+            <p class="mb-3 text-xs font-extrabold uppercase tracking-[0.12em] text-muted">Browse by category</p>
+            <nav class="grid gap-1" aria-label="Service categories">
+                <?php foreach ($categories as $category): ?>
+                    <a class="group flex items-center gap-3 rounded-lg px-3 py-3 hover:bg-surface-muted" href="#category-<?= View::escape($category['slug']) ?>">
+                        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-light text-xs font-bold text-secondary"><?= count($category['services']) ?></span>
+                        <span class="flex-1 text-sm font-semibold text-ink"><?= View::escape($category['name']) ?></span>
+                        <i class="fa-solid fa-arrow-right text-xs text-subtle transition-transform duration-150 group-hover:translate-x-1 group-hover:text-primary" aria-hidden="true"></i>
+                    </a>
+                <?php endforeach; ?>
+            </nav>
+        </aside>
         <?php endif; ?>
     </div>
 </section>
 
-<section class="section services-catalogue" id="service-catalogue">
-    <div class="container">
-        <div class="catalogue-heading">
-            <div>
-                <span class="section-kicker">Service catalogue</span>
+<section class="section scroll-mt-20" id="service-catalogue">
+    <div class="shell">
+        <div class="mb-8 flex flex-col gap-4 md:mb-10 md:flex-row md:items-end md:justify-between">
+            <div class="max-w-2xl">
+                <span class="kicker">Service catalogue</span>
                 <h2>Find the support you need</h2>
-                <p>Choose a category to explore services and see what each one includes.</p>
+                <p class="mt-3">Choose a category to explore services and see what each one includes.</p>
             </div>
-            <a class="catalogue-help-link" href="/get-help">Need guidance? Talk to us →</a>
+            <a class="link-arrow text-sm" href="/get-help">Need guidance? Talk to us <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
         </div>
 
         <?php if ($categories === []): ?>
-            <div class="empty-state">
-                <span class="empty-state__icon"><i class="fa-solid fa-layer-group" aria-hidden="true"></i></span>
+            <div class="card mx-auto max-w-xl p-8 text-center">
+                <span class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary-light text-primary"><i class="fa-solid fa-layer-group" aria-hidden="true"></i></span>
                 <h3>Our service catalogue is being updated.</h3>
-                <p>Contact us and tell us what you are looking to achieve.</p>
-                <a class="button" href="/get-help">Get in touch</a>
+                <p class="mt-2">Contact us and tell us what you are looking to achieve.</p>
+                <a class="btn btn-primary mt-5" href="/get-help">Get in touch</a>
             </div>
         <?php else: ?>
             <?php foreach ($categories as $categoryIndex => $category): ?>
-                <section class="service-category service-category--designed" aria-labelledby="category-<?= View::escape($category['slug']) ?>">
-                    <div class="service-category__heading">
-                        <div class="service-category__index"><?= str_pad((string) ($categoryIndex + 1), 2, '0', STR_PAD_LEFT) ?></div>
-                        <div class="service-category__intro">
-                            <h3 id="category-<?= View::escape($category['slug']) ?>"><?= View::escape($category['name']) ?></h3>
-                            <?php if (!empty($category['description'])): ?>
-                                <p><?= View::escape($category['description']) ?></p>
-                            <?php endif; ?>
+                <section class="mt-12 border-t border-border pt-10 first:mt-0 first:border-0 first:pt-0" aria-labelledby="category-<?= View::escape($category['slug']) ?>">
+                    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+                        <div class="flex flex-1 items-start gap-3">
+                            <span class="mt-1 text-sm font-extrabold tabular-nums text-primary"><?= str_pad((string) ($categoryIndex + 1), 2, '0', STR_PAD_LEFT) ?></span>
+                            <div>
+                                <h3 id="category-<?= View::escape($category['slug']) ?>"><?= View::escape($category['name']) ?></h3>
+                                <?php if (!empty($category['description'])): ?>
+                                    <p class="mt-1 max-w-2xl text-sm"><?= View::escape($category['description']) ?></p>
+                                <?php endif; ?>
+                            </div>
                         </div>
-                        <span class="service-category__count"><?= count($category['services']) ?> <?= count($category['services']) === 1 ? 'service' : 'services' ?></span>
+                        <span class="w-fit rounded-full bg-surface-muted px-3 py-1 text-xs font-semibold text-muted"><?= count($category['services']) ?> <?= count($category['services']) === 1 ? 'service' : 'services' ?></span>
                     </div>
 
-                    <div class="service-card-grid">
+                    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         <?php foreach ($category['services'] as $service): ?>
-                            <article class="service-tile">
-                                <div class="service-tile__top">
-                                    <span class="service-tile__symbol"><i class="fa-solid fa-briefcase" aria-hidden="true"></i></span>
-                                    <span class="service-tile__arrow"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></span>
+                            <article class="card card-lift flex flex-col p-5">
+                                <div class="mb-4 flex items-center justify-between">
+                                    <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-light text-primary"><i class="fa-solid fa-briefcase" aria-hidden="true"></i></span>
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-xs text-subtle" aria-hidden="true"></i>
                                 </div>
-                                <h4><?= View::escape($service['name']) ?></h4>
-                                <p><?= View::escape($service['short_description'] ?? '') ?></p>
-                                <div class="service-price">
+                                <h4 class="text-base font-bold tracking-normal text-ink"><?= View::escape($service['name']) ?></h4>
+                                <p class="mt-2 flex-1 text-sm"><?= View::escape($service['short_description'] ?? '') ?></p>
+                                <div class="mt-4 text-sm font-bold text-ink">
                                     <?php if (in_array((string) ($service['pricing_type'] ?? 'quote'), ['fixed', 'starting_at'], true) && ($service['pricing_amount'] ?? null) !== null && $service['pricing_amount'] !== ''): ?>
-                                        <span class="service-price__amount"><?= ($service['pricing_type'] ?? '') === 'starting_at' ? 'From ' : '' ?>KSh <?= View::escape(number_format((float) $service['pricing_amount'], ((float) $service['pricing_amount'] == (int) $service['pricing_amount']) ? 0 : 2)) ?></span>
+                                        <span><?= ($service['pricing_type'] ?? '') === 'starting_at' ? 'From ' : '' ?>KSh <?= View::escape(number_format((float) $service['pricing_amount'], ((float) $service['pricing_amount'] == (int) $service['pricing_amount']) ? 0 : 2)) ?></span>
                                     <?php else: ?>
-                                        <span class="service-price__quote"><?= View::escape(($service['pricing_label'] ?? '') ?: 'Contact for price') ?></span>
+                                        <span class="font-semibold text-muted"><?= View::escape(($service['pricing_label'] ?? '') ?: 'Contact for price') ?></span>
                                     <?php endif; ?>
                                 </div>
-                                <a href="/services/<?= rawurlencode($service['slug']) ?>" class="service-tile__link" aria-label="View service: <?= View::escape($service['name']) ?>">View service <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+                                <?php if (!empty($service['turnaround'])): ?><p class="mt-1 text-xs font-semibold text-muted"><i class="fa-regular fa-clock mr-1" aria-hidden="true"></i><?= View::escape($service['turnaround']) ?></p><?php endif; ?>
+                                <a href="/services/<?= rawurlencode($service['slug']) ?>" class="link-arrow mt-3 text-sm" aria-label="View service: <?= View::escape($service['name']) ?>">View service <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
                             </article>
                         <?php endforeach; ?>
                     </div>
@@ -115,20 +110,20 @@ use AlbaTech\Core\View;
     </div>
 </section>
 
-<section class="independent-note">
-    <div class="container independent-note__inner">
-        <span class="independent-note__icon"><i class="fa-solid fa-circle-info" aria-hidden="true"></i></span>
-        <p><strong>Important to know</strong> AlbaTech Solutions is an independent service provider, not a government agency. Government applications and registrations are subject to the relevant authority's requirements, processing times and decisions.</p>
+<section class="border-y border-warning-border bg-warning-bg py-5">
+    <div class="shell flex gap-3 text-sm leading-relaxed text-warning">
+        <i class="fa-solid fa-circle-info mt-1" aria-hidden="true"></i>
+        <p class="m-0 text-warning"><strong>Important to know</strong> AlbaTech Solutions is an independent service provider, not a government agency. Government applications and registrations are subject to the relevant authority's requirements, processing times and decisions.</p>
     </div>
 </section>
 
-<section class="services-bottom-cta">
-    <div class="container services-bottom-cta__inner">
-        <div>
-            <span class="eyebrow eyebrow--light">Have a different task in mind?</span>
-            <h2>Let's talk about what you need.</h2>
-            <p>Tell us what you're trying to achieve. We'll help you identify a sensible next step.</p>
+<section class="bg-primary py-12 text-white md:py-14">
+    <div class="shell flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+        <div class="max-w-2xl">
+            <span class="kicker kicker-light">Have a different task in mind?</span>
+            <h2 class="text-white">Let's talk about what you need.</h2>
+            <p class="mt-2 text-white/85">Tell us what you're trying to achieve. We'll help you identify a sensible next step.</p>
         </div>
-        <a class="button button--accent" href="/get-help">Contact us <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+        <a class="btn btn-accent w-full md:w-auto" href="/get-help">Contact us <i class="fa-solid fa-arrow-right text-sm" aria-hidden="true"></i></a>
     </div>
 </section>
