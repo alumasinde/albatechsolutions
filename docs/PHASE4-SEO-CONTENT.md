@@ -1,4 +1,4 @@
-# Phase 4 — SEO and Content
+# Phase 4 : SEO and Content
 
 ## Included
 

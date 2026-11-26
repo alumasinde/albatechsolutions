@@ -41,8 +41,8 @@ $val = static fn(string $key, mixed $fallback = '') => View::escape($s[$key] ?? 
     <aside class="editor-side">
         <section class="panel editor-section">
             <h3>Publish settings</h3><label class="field">Website visibility<select name="status">
-                    <option value="draft" <?= ($s['status'] ?? 'draft') === 'draft' ? 'selected' : '' ?>>Off — hidden from website</option>
-                    <option value="published" <?= ($s['status'] ?? '') === 'published' ? 'selected' : '' ?>>On — published</option>
+                    <option value="draft" <?= ($s['status'] ?? 'draft') === 'draft' ? 'selected' : '' ?>>Off (hidden from website)</option>
+                    <option value="published" <?= ($s['status'] ?? '') === 'published' ? 'selected' : '' ?>>On (published)</option>
                     <option value="archived" <?= ($s['status'] ?? '') === 'archived' ? 'selected' : '' ?>>Archived</option>
                 </select></label><label class="check-field"><input type="checkbox" name="is_featured" value="1" <?= (int)($s['is_featured'] ?? 0) === 1 ? 'checked' : '' ?>><span><strong>Feature on homepage</strong><small>Only appears while the service is published and its category is active.</small></span></label><label class="field">Display order <input type="number" name="sort_order" min="0" max="99999" value="<?= $val('sort_order', 0) ?>"><small>Smaller numbers appear first.</small></label>
         </section>
@@ -75,7 +75,7 @@ $val = static fn(string $key, mixed $fallback = '') => View::escape($s[$key] ?? 
             field.hidden = t === 'quote';
             preview.textContent = t === 'quote' ? 'Contact for price' : (t === 'starting_at' ? 'From ' : '') + 'KSh ' + (Number.isFinite(n) && amount.value !== '' ? new Intl.NumberFormat('en-KE', {
                 maximumFractionDigits: 2
-            }).format(n) : '—');
+            }).format(n) : 'N/A');
         }
         type.addEventListener('change', update);
         amount.addEventListener('input', update);

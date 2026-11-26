@@ -17,7 +17,7 @@ $article = is_array($guideArticle ?? null) ? $guideArticle : [];
 <?php endif; ?>
 
 <article class="guide-article">
-    <header class="border-b border-border bg-surface">
+    <header class="page-hero">
         <div class="shell py-12 md:py-16">
             <span class="kicker"><?= View::escape($article['category'] ?? 'Guide') ?></span>
             <h1 class="max-w-3xl"><?= View::escape($article['title'] ?? 'Guide') ?></h1>

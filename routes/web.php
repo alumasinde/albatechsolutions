@@ -77,6 +77,7 @@ $app->router()->get('/contact', static function (): void { Response::redirect('/
 $app->router()->get('/contact-details', [new StaticPageController(), 'contactDetails']);
 $app->router()->get('/terms', [new StaticPageController(), 'terms']);
 $app->router()->get('/privacy', [new StaticPageController(), 'privacy']);
+$app->router()->get('/data-deletion', [new StaticPageController(), 'dataDeletion']);
 $seo = new SeoController();
 $app->router()->get('/sitemap.xml', [$seo, 'sitemap']);
 $app->router()->get('/robots.txt', [$seo, 'robots']);

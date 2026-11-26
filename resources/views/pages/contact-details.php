@@ -13,7 +13,7 @@ $contactWhatsAppUrl = WhatsAppLink::build($contactSettings);
 $contactHours = trim((string) ($contactSettings['contact_hours'] ?? 'Monday–Friday, 8:00 am–5:00 pm'));
 $contactResponseTime = trim((string) ($contactSettings['contact_response_time'] ?? 'Within one business day'));
 $contactCity = trim((string) ($contactSettings['business_city'] ?? 'Nairobi, Kenya'));
-$contactServiceArea = trim((string) ($contactSettings['service_area'] ?? 'Nationwide — fully online'));
+$contactServiceArea = trim((string) ($contactSettings['service_area'] ?? 'Nationwide, fully online'));
 $helpEmail = trim((string) ($contactSettings['support_email'] ?? ''));
 ?>
 <?php if (isset($breadcrumbs) && is_array($breadcrumbs) && !empty($breadcrumbs)): ?>
@@ -28,7 +28,7 @@ $helpEmail = trim((string) ($contactSettings['support_email'] ?? ''));
 </nav>
 <?php endif; ?>
 
-<section class="border-b border-border bg-surface">
+<section class="page-hero">
     <div class="shell py-12 md:py-16">
         <span class="kicker">Contact &amp; location</span>
         <h1 class="max-w-3xl">How can we help you?</h1>

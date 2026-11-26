@@ -26,7 +26,7 @@ $founderLinkedin = trim((string) ($founderLinkedin ?? ''));
 </nav>
 <?php endif; ?>
 
-<section class="border-b border-border bg-surface">
+<section class="page-hero">
     <div class="shell py-12 md:py-16">
         <span class="kicker">About</span>
         <h1 class="max-w-3xl"><?= View::escape($cmsPage['title'] ?? '') ?></h1>

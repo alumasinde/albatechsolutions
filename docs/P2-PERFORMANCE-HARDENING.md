@@ -1,4 +1,4 @@
-# P2 — Performance and User Experience Hardening
+# P2 : Performance and User Experience Hardening
 
 This phase continues the P0/P1 SEO-hardened AlbaTech Solutions PHP application. It focuses on practical frontend performance without changing the application's database schema or public URL structure.
 

@@ -1,4 +1,4 @@
-# UI Colour Leak Audit — 2026-10-10
+# UI Colour Leak Audit (2026-10-10)
 
 ## What was fixed
 - Moved remaining public stylesheet literal colours into `:root` design tokens.

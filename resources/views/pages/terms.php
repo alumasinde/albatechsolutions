@@ -27,6 +27,10 @@ $toc = $legalBody !== '' ? $legalSections : [
     ['id' => 'pricing', 'title' => 'Pricing and payment'],
     ['id' => 'third-parties', 'title' => 'Third-party services'],
     ['id' => 'responsibilities', 'title' => 'Your responsibilities'],
+    ['id' => 'intellectual-property', 'title' => 'Intellectual property'],
+    ['id' => 'liability', 'title' => 'Limitation of liability'],
+    ['id' => 'termination', 'title' => 'Termination'],
+    ['id' => 'law', 'title' => 'Governing law and disputes'],
     ['id' => 'changes', 'title' => 'Changes and contact'],
 ];
 ?>
@@ -42,12 +46,12 @@ $toc = $legalBody !== '' ? $legalSections : [
 </nav>
 <?php endif; ?>
 
-<section class="border-b border-border bg-surface">
+<section class="page-hero">
     <div class="shell py-12 md:py-16">
         <span class="kicker">Legal information</span>
         <h1 class="max-w-3xl">Terms of service</h1>
         <p class="mt-4 max-w-2xl text-lg leading-relaxed">Clear expectations help us work together. These general terms explain how to use this website and engage AlbaTech Solutions.</p>
-        <p class="mt-3 text-sm text-subtle">Last updated: 9 October 2026</p>
+        <p class="mt-3 text-sm text-subtle">Last updated: 26 November 2026</p>
     </div>
 </section>
 
@@ -78,16 +82,16 @@ $toc = $legalBody !== '' ? $legalSections : [
                     <?php endif; ?>
                 <?php endforeach; ?>
             <?php else: ?>
-                <section id="website"><h2>1. Using this website</h2><p>By accessing this website, you agree to use it lawfully and not to interfere with its security, availability or normal operation. Website content is provided for general information and may be updated from time to time.</p></section>
+                <section id="website"><h2>1. Using this website</h2><p>By accessing this website, you agree to use it lawfully and not to interfere with its security, availability or normal operation. You must not use this website or our communication channels, including our WhatsApp business number, to send unlawful, misleading, harmful or unsolicited bulk content. Website content is provided for general information and may be updated from time to time.</p></section>
                 <section id="services"><h2>2. Services and scope</h2><p>AlbaTech Solutions offers digital services that may include website design, online presence, software and workflow assistance, and help with selected online processes. The exact deliverables, timeline, required information and exclusions should be agreed before paid work begins.</p><p>Submitting an enquiry does not automatically create a service contract or guarantee availability, acceptance or a particular outcome.</p></section>
                 <section id="pricing"><h2>3. Pricing and payment</h2><p>Any prices displayed on the website are subject to the scope stated for the relevant service. Where a service is marked as requiring a quote, we will discuss the requirements and confirm the applicable charges before work starts. Do not assume third-party, government, hosting, domain or subscription fees are included unless explicitly agreed.</p></section>
-                <section id="third-parties"><h2>4. Third-party and government services</h2><p>Some work may involve external platforms, providers or government portals. Those services are controlled by their respective operators, and their own terms, charges, availability and decisions apply. AlbaTech Solutions is an independent service provider and is not a government agency or an official government representative.</p><p>We cannot guarantee approval, processing time, uninterrupted availability or decisions made by a third party.</p></section>
+                <section id="third-parties"><h2>4. Third-party and government services</h2><p>Some work may involve external platforms, providers or government portals, including Meta's WhatsApp Business Platform. Those services are controlled by their respective operators, and their own terms, charges, availability and decisions apply. AlbaTech Solutions is an independent service provider and is not a government agency or an official government representative.</p><p>We cannot guarantee approval, processing time, uninterrupted availability or decisions made by a third party.</p></section>
                 <section id="responsibilities"><h2>5. Your responsibilities</h2><p>You are responsible for ensuring that information and documents you provide are accurate and that you are authorised to share them. Keep your passwords, PINs, one-time codes and payment credentials private. Do not ask us to create false documents, misrepresent information or bypass lawful processes.</p></section>
-                <section id="changes"><h2>6. Changes and contact</h2><p>We may update website content or these terms as our services change. The version published on this page is the current website version. If a separate written agreement applies to a specific project, that agreement should be reviewed alongside these general terms.</p><p>Questions? <a href="/get-help">Contact AlbaTech Solutions</a>.</p></section>
-            <?php endif; ?>
-
-            <?php if ($legalBody === ''): ?>
-                <div class="notice notice-warn mt-8"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i><p>These terms are a general website template, not legal advice. Have a qualified Kenyan legal professional review them before relying on them as a binding commercial agreement.</p></div>
+                <section id="intellectual-property"><h2>6. Intellectual property</h2><p>Content on this website, including text, design and branding, belongs to AlbaTech Solutions or its licensors and may not be reproduced without permission. Deliverables created for a client are governed by the agreement for that engagement; unless agreed otherwise in writing, ownership transfers on full payment while we retain the right to reuse general techniques, tools and know-how.</p></section>
+                <section id="liability"><h2>7. Limitation of liability</h2><p>This website and its content are provided in good faith without warranties of any kind. To the extent permitted by law, AlbaTech Solutions is not liable for indirect or consequential losses, loss of data, lost profits or losses arising from third-party platforms or government decisions. Where liability cannot be excluded, it is limited to the amount paid for the specific service giving rise to the claim.</p></section>
+                <section id="termination"><h2>8. Termination</h2><p>Either party may end an engagement as set out in its agreed terms. We may decline or stop work where a request is unlawful, fraudulent, abusive or outside the agreed scope. Amounts already due for work performed remain payable.</p></section>
+                <section id="law"><h2>9. Governing law and disputes</h2><p>These terms are governed by the laws of Kenya. We aim to resolve concerns informally first, so <a href="/get-help">contact us</a> and we will try to reach a practical resolution. Disputes that cannot be resolved informally are subject to the jurisdiction of the courts of Kenya.</p></section>
+                <section id="changes"><h2>10. Changes and contact</h2><p>We may update website content or these terms as our services change. The version published on this page is the current website version. If a separate written agreement applies to a specific project, that agreement should be reviewed alongside these general terms.</p><p>Questions? <a href="/get-help">Contact AlbaTech Solutions</a>.</p></section>
             <?php endif; ?>
         </article>
     </div>

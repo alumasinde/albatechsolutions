@@ -12,7 +12,7 @@ $contactLocation = trim((string) ($siteSettings['business_address'] ?? 'Nairobi,
 $contactHours = trim((string) ($siteSettings['contact_hours'] ?? 'Monday–Friday, 8:00 am–5:00 pm'));
 $contactResponseTime = trim((string) ($siteSettings['contact_response_time'] ?? 'Within one business day'));
 $contactCity = trim((string) ($siteSettings['business_city'] ?? 'Nairobi, Kenya'));
-$contactServiceArea = trim((string) ($siteSettings['service_area'] ?? 'Nationwide — fully online'));
+$contactServiceArea = trim((string) ($siteSettings['service_area'] ?? 'Nationwide, fully online'));
 $helpEmail = trim((string) ($siteSettings['support_email'] ?? ''));
 $mailFallback = trim((string) Env::get('MAIL_TO', ''));
 
@@ -46,7 +46,7 @@ $hasPhone = $contactPhoneHref !== '' && strlen(preg_replace('/\D+/', '', $contac
 $hasWhatsApp = strlen($whatsAppNumber) >= 8 && strlen($whatsAppNumber) <= 15 && !str_starts_with($whatsAppNumber, '0');
 ?>
 
-<section class="border-b border-border bg-surface">
+<section class="page-hero">
     <div class="shell py-12 md:py-16">
         <span class="kicker"><?= View::escape($cmsPage['title'] ?? 'Contact us') ?></span>
         <h1 class="max-w-3xl"><?= View::escape($cmsPage['title'] ?? 'Tell us what you need.') ?></h1>

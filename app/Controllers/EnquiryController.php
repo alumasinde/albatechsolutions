@@ -94,7 +94,7 @@ final class EnquiryController
             . "Source: " . (string) Env::get('APP_URL', '') . "/get-help\n";
 
         try {
-            SmtpMailer::send($recipient, 'Website enquiry — ' . $siteName, $body, $senderEmail, $safeName);
+            SmtpMailer::send($recipient, 'Website enquiry: ' . $siteName, $body, $senderEmail, $safeName);
             // Keep an audit trail without storing the enquiry body or personal data.
             try {
                 Database::connection()->prepare(

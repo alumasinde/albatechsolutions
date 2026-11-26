@@ -18,7 +18,7 @@ $steps = [
 </nav>
 <?php endif; ?>
 
-<section class="border-b border-border bg-surface">
+<section class="page-hero">
     <div class="shell grid items-center gap-10 py-12 md:py-16 lg:grid-cols-[1.1fr_0.9fr]">
         <div>
             <span class="kicker">SME Launchpad</span>

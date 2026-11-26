@@ -1,3 +1,21 @@
+// Sticky header shadow once the page has scrolled.
+(function () {
+    const header = document.querySelector('.site-header');
+    if (!header) return;
+    let ticking = false;
+    const update = function () {
+        header.classList.toggle('is-scrolled', window.scrollY > 8);
+        ticking = false;
+    };
+    update();
+    window.addEventListener('scroll', function () {
+        if (!ticking) {
+            ticking = true;
+            window.requestAnimationFrame(update);
+        }
+    }, { passive: true });
+})();
+
 // Mobile navigation toggle for the public site.
 (function () {
     const menuToggle = document.getElementById('mobile-menu-toggle');

@@ -13,7 +13,7 @@ VALUES
 <h3>2. Features and integrations</h3>
 <p>Contact forms, WhatsApp links and a simple enquiry flow are relatively straightforward compared with customer accounts, online payments, inventory, appointment scheduling or integration with another system. List the features you genuinely need for launch and separate future improvements from must-haves.</p>
 <h3>3. Design, mobile usability and accessibility</h3>
-<p>A business website should be easy to use on a phone, load reliably on ordinary mobile connections and make key actions obvious. Ask how the developer will test mobile layouts, forms, navigation, keyboard access and page speed—not just how the homepage looks on a laptop.</p>
+<p>A business website should be easy to use on a phone, load reliably on ordinary mobile connections and make key actions obvious. Ask how the developer will test mobile layouts, forms, navigation, keyboard access and page speed, not just how the homepage looks on a laptop.</p>
 <h2>Budget for the costs after launch</h2>
 <p>The initial build is only one part of owning a website. Depending on the arrangement, you may also pay for:</p>
 <ul>
@@ -36,7 +36,7 @@ VALUES
 <li>What happens if you later want to move to another provider?</li>
 </ul>
 <h2>A simple brief that helps you get an accurate quote</h2>
-<p>Write down what your business does, who you want to reach, the pages you need, examples of websites you like and the action visitors should take—call, WhatsApp, request a quote, book or buy. Include any deadline and a realistic starting budget if you have one. This helps a developer recommend an appropriate scope instead of guessing.</p>
+<p>Write down what your business does, who you want to reach, the pages you need, examples of websites you like and the action visitors should take: call, WhatsApp, request a quote, book or buy. Include any deadline and a realistic starting budget if you have one. This helps a developer recommend an appropriate scope instead of guessing.</p>
 <h2>Watch out for these warning signs</h2>
 <ul>
 <li>A promise of guaranteed Google rankings or a guaranteed number of customers.</li>

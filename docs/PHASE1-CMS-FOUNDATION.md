@@ -1,4 +1,4 @@
-# Phase 1 — CMS foundation
+# Phase 1: CMS foundation
 
 This phase adds an admin-managed content layer to AlbaTech Solutions while keeping routing, authorization, input validation and rendering logic in PHP.
 
@@ -54,7 +54,7 @@ The admin content editor now uses a focused Content Studio layout:
 
 Verification after this UI update:
 
-- `php -l resources/views/admin/cms.php` — passed.
-- `php tests/cms_foundation_static_regression.php` — 24 checks passed.
-- `php tests/guides_cms_regression.php` — 10 checks passed.
-- `php tests/seo_phase4_regression.php` — still requires a running, migrated, seeded MySQL database; without MySQL it fails the published-guide-count assertion.
+- `php -l resources/views/admin/cms.php`: passed.
+- `php tests/cms_foundation_static_regression.php`: 24 checks passed.
+- `php tests/guides_cms_regression.php`: 10 checks passed.
+- `php tests/seo_phase4_regression.php`: still requires a running, migrated, seeded MySQL database; without MySQL it fails the published-guide-count assertion.

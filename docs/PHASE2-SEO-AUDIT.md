@@ -1,4 +1,4 @@
-# AlbaTech Solutions — Phase 2 SEO audit
+# AlbaTech Solutions: Phase 2 SEO audit
 
 ## Changes included
 

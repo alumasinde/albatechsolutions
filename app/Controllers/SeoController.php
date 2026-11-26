@@ -35,6 +35,7 @@ final class SeoController
             'contact-details' => '/contact-details',
             'terms' => '/terms',
             'privacy' => '/privacy',
+            'data-deletion' => '/data-deletion',
         ];
         $dynamicSitemapIncomplete = false;
         try {
@@ -46,7 +47,7 @@ final class SeoController
                 if (!isset($cmsRoutes[$slug])) {
                     continue;
                 }
-                $entry = ['loc' => $baseUrl . $cmsRoutes[$slug], 'priority' => in_array($slug, ['about'], true) ? '0.6' : (in_array($slug, ['terms', 'privacy'], true) ? '0.2' : '0.5'), 'changefreq' => in_array($slug, ['terms', 'privacy'], true) ? 'yearly' : 'monthly'];
+                $entry = ['loc' => $baseUrl . $cmsRoutes[$slug], 'priority' => in_array($slug, ['about'], true) ? '0.6' : (in_array($slug, ['terms', 'privacy', 'data-deletion'], true) ? '0.2' : '0.5'), 'changefreq' => in_array($slug, ['terms', 'privacy', 'data-deletion'], true) ? 'yearly' : 'monthly'];
                 $updatedRaw = trim((string) ($page['updated_at'] ?? ''));
                 $updated = $updatedRaw !== '' ? strtotime($updatedRaw) : false;
                 if ($updated !== false) $entry['lastmod'] = date('Y-m-d', $updated);
@@ -163,6 +164,7 @@ final class SeoController
             'contact-details' => ['path' => '/contact-details', 'label' => 'Contact Details', 'summary' => 'Full contact information and location details.'],
             'privacy' => ['path' => '/privacy', 'label' => 'Privacy policy', 'summary' => 'How enquiry information is handled.'],
             'terms' => ['path' => '/terms', 'label' => 'Terms of service', 'summary' => 'Terms for using the website and services.'],
+            'data-deletion' => ['path' => '/data-deletion', 'label' => 'Data deletion', 'summary' => 'How to request deletion of personal information.'],
         ];
         try {
             $cmsPages = \AlbaTech\Core\Database::connection()->query("SELECT slug,title,intro FROM cms_pages WHERE status='published' ORDER BY title")->fetchAll();

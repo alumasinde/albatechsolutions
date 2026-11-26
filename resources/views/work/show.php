@@ -18,7 +18,7 @@ $statusClass = match ($project['lifecycle_status']) { 'live' => 'badge-live', 'b
 </nav>
 <?php endif; ?>
 
-<section class="border-b border-border bg-surface">
+<section class="page-hero">
     <div class="shell py-12 md:py-16">
         <span class="kicker"><?= View::escape($project['category_name']) ?> case study</span>
         <h1 class="max-w-3xl"><?= View::escape($project['title']) ?></h1>

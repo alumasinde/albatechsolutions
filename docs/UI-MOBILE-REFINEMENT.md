@@ -1,4 +1,4 @@
-# Homepage mobile refinement — 2026-10-10
+# Homepage mobile refinement (2026-10-10)
 
 ## Changed files
 - resources/views/pages/home.php

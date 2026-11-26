@@ -331,7 +331,7 @@ $navIsActive = static function (string $url) use ($currentPath): bool {
     return $path === '/' ? $currentPath === '/' : ($currentPath === $path || str_starts_with($currentPath, $path . '/'));
 };
 if (!$footerExploreNavigation) $footerExploreNavigation = [['label'=>'Our work','url'=>'/work','open_new_tab'=>0],['label'=>'Products','url'=>'/products','open_new_tab'=>0],['label'=>'Solutions','url'=>'/solutions','open_new_tab'=>0],['label'=>'Services','url'=>'/services','open_new_tab'=>0],['label'=>'Guides','url'=>'/guides','open_new_tab'=>0],['label'=>'About us','url'=>'/about','open_new_tab'=>0]];
-if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy','url'=>'/privacy','open_new_tab'=>0],['label'=>'Terms of service','url'=>'/terms','open_new_tab'=>0],['label'=>'Make an enquiry','url'=>'/get-help','open_new_tab'=>0]];
+if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy','url'=>'/privacy','open_new_tab'=>0],['label'=>'Terms of service','url'=>'/terms','open_new_tab'=>0],['label'=>'Data deletion','url'=>'/data-deletion','open_new_tab'=>0],['label'=>'Make an enquiry','url'=>'/get-help','open_new_tab'=>0]];
 
 ?>
 <!doctype html>
@@ -388,13 +388,13 @@ if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy',
         <meta property="og:image:width" content="1200">
         <meta property="og:image:height" content="630">
     <?php endif; ?>
-    <meta property="og:image:alt" content="<?= View::escape($siteName . ' — software and websites for Kenyan businesses') ?>">
+    <meta property="og:image:alt" content="<?= View::escape($siteName . ': software and websites for Kenyan businesses') ?>">
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="<?= View::escape($pageTitle) ?>">
     <meta name="twitter:description" content="<?= View::escape($metaDescription) ?>">
     <meta name="twitter:image" content="<?= View::escape($finalImage) ?>">
-    <meta name="twitter:image:alt" content="<?= View::escape($siteName . ' — software and websites for Kenyan businesses') ?>">
+    <meta name="twitter:image:alt" content="<?= View::escape($siteName . ': software and websites for Kenyan businesses') ?>">
 
     <!-- The hero image is CMS-configurable. Its eager, high-priority image element in the page is the source of truth;
          avoid preloading a hardcoded fallback URL when an administrator may choose another image. -->
@@ -406,6 +406,9 @@ if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy',
     <link rel="icon" type="image/png" sizes="512x512" href="/assets/images/favicon-512x512.png">
     <link rel="apple-touch-icon" sizes="192x192" href="/assets/images/favicon-192x192.png">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
     <link rel="stylesheet" href="<?= View::escape(View::asset('css/bundle.css')) ?>">
     <!-- SVG sprite is the primary icon system. Font Awesome (self-hosted subset) remains for legacy solid/regular icons and brand marks until all legacy icons are migrated. -->
     <link rel="stylesheet" href="<?= View::escape(View::asset('vendor/fontawesome/css/all.min.css')) ?>">
@@ -459,20 +462,22 @@ if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy',
             <img src="<?= View::escape(View::asset('images/albatech-logo.png')) ?>" alt="<?= View::escape($siteName) ?>" class="brand-logo" width="180" height="180">
         </a>
 
-        <button
-            class="mobile-menu-btn"
-            type="button"
-            aria-label="Toggle navigation menu"
-            aria-expanded="false"
-            aria-controls="site-nav"
-            id="mobile-menu-toggle"
-        >
-            <svg class="icon icon-bars" aria-hidden="true"><use href="/assets/images/icons.svg#icon-bars"></use></svg>
-        </button>
-
-        <nav class="site-nav" id="site-nav" aria-label="Main navigation">
-            <?php foreach ($headerNavigation as $nav): ?><a href="<?= View::escape($nav['url']) ?>"<?= $navIsActive((string) $nav['url']) ? ' aria-current="page"' : '' ?><?= !empty($nav['open_new_tab']) ? ' target="_blank" rel="noopener noreferrer"' : '' ?>><?= View::escape($nav['label']) ?></a><?php endforeach; ?>
-        </nav>
+        <div class="flex items-center gap-1">
+            <nav class="site-nav" id="site-nav" aria-label="Main navigation">
+                <?php foreach ($headerNavigation as $nav): ?><a href="<?= View::escape($nav['url']) ?>"<?= $navIsActive((string) $nav['url']) ? ' aria-current="page"' : '' ?><?= !empty($nav['open_new_tab']) ? ' target="_blank" rel="noopener noreferrer"' : '' ?>><?= View::escape($nav['label']) ?></a><?php endforeach; ?>
+            </nav>
+            <a class="btn btn-primary btn-sm header-cta" href="/get-help">Get help</a>
+            <button
+                class="mobile-menu-btn"
+                type="button"
+                aria-label="Toggle navigation menu"
+                aria-expanded="false"
+                aria-controls="site-nav"
+                id="mobile-menu-toggle"
+            >
+                <svg class="icon icon-bars" aria-hidden="true"><use href="/assets/images/icons.svg#icon-bars"></use></svg>
+            </button>
+        </div>
     </div>
 </header>
 
@@ -480,33 +485,33 @@ if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy',
     <?= $content ?? '' ?>
 </main>
 
-<footer class="mt-auto border-t border-border bg-surface py-12">
+<footer class="site-footer mt-auto py-12">
     <div class="shell grid gap-10 pb-10 md:grid-cols-2 lg:grid-cols-[1.7fr_1fr_1fr_1fr]">
         <div class="md:col-span-2 lg:col-span-1">
             <a class="brand" href="/" aria-label="<?= View::escape($siteName) ?> home">AlbaTech <span class="text-primary">Solutions</span></a>
-            <p class="mt-4 mb-4 max-w-sm text-sm leading-relaxed text-footer-text"><?= View::escape($siteSettings['footer_description'] ?? 'A software studio in Nairobi building products and systems for Kenyan businesses, alongside websites and practical digital assistance.') ?></p>
-            <?php $footerCta = $layoutCtas['primary_enquiry'] ?? ['label'=>'Tell us what you need','url'=>'/get-help']; ?><a class="footer-contact-cta inline-flex items-center gap-2 font-bold text-primary hover:text-primary-hover" href="<?= View::escape($footerCta['url']) ?>"><?= View::escape($footerCta['label']) ?> <i class="fa-solid fa-arrow-right text-sm transition-transform duration-150" aria-hidden="true"></i></a>
+            <p class="mt-4 mb-4 max-w-sm text-sm leading-relaxed"><?= View::escape($siteSettings['footer_description'] ?? 'A software studio in Nairobi building products and systems for Kenyan businesses, alongside websites and practical digital assistance.') ?></p>
+            <?php $footerCta = $layoutCtas['primary_enquiry'] ?? ['label'=>'Tell us what you need','url'=>'/get-help']; ?><a class="footer-contact-cta inline-flex items-center gap-2 font-bold" href="<?= View::escape($footerCta['url']) ?>"><?= View::escape($footerCta['label']) ?> <i class="fa-solid fa-arrow-right text-sm transition-transform duration-150" aria-hidden="true"></i></a>
         </div>
         <nav class="flex flex-col items-start gap-3" aria-label="Explore">
-            <h2 class="text-sm font-extrabold tracking-normal text-ink">Explore</h2>
-            <?php foreach ($footerExploreNavigation as $nav): ?><a class="text-sm leading-normal text-footer-text hover:text-primary" href="<?= View::escape($nav['url']) ?>"<?= !empty($nav['open_new_tab']) ? ' target="_blank" rel="noopener noreferrer"' : '' ?>><?= View::escape($nav['label']) ?></a><?php endforeach; ?>
+            <h2 class="text-sm font-extrabold tracking-normal">Explore</h2>
+            <?php foreach ($footerExploreNavigation as $nav): ?><a class="text-sm leading-normal" href="<?= View::escape($nav['url']) ?>"<?= !empty($nav['open_new_tab']) ? ' target="_blank" rel="noopener noreferrer"' : '' ?>><?= View::escape($nav['label']) ?></a><?php endforeach; ?>
         </nav>
         <div class="flex flex-col items-start gap-3">
-            <h2 class="text-sm font-extrabold tracking-normal text-ink">Contact &amp; location</h2>
-            <p class="m-0 inline-flex items-start gap-2 text-sm leading-normal text-footer-text"><i class="fa-solid fa-location-dot mt-1 w-4 text-center text-primary" aria-hidden="true"></i><span><?= View::escape($footerLocation) ?></span></p>
-            <?php if ($footerEmail !== '' && filter_var($footerEmail, FILTER_VALIDATE_EMAIL)): ?><a class="inline-flex items-start gap-2 text-sm leading-normal text-footer-text hover:text-primary" href="mailto:<?= View::escape($footerEmail) ?>"><i class="fa-regular fa-envelope mt-1 w-4 text-center text-primary" aria-hidden="true"></i><?= View::escape($footerEmail) ?></a><?php endif; ?>
-            <?php if ($footerPhone !== '' && $footerPhoneHref !== ''): ?><a class="inline-flex items-start gap-2 text-sm leading-normal text-footer-text hover:text-primary" href="tel:<?= View::escape($footerPhoneHref) ?>"><i class="fa-solid fa-phone mt-1 w-4 text-center text-primary" aria-hidden="true"></i><?= View::escape($footerPhone) ?></a><?php endif; ?>
-            <a class="text-sm leading-normal text-footer-text hover:text-primary" href="/get-help">All contact details</a>
+            <h2 class="text-sm font-extrabold tracking-normal">Contact &amp; location</h2>
+            <p class="m-0 inline-flex items-start gap-2 text-sm leading-normal"><i class="fa-solid fa-location-dot mt-1 w-4 text-center text-accent" aria-hidden="true"></i><span><?= View::escape($footerLocation) ?></span></p>
+            <?php if ($footerEmail !== '' && filter_var($footerEmail, FILTER_VALIDATE_EMAIL)): ?><a class="inline-flex items-start gap-2 text-sm leading-normal" href="mailto:<?= View::escape($footerEmail) ?>"><i class="fa-regular fa-envelope mt-1 w-4 text-center text-accent" aria-hidden="true"></i><?= View::escape($footerEmail) ?></a><?php endif; ?>
+            <?php if ($footerPhone !== '' && $footerPhoneHref !== ''): ?><a class="inline-flex items-start gap-2 text-sm leading-normal" href="tel:<?= View::escape($footerPhoneHref) ?>"><i class="fa-solid fa-phone mt-1 w-4 text-center text-accent" aria-hidden="true"></i><?= View::escape($footerPhone) ?></a><?php endif; ?>
+            <a class="text-sm leading-normal" href="/get-help">All contact details</a>
         </div>
         <nav class="flex flex-col items-start gap-3" aria-label="Information">
-            <h2 class="text-sm font-extrabold tracking-normal text-ink">Information</h2>
-            <?php foreach ($footerInfoNavigation as $nav): ?><a class="text-sm leading-normal text-footer-text hover:text-primary" href="<?= View::escape($nav['url']) ?>"<?= !empty($nav['open_new_tab']) ? ' target="_blank" rel="noopener noreferrer"' : '' ?>><?= View::escape($nav['label']) ?></a><?php endforeach; ?>
+            <h2 class="text-sm font-extrabold tracking-normal">Information</h2>
+            <?php foreach ($footerInfoNavigation as $nav): ?><a class="text-sm leading-normal" href="<?= View::escape($nav['url']) ?>"<?= !empty($nav['open_new_tab']) ? ' target="_blank" rel="noopener noreferrer"' : '' ?>><?= View::escape($nav['label']) ?></a><?php endforeach; ?>
         </nav>
     </div>
-    <div class="shell flex flex-col gap-3 border-t border-border pt-5 text-xs text-muted">
+    <div class="shell flex flex-col gap-3 border-t border-footer-border pt-5 text-xs">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p class="m-0">&copy; <?= date('Y') ?> <?= View::escape($siteName) ?>. All rights reserved.</p>
-            <div class="flex flex-wrap gap-4"><a class="text-footer-text hover:text-primary" href="/privacy">Privacy</a><a class="text-footer-text hover:text-primary" href="/terms">Terms</a><a class="text-footer-text hover:text-primary" href="/get-help">Contact details</a><?php if ($ga4Active && $consentRequired): ?><a class="text-footer-text hover:text-primary" href="#cookie-settings" data-consent-settings>Cookie settings</a><?php endif; ?></div>
+            <div class="flex flex-wrap gap-4"><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/data-deletion">Data deletion</a><a href="/get-help">Contact details</a><?php if ($ga4Active && $consentRequired): ?><a href="#cookie-settings" data-consent-settings>Cookie settings</a><?php endif; ?></div>
         </div>
         <p class="m-0 leading-normal">AlbaTech Solutions is an independent service provider, not a government agency. Official decisions remain with the relevant authority.</p>
     </div>
@@ -520,7 +525,7 @@ if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy',
 
 <?php if ($ga4Active && $consentRequired): ?>
 <div id="consent-banner" class="fixed inset-x-0 bottom-0 z-[60] p-4 sm:p-6" hidden>
-  <div class="mx-auto flex max-w-3xl flex-col gap-4 rounded-xl border border-border bg-surface p-4 shadow-card sm:flex-row sm:items-center sm:justify-between sm:p-5">
+  <div class="mx-auto flex max-w-3xl flex-col gap-4 rounded-2xl border border-border bg-surface p-4 shadow-pop sm:flex-row sm:items-center sm:justify-between sm:p-5">
     <span class="block text-sm leading-relaxed text-muted">We use Google Analytics to see which pages help people. It only loads if you accept. <a href="/privacy" class="underline">Privacy policy</a></span>
     <div class="flex shrink-0 gap-2">
       <button type="button" data-consent="denied" class="inline-flex min-h-11 items-center justify-center rounded-md border border-border-strong bg-surface px-4 text-sm font-semibold text-ink hover:bg-surface-muted">Decline</button>

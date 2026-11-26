@@ -44,6 +44,7 @@ final class StaticPageController
     public function contactDetails(): void { $this->render('contact-details', 'pages/contact-details', 'Contact & Location | AlbaTech Solutions Kenya', 'WhatsApp, phone and email details for AlbaTech Solutions in Nairobi, with nationwide remote support across Kenya.', 'contact-details', [], ['name' => 'Contact Details', 'url' => '/contact-details']); }
     public function terms(): void { $this->render('terms', 'pages/terms', 'Terms of Service', 'Read the terms that apply when using AlbaTech Solutions services and website.', 'terms', [], ['name' => 'Terms', 'url' => '/terms']); }
     public function privacy(): void { $this->render('privacy', 'pages/privacy', 'Privacy Policy', 'Learn how AlbaTech Solutions handles enquiries and personal information.', 'privacy', [], ['name' => 'Privacy', 'url' => '/privacy']); }
+    public function dataDeletion(): void { $this->render('data-deletion', 'pages/data-deletion', 'Data Deletion Instructions', 'How to request deletion of personal information held by AlbaTech Solutions, including enquiry and WhatsApp conversation data.', 'data-deletion', [], ['name' => 'Data deletion', 'url' => '/data-deletion']); }
 
     private function render(string $slug, string $fallbackView, string $title, string $description, string $canonicalSlug, array $extra = [], array $breadcrumbItem = []): void
     {

@@ -13,7 +13,7 @@ use AlbaTech\Core\View; ?>
 </nav>
 <?php endif; ?>
 
-<section class="border-b border-border bg-surface">
+<section class="page-hero">
     <div class="shell py-12 md:py-16">
         <span class="kicker">Guides &amp; resources</span>
         <h1 class="max-w-3xl">Practical Guides for Kenyan Businesses and Individuals</h1>

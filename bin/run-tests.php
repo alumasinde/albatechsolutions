@@ -17,7 +17,7 @@ foreach (glob($root . '/tests/*.php') ?: [] as $test) {
     $summary = trim((string) (end($output) ?: ''));
     if ($exitCode === 0) {
         $passed++;
-        echo "PASS  " . basename($test) . ($summary !== '' ? "  — {$summary}" : '') . "\n";
+        echo "PASS  " . basename($test) . ($summary !== '' ? ": {$summary}" : '') . "\n";
     } else {
         $failures[] = basename($test);
         echo "FAIL  " . basename($test) . "\n";

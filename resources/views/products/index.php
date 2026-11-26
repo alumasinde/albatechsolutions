@@ -11,7 +11,7 @@
 </nav>
 <?php endif; ?>
 
-<section class="border-b border-border bg-surface">
+<section class="page-hero">
     <div class="shell py-12 md:py-16">
         <span class="kicker">Products</span>
         <h1 class="max-w-3xl">Software we build and run ourselves.</h1>

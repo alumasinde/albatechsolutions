@@ -12,7 +12,7 @@
 </nav>
 <?php endif; ?>
 
-<section class="border-b border-border bg-surface">
+<section class="page-hero">
     <div class="shell grid items-center gap-10 py-12 md:py-16 lg:grid-cols-[1.15fr_0.85fr]">
         <div>
             <span class="kicker"><?= View::escape($service['category_name']) ?></span>

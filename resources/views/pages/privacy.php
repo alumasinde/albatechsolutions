@@ -22,12 +22,15 @@ foreach (preg_split("/\R{2,}/", $legalBody) ?: [] as $paragraph) {
 }
 
 $toc = $legalBody !== '' ? $legalSections : [
-    ['id' => 'information', 'title' => 'Information you share'],
+    ['id' => 'who', 'title' => 'Who we are'],
+    ['id' => 'information', 'title' => 'Information we collect'],
     ['id' => 'use', 'title' => 'How information is used'],
+    ['id' => 'whatsapp', 'title' => 'WhatsApp and Meta'],
     ['id' => 'sharing', 'title' => 'Sharing and providers'],
     ['id' => 'security', 'title' => 'Security and retention'],
-    ['id' => 'choices', 'title' => 'Your choices'],
-    ['id' => 'contact', 'title' => 'Contact'],
+    ['id' => 'rights', 'title' => 'Your rights'],
+    ['id' => 'deletion', 'title' => 'Data deletion'],
+    ['id' => 'contact', 'title' => 'Updates and contact'],
 ];
 ?>
 <?php if (isset($breadcrumbs) && is_array($breadcrumbs) && !empty($breadcrumbs)): ?>
@@ -42,12 +45,12 @@ $toc = $legalBody !== '' ? $legalSections : [
 </nav>
 <?php endif; ?>
 
-<section class="border-b border-border bg-surface">
+<section class="page-hero">
     <div class="shell py-12 md:py-16">
         <span class="kicker">Your information</span>
         <h1 class="max-w-3xl">Privacy policy</h1>
-        <p class="mt-4 max-w-2xl text-lg leading-relaxed">We aim to handle enquiry information carefully and use it only for legitimate service and communication purposes.</p>
-        <p class="mt-3 text-sm text-subtle">Last updated: 9 October 2026</p>
+        <p class="mt-4 max-w-2xl text-lg leading-relaxed">We handle personal information shared through this website, our enquiry form and our WhatsApp business number carefully, and use it only for legitimate service and communication purposes.</p>
+        <p class="mt-3 text-sm text-subtle">Last updated: 26 November 2026</p>
     </div>
 </section>
 
@@ -78,16 +81,15 @@ $toc = $legalBody !== '' ? $legalSections : [
                     <?php endif; ?>
                 <?php endforeach; ?>
             <?php else: ?>
-                <section id="information"><h2>1. Information you share</h2><p>When you contact us, you may choose to share details such as your name, phone number, email address, project requirements or information needed to respond to your enquiry. Please share only what is reasonably necessary for the task.</p></section>
-                <section id="use"><h2>2. How information is used</h2><p>Information may be used to respond to you, understand a requested service, prepare a quote, deliver agreed work, provide support and maintain appropriate business records. We do not ask you to send passwords, PINs, one-time verification codes or M-Pesa credentials through an enquiry.</p></section>
-                <section id="sharing"><h2>3. Sharing and service providers</h2><p>We do not intend to sell your personal information. Information may be processed by communication, hosting or other service providers where needed to operate the website or provide a requested service, or disclosed where required by law. External services have their own privacy practices and terms.</p></section>
-                <section id="security"><h2>4. Security and retention</h2><p>Reasonable safeguards should be used to protect information from unauthorised access, loss or misuse. No internet transmission or storage method can be guaranteed completely secure. Information should be retained only for as long as reasonably needed for the purpose collected, business records or applicable legal obligations.</p></section>
-                <section id="choices"><h2>5. Your choices</h2><p>You can choose what information to include in an enquiry. You may contact us to ask about information you have shared, request a correction or raise a privacy concern. Applicable rights and obligations depend on the circumstances and Kenyan law.</p></section>
-                <section id="contact"><h2>6. Updates and contact</h2><p>This policy may be updated as our website and services change. The current version will be published here. For a privacy question, <a href="/get-help">contact us</a>.</p></section>
-            <?php endif; ?>
-
-            <?php if ($legalBody === ''): ?>
-                <div class="notice notice-warn mt-8"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i><p>This is a starter privacy notice, not legal advice or a completed compliance assessment. Review the actual data collected by your website, analytics, hosting and communication providers, and have the policy checked for compliance with Kenya's Data Protection Act and applicable regulations before launch.</p></div>
+                <section id="who"><h2>1. Who we are</h2><p>AlbaTech Solutions is an independent technology service provider based in Nairobi, Kenya. For the purposes of Kenya's Data Protection Act, 2019, AlbaTech Solutions is the data controller for personal information collected through this website, the enquiry form and our direct communication channels.</p></section>
+                <section id="information"><h2>2. Information we collect</h2><p>When you contact us, you may choose to share details such as your name, phone number, email address, project requirements or information needed to respond to your enquiry. When you message us on WhatsApp, we receive your WhatsApp name, phone number and the content of your messages. With your consent, this website may also collect analytics information about how pages are used. Please share only what is reasonably necessary for the task.</p></section>
+                <section id="use"><h2>3. How information is used</h2><p>Information is used to respond to you, understand a requested service, prepare a quote, deliver agreed work, provide support and maintain appropriate business records. We do not ask you to send passwords, PINs, one-time verification codes or M-Pesa credentials through an enquiry or on WhatsApp.</p></section>
+                <section id="whatsapp"><h2>4. WhatsApp and Meta</h2><p>If you contact us through our WhatsApp business number, your messages are processed by Meta Platforms, Inc. through the WhatsApp Business Platform in addition to being received by us. Meta processes this information under its own terms and privacy policy. We use WhatsApp conversation information only to respond to your enquiry and provide the requested service, and we do not use it for unrelated marketing.</p></section>
+                <section id="sharing"><h2>5. Sharing and service providers</h2><p>We do not sell your personal information. Information may be processed by communication providers (including Meta for WhatsApp messaging), email and hosting providers where needed to operate the website or provide a requested service, or disclosed where required by law. External services have their own privacy practices and terms.</p></section>
+                <section id="security"><h2>6. Security and retention</h2><p>Reasonable safeguards are used to protect information from unauthorised access, loss or misuse. No internet transmission or storage method can be guaranteed completely secure. Information is retained only for as long as reasonably needed for the purpose collected, business records or applicable legal obligations.</p></section>
+                <section id="rights"><h2>7. Your rights</h2><p>Under the Data Protection Act, 2019 you may have the right to access your personal information, request correction of inaccurate information, request deletion, object to or restrict certain processing, and withdraw consent where processing is based on consent. You may also lodge a complaint with the Office of the Data Protection Commissioner (ODPC) if you believe your information has been mishandled. To exercise any of these rights, <a href="/get-help">contact us</a>.</p></section>
+                <section id="deletion"><h2>8. Data deletion</h2><p>You can ask us to delete personal information we hold about you at any time. See our <a href="/data-deletion">data deletion instructions</a> for how to submit a request, how requests are verified and what information may need to be retained by law.</p></section>
+                <section id="contact"><h2>9. Updates and contact</h2><p>This policy may be updated as our website and services change. The current version will be published here. For a privacy question or request, <a href="/get-help">contact us</a> or use the details on our <a href="/contact-details">contact details page</a>.</p></section>
             <?php endif; ?>
         </article>
     </div>

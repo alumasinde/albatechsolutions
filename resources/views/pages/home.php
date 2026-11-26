@@ -20,7 +20,7 @@ $statusClass = static fn (string $status): string => match ($status) { 'live' =>
 </nav>
 <?php endif; ?>
 
-<section class="border-b border-border bg-surface">
+<section class="hero">
     <div class="shell grid items-center gap-10 py-12 md:py-16 lg:grid-cols-[1.05fr_0.95fr] lg:py-20">
         <div>
             <span class="kicker"><?= View::escape($homeContent['home_hero_eyebrow'] ?? 'Software studio in Nairobi') ?></span>
@@ -253,7 +253,7 @@ $buildItems = [
     </div>
 </section>
 
-<section class="bg-primary py-12 text-white md:py-14">
+<section class="bg-deep py-12 text-white md:py-14">
     <div class="shell flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
         <div class="max-w-2xl">
             <span class="kicker kicker-light"><?= View::escape($homeContent['home_cta_kicker'] ?? 'Let us talk') ?></span>
