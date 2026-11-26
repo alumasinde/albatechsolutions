@@ -524,7 +524,7 @@ if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy',
 <?php endif; ?>
 
 <?php if ($ga4Active && $consentRequired): ?>
-<div id="consent-banner" class="fixed inset-x-0 bottom-0 z-[60] p-4 sm:p-6" hidden>
+<div id="consent-banner" class="fixed inset-x-0 bottom-0 z-60 p-4 sm:p-6" hidden>
   <div class="mx-auto flex max-w-3xl flex-col gap-4 rounded-2xl border border-border bg-surface p-4 shadow-pop sm:flex-row sm:items-center sm:justify-between sm:p-5">
     <span class="block text-sm leading-relaxed text-muted">We'd like to use Google Analytics to see which pages visitors find useful. Nothing loads unless you accept. <a href="/privacy" class="underline">Privacy policy</a></span>
     <div class="flex shrink-0 gap-2">

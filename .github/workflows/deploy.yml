@@ -5,6 +5,7 @@ on:
     inputs:
       branch:
         description: 'Branch to deploy'
+        type: string
         required: true
         default: 'v2'
       run_migrations:
@@ -16,52 +17,101 @@ on:
 # Deploys by SSHing into the production server: git pull, composer install,
 # migrations, optional post-deploy command (e.g. php-fpm/apache reload for
 # OPcache). Required repository secrets:
-#   PROD_SSH_HOST  server hostname or IP
-#   PROD_SSH_USER  SSH user
-#   PROD_SSH_KEY   private key whose public key is in the user's authorized_keys
-#   PROD_PATH      absolute project path on the server (the git checkout)
+#   PROD_SSH_HOST         server hostname or IP
+#   PROD_SSH_USER         SSH user
+#   PROD_SSH_KEY          private key whose public key is in the user's authorized_keys
+#   PROD_PATH             absolute project path on the server (the git checkout)
 # Optional secrets:
-#   PROD_SSH_PORT  SSH port (default 22)
-#   PROD_POST_CMD  shell command run after deploy (e.g. sudo -n systemctl reload php-fpm)
+#   PROD_SSH_PORT         SSH port (default 22)
+#   PROD_SSH_KNOWN_HOSTS  output of `ssh-keyscan -p PORT HOST` checked by you once;
+#                         without it the host key is trusted on first use each run
+#   PROD_POST_CMD         shell command run after deploy (e.g. sudo -n systemctl reload php-fpm)
+
+permissions:
+  contents: read
+
+# Never run two deploys against the server at the same time.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
 
 jobs:
   deploy:
     name: Deploy to production
     runs-on: ubuntu-latest
     environment: production
+    timeout-minutes: 15
+    env:
+      BRANCH: ${{ inputs.branch }}
+      MIGRATE: ${{ inputs.run_migrations }}
+      SSH_HOST: ${{ secrets.PROD_SSH_HOST }}
+      SSH_USER: ${{ secrets.PROD_SSH_USER }}
+      SSH_PORT: ${{ secrets.PROD_SSH_PORT || '22' }}
+      PROD_PATH: ${{ secrets.PROD_PATH }}
     steps:
+      - name: Check inputs and secrets
+        env:
+          HAS_KEY: ${{ secrets.PROD_SSH_KEY != '' }}
+        run: |
+          if [[ ! "$BRANCH" =~ ^[A-Za-z0-9._/-]+$ ]]; then
+            echo "::error::Invalid branch name: $BRANCH"
+            exit 1
+          fi
+          missing=0
+          for name in SSH_HOST SSH_USER PROD_PATH; do
+            if [ -z "${!name}" ]; then echo "::error::Missing secret for $name"; missing=1; fi
+          done
+          if [ "$HAS_KEY" != "true" ]; then echo "::error::Missing secret PROD_SSH_KEY"; missing=1; fi
+          if [[ ! "$SSH_PORT" =~ ^[0-9]+$ ]]; then echo "::error::PROD_SSH_PORT must be a number"; missing=1; fi
+          exit "$missing"
+
       - name: Setup SSH key
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.PROD_SSH_KEY }}
 
+      - name: Trust the server host key
+        env:
+          KNOWN_HOSTS: ${{ secrets.PROD_SSH_KNOWN_HOSTS }}
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          if [ -n "$KNOWN_HOSTS" ]; then
+            printf '%s\n' "$KNOWN_HOSTS" >> ~/.ssh/known_hosts
+          else
+            echo "::warning::PROD_SSH_KNOWN_HOSTS is not set; trusting whatever host key the server presents."
+            ssh-keyscan -p "$SSH_PORT" "$SSH_HOST" >> ~/.ssh/known_hosts
+          fi
+          chmod 600 ~/.ssh/known_hosts
+
       - name: git pull and migrate on production
         env:
-          PROD_PORT: ${{ secrets.PROD_SSH_PORT }}
+          POST_CMD: ${{ secrets.PROD_POST_CMD }}
         run: |
-          ssh -o StrictHostKeyChecking=accept-new -p "${PROD_PORT:-22}" "${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SSH_HOST }}" \
-            BRANCH='${{ inputs.branch }}' \
-            PROD_PATH='${{ secrets.PROD_PATH }}' \
-            POST_CMD='${{ secrets.PROD_POST_CMD }}' \
-            MIGRATE='${{ inputs.run_migrations }}' \
-            bash -s <<'EOF'
-            set -euo pipefail
-            cd "$PROD_PATH"
-            git fetch origin --prune
-            git checkout "$BRANCH"
-            git pull --ff-only origin "$BRANCH"
-            if command -v composer >/dev/null 2>&1; then
-              composer install --no-dev --prefer-dist --optimize-autoloader
-            elif [ -f composer.phar ]; then
-              php composer.phar install --no-dev --prefer-dist --optimize-autoloader
-            else
-              php composer.phar dump-autoload -o 2>/dev/null || echo "composer not found; run: php composer.phar install --no-dev"
-            fi
-            if [ "$MIGRATE" = "true" ]; then
-              php bin/migrate.php
-            fi
-            if [ -n "$POST_CMD" ]; then
-              eval "$POST_CMD"
-            fi
-            echo "Deploy finished on $(hostname)."
+          # Quote every value for the remote shell so paths and commands with
+          # spaces or quotes arrive intact.
+          remote_env=$(printf 'BRANCH=%q PROD_PATH=%q POST_CMD=%q MIGRATE=%q' "$BRANCH" "$PROD_PATH" "$POST_CMD" "$MIGRATE")
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "$remote_env bash -s" <<'EOF'
+          set -euo pipefail
+          cd "$PROD_PATH"
+          git fetch origin --prune
+          git checkout "$BRANCH"
+          git pull --ff-only origin "$BRANCH"
+          if command -v composer >/dev/null 2>&1; then
+            composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction
+          elif [ -f composer.phar ]; then
+            php composer.phar install --no-dev --prefer-dist --optimize-autoloader --no-interaction
+          elif [ -f vendor/autoload.php ]; then
+            echo "::warning::Composer not found on the server; keeping the existing vendor/ directory. Upload composer.phar to update dependencies."
+          else
+            echo "::error::Composer not found and vendor/ is missing. Upload composer.phar to $PROD_PATH and run the deploy again."
+            exit 1
+          fi
+          if [ "$MIGRATE" = "true" ]; then
+            php bin/migrate.php
+          fi
+          if [ -n "$POST_CMD" ]; then
+            eval "$POST_CMD"
+          fi
+          echo "Deployed $(git rev-parse --short HEAD) on $(hostname)."
           EOF
