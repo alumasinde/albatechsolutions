@@ -79,8 +79,7 @@ final class WhatsAppAdminController
             AdminSecurity::flash('success', 'Message sent.');
             $this->audit('whatsapp.message.sent', $number, ['length' => mb_strlen($body)]);
         } else {
-            $error = (string) ($result['response']['error']['message'] ?? 'send failed');
-            AdminSecurity::flash('error', 'WhatsApp send failed: ' . mb_substr($error, 0, 200));
+            AdminSecurity::flash('error', 'WhatsApp send failed: ' . $this->apiError($result));
         }
         Response::redirect($back);
     }
@@ -95,9 +94,9 @@ final class WhatsAppAdminController
         $settings = (new SiteSettingsRepository())->publicValues();
         $repo = new WhatsAppRepository();
 
-        $to = preg_replace('/\D+/', '', (string) ($settings['whatsapp_notify_number'] ?? '')) ?? '';
+        $to = WhatsAppApi::normalizeNumber((string) ($settings['whatsapp_notify_number'] ?? ''));
         if ($to === '') {
-            $to = preg_replace('/\D+/', '', (string) ($settings['whatsapp_number'] ?? '')) ?? '';
+            $to = WhatsAppApi::normalizeNumber((string) ($settings['whatsapp_number'] ?? ''));
         }
         if ($to === '') {
             AdminSecurity::flash('error', 'Set a WhatsApp notification number in Site settings first.');
@@ -132,10 +131,21 @@ final class WhatsAppAdminController
         if ($result['ok']) {
             AdminSecurity::flash('success', 'Test template sent to +' . $to . '.');
         } else {
-            $error = (string) ($result['response']['error']['message'] ?? 'send failed');
-            AdminSecurity::flash('error', 'Test send failed: ' . mb_substr($error, 0, 200));
+            AdminSecurity::flash('error', 'Test send failed: ' . $this->apiError($result));
         }
         Response::redirect('/admin/whatsapp');
+    }
+
+    /** Meta's error.message plus the more precise error_data.details when present. */
+    private function apiError(array $result): string
+    {
+        $error = $result['response']['error'] ?? [];
+        $message = '(#' . (string) ($error['code'] ?? '?') . ') ' . (string) ($error['message'] ?? 'send failed');
+        $details = trim((string) ($error['error_data']['details'] ?? ''));
+        if ($details !== '' && !str_contains($message, $details)) {
+            $message .= ' — ' . $details;
+        }
+        return mb_substr($message, 0, 300);
     }
 
     private function render(string $view, array $data): void
