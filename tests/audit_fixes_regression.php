@@ -56,7 +56,7 @@ $assert($ratio('#ffffff', $themeToken('--color-success')) >= 4.5, 'White text on
 $assert($ratio('#052e16', $themeToken('--color-whatsapp')) >= 7.0, 'Dark text on WhatsApp green is AAA');
 
 // --- CSS / layout structure ---------------------------------------------------------------------
-$bundleCss = (string) file_get_contents($root . '/public/assets/css/bundle.css');
+$bundleCss = (string) file_get_contents($root . '/public_html/assets/css/bundle.css');
 $assert(!preg_match('/@import\s+url|@import\s+"/', $bundleCss), 'Compiled bundle contains no runtime @import chain');
 $layout = (string) file_get_contents($root . '/resources/views/layouts/main.php');
 $assert(str_contains($layout, "View::asset('css/bundle.css')"), 'Layout links the bundled public CSS');
@@ -101,7 +101,7 @@ $assert(preg_match($pattern, '/\\evil.com/') === 0, 'Pattern rejects backslash p
 $assert(preg_match($pattern, "/services/\r\nSet-Cookie: x=1") === 0, 'Pattern rejects control characters (header-injection guard)');
 
 // --- .htaccess performance blocks ---------------------------------------------------------------
-$htaccess = (string) file_get_contents($root . '/public/.htaccess');
+$htaccess = (string) file_get_contents($root . '/public_html/.htaccess');
 $assert(str_contains($htaccess, 'mod_deflate') && str_contains($htaccess, 'mod_expires'), '.htaccess enables compression and asset caching');
 
 echo "PASS: {$checks} audit-fix regression checks.\n";

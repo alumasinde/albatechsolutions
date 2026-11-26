@@ -56,4 +56,4 @@ jobs:
       - name: Verify generated assets are fresh
         run: |
           php bin/subset-fontawesome.php
-          git diff --exit-code -- public/assets/vendor/fontawesome/css/fa-subset.min.css
+          git diff --exit-code -- public_html/assets/vendor/fontawesome/css/fa-subset.min.css

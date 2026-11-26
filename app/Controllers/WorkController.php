@@ -204,7 +204,7 @@ final class WorkController
         $finfo=new \finfo(FILEINFO_MIME_TYPE); $mime=$finfo->file($tmp);
         $allowed=['image/jpeg'=>'jpg','image/png'=>'png','image/webp'=>'webp']; if (!isset($allowed[$mime])) return ['error'=>'Use a JPG, PNG or WebP image. SVG and other file types are not allowed.'];
         $info=@getimagesize($tmp); if (!$info || (int)$info[0]<1 || (int)$info[1]<1 || (int)$info[0]>12000 || (int)$info[1]>12000) return ['error'=>'The image dimensions are invalid or too large.'];
-        $dir=dirname(__DIR__,2).'/public/uploads/work'; if (!is_dir($dir) && !mkdir($dir,0755,true) && !is_dir($dir)) return ['error'=>'Image storage is unavailable. Check folder permissions.'];
+        $dir=dirname(__DIR__,2).'/public_html/uploads/work'; if (!is_dir($dir) && !mkdir($dir,0755,true) && !is_dir($dir)) return ['error'=>'Image storage is unavailable. Check folder permissions.'];
         $name=bin2hex(random_bytes(20)); $ext=$allowed[$mime]; $dest=$dir.'/'.$name.'.'.$ext;
         // Re-encode raster uploads when GD is available to strip metadata and reduce size; WebP output is preferred.
         if (function_exists('imagewebp')) {
@@ -220,7 +220,7 @@ final class WorkController
     private function deleteStoredImage(string $path): void
     {
         if (!preg_match('~^uploads/work/[a-f0-9]{40}\.(?:jpg|png|webp)$~',$path)) return;
-        $full=dirname(__DIR__,2).'/public/'.$path; if (is_file($full)) @unlink($full);
+        $full=dirname(__DIR__,2).'/public_html/'.$path; if (is_file($full)) @unlink($full);
     }
 
     private function adminRender(string $view,array $data): void { $data['csrf']=AdminSecurity::csrfToken(); $data['adminUser']=AdminSecurity::user(); $data['flash']=AdminSecurity::pullFlash(); Response::html(View::render('admin/'.$view,$data,'layouts/admin')); }

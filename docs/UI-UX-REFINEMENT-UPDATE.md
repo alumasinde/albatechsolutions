@@ -9,8 +9,8 @@
 - No database schema or application behavior changes are included.
 
 ## Files changed
-- `public/assets/css/app.css`
-- `public/assets/css/admin.css`
+- `public_html/assets/css/app.css`
+- `public_html/assets/css/admin.css`
 
 ## Local verification
 1. Run the app in XAMPP and hard-refresh (`Ctrl+F5`) to load the filemtime-versioned CSS.

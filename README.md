@@ -11,11 +11,11 @@ Requirements: PHP 8.2+, Composer 2, MySQL 8+, `pdo_mysql`, and `mbstring`.
 3. Run `composer install`.
 4. Run migrations: `php bin/migrate.php`.
 5. Add `127.0.0.1 albatechsolution.test` to the Windows hosts file.
-6. Run `composer serve` and open `http://albatechsolution.test:8000/`. The serve script disables Composer's process timeout because the PHP development server is intended to run continuously. You can also run `php -S albatechsolution.test:8000 -t public` directly.
+6. Run `composer serve` and open `http://albatechsolution.test:8000/`. The serve script disables Composer's process timeout because the PHP development server is intended to run continuously. You can also run `php -S albatechsolution.test:8000 -t public_html` directly.
 
 ## Apache option
 
-The document root must be the `public/` directory. Enable `mod_rewrite` and allow overrides for the `public/` directory. `.test` is the local development domain; use HTTPS on the real production domain.
+The document root must be the `public_html/` directory. Enable `mod_rewrite` and allow overrides for the `public_html/` directory. `.test` is the local development domain; use HTTPS on the real production domain.
 
 ## Migrations
 
@@ -27,16 +27,16 @@ Migration files use a three-digit prefix and descriptive name, e.g. `000_auth.sq
 - `app/Controllers`: HTTP controllers.
 - `app/Repositories`: SQL queries.
 - `resources/views`: PHP templates only.
-- `public/assets/css/tokens.css`: brand design tokens for the admin panel.
+- `public_html/assets/css/tokens.css`: brand design tokens for the admin panel.
 - `resources/css/tailwind.css`: public design system (theme, base layer, components, utilities).
-- `public/assets/css/bundle.css`: compiled Tailwind output loaded by the public site.
+- `public_html/assets/css/bundle.css`: compiled Tailwind output loaded by the public site.
 - `routes/web.php`: public route definitions.
 
 ## Tailwind and asset builds
 
 The public site is fully Tailwind v4. `resources/css/tailwind.css` is the single entry point: it declares the brand palette in `@theme`, a hand-written base layer (preflight is deliberately omitted because the design predates it), reusable components such as `.btn`, `.card`, `.section`, `.site-nav` and `.prose-page`, and then imports the Tailwind utilities layer. Utilities are used for page-level layout; components carry anything reused across pages.
 
-`public/assets/css/bundle.css` is the compiled, minified stylesheet linked by `layouts/main.php`. It is committed, so production servers do not need Node. The admin panel keeps its own `tokens.css` + `admin.css` and never loads the public bundle.
+`public_html/assets/css/bundle.css` is the compiled, minified stylesheet linked by `layouts/main.php`. It is committed, so production servers do not need Node. The admin panel keeps its own `tokens.css` + `admin.css` and never loads the public bundle.
 
 ```powershell
 npm install
@@ -46,7 +46,7 @@ php bin/build-css.php    # same build via the PHP entry point
 php bin/build-css.php --check   # verify the committed artifact
 ```
 
-Class names must exist in `resources/css/tailwind.css` or be reachable Tailwind utilities; `@source` scans `resources/views/**/*.php` and `public/assets/js/**/*.js`, so utilities used only in templates are picked up automatically.
+Class names must exist in `resources/css/tailwind.css` or be reachable Tailwind utilities; `@source` scans `resources/views/**/*.php` and `public_html/assets/js/**/*.js`, so utilities used only in templates are picked up automatically.
 
 ## Phase 2 service catalogue
 
@@ -93,7 +93,7 @@ The application includes baseline admin security controls: CSRF validation on ad
 1. Set `APP_ENV=production`, `APP_DEBUG=false`, and `APP_URL=https://your-real-domain`. The application refuses requests if production debug is enabled, the configured URL is not HTTPS, or the database username is `root`.
 2. Set `SESSION_SECURE_COOKIE=true`; use HTTPS across the entire site. HSTS is emitted on HTTPS requests.
 3. Create a dedicated MySQL user with only the privileges this application requires; never use the database root account.
-4. Configure the web server document root to the `public/` directory. Do not expose the project root, `.env`, `storage/`, `vendor/`, database files, or logs.
+4. Configure the web server document root to the `public_html/` directory. Do not expose the project root, `.env`, `storage/`, `vendor/`, database files, or logs.
 5. Keep `.env` out of version control and set restrictive file permissions on `.env`, logs, and storage directories.
 6. Test administrator login, failed-login throttling, role permissions, CSRF failures, session expiry, logout, service/category/settings validation and recovery from database errors against the actual production-like environment.
 7. Back up the database and verify that a restore works before launch. Keep PHP and Composer dependencies patched.
@@ -133,7 +133,7 @@ Apply migration `database/migrations/025_search_console_and_analytics_consent.sq
 - **Analytics → Provider** supports Plausible (cookieless, loads immediately) or GA4. For GA4, set the measurement ID (`G-…`) and the `https://www.googletagmanager.com/gtag/js?id=G-…` script URL.
 - **Consent before GA4 loads** defaults to *Required*: GA4 does not load and sets no cookies until the visitor accepts the banner. The footer keeps a **Cookie settings** link for changing the choice. Plausible is unaffected. If you disable consent, GA4 loads on first paint with `analytics_storage` granted.
 
-Conversion events are sent from `public/assets/js/site.js` once analytics is active:
+Conversion events are sent from `public_html/assets/js/site.js` once analytics is active:
 
 | Event | Trigger |
 |---|---|
@@ -227,4 +227,4 @@ Notes for the deploy job: the server checkout must already `git pull` cleanly (`
 Apply `deploy/php-opcache.ini` on the production server (copy into the PHP `conf.d` directory or mirror the values in the PHP-FPM pool). Because `opcache.validate_timestamps=0`, PHP must be reloaded after every deployment (`systemctl reload php-fpm` or an `opcache_reset()` deploy hook); without the reload the previous release keeps serving.
 
 ### Self-hosted Font Awesome
-Font Awesome 6.5.2 CSS and webfonts are served from `public/assets/vendor/fontawesome/` (no CDN request). The URL carries a `?v=<mtime>` version, and `.htaccess` applies immutable caching to CSS. If icons ever need updating, replace the files in that folder and rebuild nothing else; the CSP already allows same-origin fonts and styles only.
+Font Awesome 6.5.2 CSS and webfonts are served from `public_html/assets/vendor/fontawesome/` (no CDN request). The URL carries a `?v=<mtime>` version, and `.htaccess` applies immutable caching to CSS. If icons ever need updating, replace the files in that folder and rebuild nothing else; the CSP already allows same-origin fonts and styles only.

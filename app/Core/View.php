@@ -30,11 +30,11 @@ final class View
         return (string) ob_get_clean();
     }
 
-    /** Versioned URL for files under public/assets so long browser caching never serves stale CSS/images. */
+    /** Versioned URL for files under public_html/assets so long browser caching never serves stale CSS/images. */
     public static function asset(string $path): string
     {
         $path = ltrim($path, '/');
-        $file = dirname(__DIR__, 2) . '/public/assets/' . $path;
+        $file = dirname(__DIR__, 2) . '/public_html/assets/' . $path;
         $version = is_file($file) ? (string) filemtime($file) : '';
         return '/assets/' . $path . ($version !== '' ? '?v=' . $version : '');
     }

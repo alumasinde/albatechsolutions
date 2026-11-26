@@ -2,7 +2,7 @@
 
 ## Root causes found
 - Public templates use Font Awesome classes (`fa-solid`, `fa-regular`, `fa-brands`) but the public layout did not load the Font Awesome stylesheet. Admin layouts did load it. Those public icons therefore had no icon font/style definitions.
-- `public/assets/images/icons.svg` used `style="display: none"` on the root SVG. This can suppress rendering when symbols are referenced from that external SVG sprite with `<use href="...#icon-name">`.
+- `public_html/assets/images/icons.svg` used `style="display: none"` on the root SVG. This can suppress rendering when symbols are referenced from that external SVG sprite with `<use href="...#icon-name">`.
 - The homepage hero image is configurable in the CMS, but the layout preloaded the fixed fallback `/assets/images/albatech-hero.webp`. When an admin selected a different image, the preloaded file was not used, producing the browser warning.
 
 ## Changes

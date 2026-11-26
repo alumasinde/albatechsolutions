@@ -2,7 +2,7 @@
 declare(strict_types=1);
 $root=dirname(__DIR__); $checks=[];
 $routes=file_get_contents($root.'/routes/web.php'); $migration=file_get_contents($root.'/database/migrations/007_work_projects.sql');
-$controller=file_get_contents($root.'/app/Controllers/WorkController.php'); $home=file_get_contents($root.'/resources/views/pages/home.php'); $js=file_get_contents($root.'/public/assets/js/work-carousel.js'); $sitemap=file_get_contents($root.'/app/Controllers/SeoController.php'); $service=file_get_contents($root.'/resources/views/services/show.php');
+$controller=file_get_contents($root.'/app/Controllers/WorkController.php'); $home=file_get_contents($root.'/resources/views/pages/home.php'); $js=file_get_contents($root.'/public_html/assets/js/work-carousel.js'); $sitemap=file_get_contents($root.'/app/Controllers/SeoController.php'); $service=file_get_contents($root.'/resources/views/services/show.php');
 $checks['public work routes']=str_contains($routes,"get('/work'") && str_contains($routes,"get('/work/{slug}'");
 $checks['admin CRUD routes']=str_contains($routes,"get('/admin/work/create'") && str_contains($routes,"post('/admin/work/{id}/delete'");
 $checks['permission and project table']=str_contains($migration,"'work.manage'") && str_contains($migration,'CREATE TABLE IF NOT EXISTS work_projects');

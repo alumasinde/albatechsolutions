@@ -4,7 +4,7 @@
  * Build the public stylesheet with the Tailwind CLI.
  *
  * Source:   resources/css/tailwind.css
- * Output:   public/assets/css/bundle.css (committed; production needs no Node)
+ * Output:   public_html/assets/css/bundle.css (committed; production needs no Node)
  *
  * Usage:
  *   php bin/build-css.php            build and write bundle.css
@@ -13,7 +13,7 @@
 
 $root = dirname(__DIR__);
 $source = $root . '/resources/css/tailwind.css';
-$output = $root . '/public/assets/css/bundle.css';
+$output = $root . '/public_html/assets/css/bundle.css';
 $cli = $root . '/node_modules/.bin/tailwindcss';
 
 $isCheck = in_array('--check', $argv ?? [], true);

@@ -9,7 +9,7 @@ $checks = [
     'Editor supports H1-H6' => str_contains(file_get_contents($root . '/resources/views/admin/guide-form.php'), '<option value="h6">Heading 6</option>'),
     'Editor supports tables' => str_contains(file_get_contents($root . '/resources/views/admin/guide-form.php'), 'data-action="table"'),
     'Editor supports images' => str_contains(file_get_contents($root . '/resources/views/admin/guide-form.php'), 'data-action="image"'),
-    'Toolbar is sticky' => str_contains(file_get_contents($root . '/public/assets/css/admin.css'), '.rich-toolbar{position:sticky'),
+    'Toolbar is sticky' => str_contains(file_get_contents($root . '/public_html/assets/css/admin.css'), '.rich-toolbar{position:sticky'),
     'Server HTML sanitizer exists' => str_contains(file_get_contents($root . '/app/Controllers/GuideAdminController.php'), 'sanitizeHtml'),
     'Public view supports sanitized rich content' => str_contains(file_get_contents($root . '/resources/views/pages/guide-article.php'), 'guide-rich-content'),
 ];

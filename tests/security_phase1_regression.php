@@ -52,7 +52,7 @@ $router->dispatch(new Request());
 $assert($called, 'Admin POST with valid CSRF token reaches handler');
 
 // Verify strict CSP and nonce wiring statically, without depending on a running web server.
-$index = file_get_contents(dirname(__DIR__) . '/public/index.php');
+$index = file_get_contents(dirname(__DIR__) . '/public_html/index.php');
 $assert(is_string($index) && str_contains($index, "script-src 'self' 'nonce-" ), 'CSP is configured dynamically rather than with a hard-coded nonce');
 $assert(is_string($index) && !str_contains($index, "script-src 'self' 'unsafe-inline'"), 'CSP does not allow unsafe inline scripts');
 $adminLayout = file_get_contents(dirname(__DIR__) . '/resources/views/layouts/admin.php');

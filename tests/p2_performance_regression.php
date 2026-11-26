@@ -10,11 +10,11 @@ $assert = static function (bool $condition, string $message) use (&$checks, &$fa
     if (!$condition) $failures[] = $message;
 };
 
-$htaccess = (string) file_get_contents($root . '/public/.htaccess');
+$htaccess = (string) file_get_contents($root . '/public_html/.htaccess');
 $layout = (string) file_get_contents($root . '/resources/views/layouts/main.php');
 $home = (string) file_get_contents($root . '/resources/views/pages/home.php');
 $view = (string) file_get_contents($root . '/app/Core/View.php');
-$bundleCss = (string) file_get_contents($root . '/public/assets/css/bundle.css');
+$bundleCss = (string) file_get_contents($root . '/public_html/assets/css/bundle.css');
 
 $assert(str_contains($view, 'filemtime($file)'), 'Asset URLs must be versioned when files change.');
 $assert(str_contains($htaccess, 'max-age=31536000, immutable'), 'Versioned static assets should use long-lived immutable caching.');
@@ -29,7 +29,7 @@ $assert(str_contains($home, 'width="1200" height="630"'), 'Homepage hero image s
 $assert(str_contains($bundleCss, 'aspect-ratio:16/10'), 'Portfolio card images should reserve an aspect-ratio box.');
 $assert(str_contains($bundleCss, 'prefers-reduced-motion'), 'Motion-sensitive behaviour should be covered in the public stylesheet.');
 $assert(str_contains($layout, "View::asset('css/bundle.css')"), 'Public pages should load the single versioned CSS bundle.');
-$assert(filesize($root . '/public/assets/css/bundle.css') > 0, 'bundle.css must be built and non-empty.');
+$assert(filesize($root . '/public_html/assets/css/bundle.css') > 0, 'bundle.css must be built and non-empty.');
 
 if ($failures) {
     fwrite(STDERR, "P2 performance regression: FAIL\n");

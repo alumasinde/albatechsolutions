@@ -49,8 +49,8 @@ The admin content editor now uses a focused Content Studio layout:
 - Select Homepage, Website pages, Navigation, or Calls to action using responsive workspace cards.
 - In Website pages, choose one static page from the page selector. Only that page's editor is shown at a time.
 - Workspace selection is reflected in the URL hash, so the editor returns to the same section after save redirects.
-- Form spacing, labels, focus states, save actions, and mobile layout have been refined in `public/assets/css/admin.css`.
-- Interaction logic is in `public/assets/js/admin-cms.js` and does not require a JavaScript framework.
+- Form spacing, labels, focus states, save actions, and mobile layout have been refined in `public_html/assets/css/admin.css`.
+- Interaction logic is in `public_html/assets/js/admin-cms.js` and does not require a JavaScript framework.
 
 Verification after this UI update:
 

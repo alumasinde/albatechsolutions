@@ -21,5 +21,5 @@
 
 ## Notes
 - Only publish client names, screenshots and live links when the client has approved public display. An anonymised client name is optional.
-- Cover images require writable `public/uploads/work` storage. WebP conversion requires PHP GD with WebP support; without it, validated JPG/PNG/WebP uploads are stored as received.
+- Cover images require writable `public_html/uploads/work` storage. WebP conversion requires PHP GD with WebP support; without it, validated JPG/PNG/WebP uploads are stored as received.
 - Database-backed routes have not been live-tested against your MySQL instance in this environment.

@@ -20,5 +20,5 @@ $assert(str_contains($admin, 'Save homepage') && str_contains($admin, 'Website p
 $assert(str_contains($controller, 'verifyCsrf') && str_contains($controller, 'requirePermission(\'settings.manage\')'), 'CMS writes require CSRF and settings permission');
 $assert(str_contains($controller, 'validImageReference') && str_contains($controller, 'validInternalOrHttpsUrl'), 'Image and link inputs are validated');
 $assert(str_contains($admin, 'data-cms-target="pages"') && str_contains($admin, 'id="cms-page-select"') && str_contains($admin, 'data-cms-page='), 'CMS editor supports section navigation and choosing one page at a time');
-$assert(is_file($root . '/public/assets/js/admin-cms.js') && str_contains(file_get_contents($root . '/public/assets/js/admin-cms.js'), 'showPanel'), 'CMS editor interaction script exists');
+$assert(is_file($root . '/public_html/assets/js/admin-cms.js') && str_contains(file_get_contents($root . '/public_html/assets/js/admin-cms.js'), 'showPanel'), 'CMS editor interaction script exists');
 echo "PASS: {$checks} CMS foundation static regression checks.\n";

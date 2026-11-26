@@ -3,7 +3,7 @@
 ## Changed files
 - resources/views/pages/home.php
 - resources/views/layouts/main.php
-- public/assets/css/app.css
+- public_html/assets/css/app.css
 
 ## What changed (phones, under 640px; tablet/desktop layouts unchanged)
 - Hero: shorter eyebrow/lead, meta as pill chips, "Explore services" as a text link under the WhatsApp CTA.

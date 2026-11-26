@@ -5,8 +5,8 @@
  * Creates 48x48, 192x192, 512x512 PNG favicons and an SVG favicon
  */
 
-$sourceLogo = __DIR__ . '/../public/assets/images/albatech-logo.png';
-$outputDir = __DIR__ . '/../public/assets/images';
+$sourceLogo = __DIR__ . '/../public_html/assets/images/albatech-logo.png';
+$outputDir = __DIR__ . '/../public_html/assets/images';
 
 if (!file_exists($sourceLogo)) {
     echo "Error: Source logo not found at $sourceLogo\n";

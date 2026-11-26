@@ -69,8 +69,8 @@ if (preg_match('~<script type="application/ld\+json"[^>]*>(.*?)</script>~s', $ht
 } else {
     $assert(false, 'JSON-LD script block exists');
 }
-$assert(is_file(dirname(__DIR__) . '/public/assets/images/albatech-social-card.jpg'), 'Social preview image asset exists');
-$assert(is_file(dirname(__DIR__) . '/public/assets/images/albatech-logo.png'), 'Structured-data logo asset exists');
+$assert(is_file(dirname(__DIR__) . '/public_html/assets/images/albatech-social-card.jpg'), 'Social preview image asset exists');
+$assert(is_file(dirname(__DIR__) . '/public_html/assets/images/albatech-logo.png'), 'Structured-data logo asset exists');
 foreach (['pages/terms', 'pages/privacy', 'pages/contact-details'] as $view) {
     $legalHtml = View::render($view, ['pageTitle' => 'AlbaTech Solutions | ' . basename($view), 'metaDescription' => 'Public information for AlbaTech Solutions.', 'canonicalUrl' => $baseUrl . '/' . basename($view)]);
     $assert(str_contains($legalHtml, '<link rel="canonical"'), 'Legal/contact page renders canonical metadata: ' . $view);

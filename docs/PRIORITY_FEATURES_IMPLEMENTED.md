@@ -20,7 +20,7 @@
 
 **Files changed:**
 - `resources/views/pages/get-help.php` - Complete rewrite
-- `public/assets/css/app.css` - Added form styling (180 lines)
+- `public_html/assets/css/app.css` - Added form styling (180 lines)
 - `routes/web.php` - Added `/contact` redirect to `/get-help`
 
 ### 2. ✅ Merged Contact Pages
@@ -53,7 +53,7 @@
 **Files changed:**
 - `resources/views/layouts/main.php` - Logo in header
 - `resources/views/pages/home.php` - Hero visual image
-- `public/assets/css/app.css` - Logo styling
+- `public_html/assets/css/app.css` - Logo styling
 - `resources/views/layouts/main.php` - Open Graph image fallback
 
 ### 4. ✅ Work Areas / Portfolio Section
@@ -72,7 +72,7 @@
 
 **Files changed:**
 - `resources/views/pages/home.php` - Added work areas section
-- `public/assets/css/app.css` - Added case study card styling (110 lines)
+- `public_html/assets/css/app.css` - Added case study card styling (110 lines)
 
 ### 5. ✅ Breadcrumb Markup
 **Status**: Complete
@@ -87,7 +87,7 @@
 
 **Files changed:**
 - `resources/views/services/show.php` - Added breadcrumb nav
-- `public/assets/css/app.css` - Added breadcrumb styling (55 lines)
+- `public_html/assets/css/app.css` - Added breadcrumb styling (55 lines)
 
 ## Deferred Features
 

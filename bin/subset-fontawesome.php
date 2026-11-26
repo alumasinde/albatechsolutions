@@ -6,15 +6,15 @@ declare(strict_types=1);
  * Build a public-site Font Awesome subset containing only the icon classes the
  * public views and JS actually use. Admin keeps the full all.min.css.
  *
- * Source: public/assets/vendor/fontawesome/css/all.min.css
- * Output: public/assets/vendor/fontawesome/css/fa-subset.min.css
+ * Source: public_html/assets/vendor/fontawesome/css/all.min.css
+ * Output: public_html/assets/vendor/fontawesome/css/fa-subset.min.css
  *
  * Usage: php bin/subset-fontawesome.php
  */
 
 $root = dirname(__DIR__);
-$source = $root . '/public/assets/vendor/fontawesome/css/all.min.css';
-$output = $root . '/public/assets/vendor/fontawesome/css/fa-subset.min.css';
+$source = $root . '/public_html/assets/vendor/fontawesome/css/all.min.css';
+$output = $root . '/public_html/assets/vendor/fontawesome/css/fa-subset.min.css';
 
 $scanDirs = [
     $root . '/resources/views/pages',
@@ -25,7 +25,7 @@ $scanDirs = [
     $root . '/resources/views/solutions',
     $root . '/resources/views/landing',
     $root . '/resources/views/errors',
-    $root . '/public/assets/js',
+    $root . '/public_html/assets/js',
 ];
 
 $icons = [];
@@ -33,7 +33,7 @@ foreach ($scanDirs as $path) {
     $files = is_dir($path) ? array_merge(glob($path . '/*.php') ?: [], glob($path . '/*.js') ?: []) : [$path];
     foreach ($files ?: [] as $file) {
         $content = (string) file_get_contents($file);
-        if (preg_match_all('/\bfa-([a-z0-9-]+)\b/', $content, $m)) {
+        if (preg_match_all('/\bfa-([a-z0-9-]+)(?![\w.-])/', $content, $m)) {
             foreach ($m[1] as $name) $icons[$name] = true;
         }
     }

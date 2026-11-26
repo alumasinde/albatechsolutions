@@ -5,8 +5,8 @@
  * JPEG keeps the file small enough for WhatsApp and other link-preview crawlers.
  */
 
-$sourcePath = __DIR__ . '/../public/assets/images/albatech-hero.webp';
-$outputPath = __DIR__ . '/../public/assets/images/albatech-social-card.jpg';
+$sourcePath = __DIR__ . '/../public_html/assets/images/albatech-hero.webp';
+$outputPath = __DIR__ . '/../public_html/assets/images/albatech-social-card.jpg';
 
 if (!is_file($sourcePath)) {
     fwrite(STDERR, "Error: hero image not found at {$sourcePath}\n");

@@ -19,7 +19,7 @@ echo "\n";
 
 // 3. Optimize images (if source exists)
 echo "3. Optimizing images...\n";
-if (file_exists(__DIR__ . '/../public/assets/images/albatech-hero.webp')) {
+if (file_exists(__DIR__ . '/../public_html/assets/images/albatech-hero.webp')) {
     require __DIR__ . '/optimize-images.php';
 } else {
     echo "  Hero image not found, skipping social card generation\n";

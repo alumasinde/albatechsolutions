@@ -9,7 +9,7 @@ if ($exitCode !== 0) {
     exit(1);
 }
 
-$bundle = $root . '/public/assets/css/bundle.css';
+$bundle = $root . '/public_html/assets/css/bundle.css';
 if (!is_file($bundle) || filesize($bundle) === 0) {
     fwrite(STDERR, "FAIL: bundle.css is missing or empty.\n");
     exit(1);

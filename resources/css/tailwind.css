@@ -15,7 +15,7 @@
 @import "tailwindcss/utilities.css" layer(utilities);
 
 @source "../../resources/views/**/*.php";
-@source "../../public/assets/js/**/*.js";
+@source "../../public_html/assets/js/**/*.js";
 
 @theme {
   /* Brand palette */

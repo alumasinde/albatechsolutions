@@ -6,7 +6,7 @@ The public header already uses the local SVG sprite at `/assets/images/icons.svg
 <svg class="icon" aria-hidden="true" focusable="false"><use href="/assets/images/icons.svg#icon-arrow-right"></use></svg>
 ```
 
-Available symbols currently include `icon-arrow-right`, `icon-external-link`, `icon-bars`, `icon-xmark`, `icon-circle-info`, `icon-location`, `icon-envelope`, `icon-phone`, `icon-laptop-code`, `icon-comments`, `icon-globe`, `icon-pause`, `icon-receipt`, `icon-handshake`, and `icon-whatsapp`. Verify IDs in `public/assets/images/icons.svg` before referencing them.
+Available symbols currently include `icon-arrow-right`, `icon-external-link`, `icon-bars`, `icon-xmark`, `icon-circle-info`, `icon-location`, `icon-envelope`, `icon-phone`, `icon-laptop-code`, `icon-comments`, `icon-globe`, `icon-pause`, `icon-receipt`, `icon-handshake`, and `icon-whatsapp`. Verify IDs in `public_html/assets/images/icons.svg` before referencing them.
 
 ## Migration policy
 - Prefer the local SVG sprite for new interface icons and any existing icon with a matching symbol.

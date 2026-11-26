@@ -18,11 +18,11 @@
     "build:css": "php bin/build-css.php",
     "serve": [
         "Composer\\Config::disableProcessTimeout",
-        "php -S albatechsolution.test:8000 -t public"
+        "php -S albatechsolution.test:8000 -t public_html"
     ],
     "serve:lan": [
         "Composer\\Config::disableProcessTimeout",
-        "php -S 0.0.0.0:8000 -t public"
+        "php -S 0.0.0.0:8000 -t public_html"
     ]
   },
   "config": {

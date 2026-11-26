@@ -86,7 +86,7 @@
 2. `resources/views/layouts/main.php` - Logo, Open Graph images
 3. `resources/views/pages/home.php` - Hero image, work areas section
 4. `resources/views/services/show.php` - Breadcrumb markup
-5. `public/assets/css/app.css` - Form, case studies, breadcrumb styling (~345 lines)
+5. `public_html/assets/css/app.css` - Form, case studies, breadcrumb styling (~345 lines)
 6. `routes/web.php` - Contact redirect
 
 ### New Documentation
