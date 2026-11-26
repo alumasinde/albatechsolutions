@@ -52,8 +52,10 @@ jobs:
             git pull --ff-only origin "$BRANCH"
             if command -v composer >/dev/null 2>&1; then
               composer install --no-dev --prefer-dist --optimize-autoloader
+            elif [ -f composer.phar ]; then
+              php composer.phar install --no-dev --prefer-dist --optimize-autoloader
             else
-              echo "composer not found on PATH; skipping dependency install"
+              php composer.phar dump-autoload -o 2>/dev/null || echo "composer not found; run: php composer.phar install --no-dev"
             fi
             if [ "$MIGRATE" = "true" ]; then
               php bin/migrate.php
