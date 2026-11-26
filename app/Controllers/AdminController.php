@@ -322,7 +322,7 @@ final class AdminController
         $socialKeys = ['social_facebook', 'social_twitter', 'social_linkedin', 'social_instagram'];
         $analyticsKeys = ['analytics_enabled', 'analytics_provider', 'analytics_domain', 'analytics_script_url', 'analytics_consent_enabled'];
         $founderKeys = ['founder_name', 'founder_title', 'founder_bio', 'founder_linkedin'];
-        $whatsAppApiKeys = ['whatsapp_api_enabled', 'whatsapp_business_display_name', 'whatsapp_notify_number', 'whatsapp_template_name', 'whatsapp_template_language'];
+        $whatsAppApiKeys = ['whatsapp_api_enabled', 'whatsapp_business_display_name', 'whatsapp_notify_number', 'whatsapp_template_name', 'whatsapp_template_language', 'whatsapp_ack_enabled', 'whatsapp_auto_reply_enabled', 'whatsapp_auto_reply_text', 'whatsapp_keyword_replies', 'whatsapp_email_alerts'];
         $allowed = array_merge(['site_name', 'site_url', 'default_author', 'default_meta_title', 'default_meta_description', 'default_social_image', 'google_site_verification'], $founderKeys, $contactKeys, $socialKeys, $analyticsKeys, $whatsAppApiKeys, ['footer_description']);
         $normalized = [];
         $siteUrl = trim((string) $request->input('site_url', ''));
@@ -369,6 +369,10 @@ final class AdminController
             Response::redirect('/admin/settings');
         }
         $normalized['whatsapp_template_language'] = $templateLanguage;
+        foreach (['whatsapp_ack_enabled', 'whatsapp_auto_reply_enabled', 'whatsapp_keyword_replies', 'whatsapp_email_alerts'] as $waToggle) {
+            $normalized[$waToggle] = ((string) $request->input($waToggle, '0')) === '1' ? '1' : '0';
+        }
+        $normalized['whatsapp_auto_reply_text'] = mb_substr(trim((string) $request->input('whatsapp_auto_reply_text', '')), 0, 1000);
         foreach ($socialKeys as $key) {
             $socialUrl = trim((string) $request->input($key, ''));
             if ($socialUrl !== '' && (!filter_var($socialUrl, FILTER_VALIDATE_URL) || preg_match('~^https://~i', $socialUrl) !== 1)) {

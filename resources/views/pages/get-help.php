@@ -110,6 +110,11 @@ $hasWhatsApp = strlen($whatsAppNumber) >= 8 && strlen($whatsAppNumber) <= 15 && 
                     <textarea class="textarea" id="enquiry-message" name="message" required rows="4" placeholder="Tell us what you're trying to achieve. Be as specific as you can."></textarea>
                 </div>
 
+                <label class="flex items-start gap-3 text-sm leading-relaxed">
+                    <input type="checkbox" name="whatsapp_consent" value="1" class="mt-1 shrink-0">
+                    <span>I agree to be contacted on WhatsApp about this enquiry. We will not send marketing messages, and you can reply STOP at any time to opt out.</span>
+                </label>
+
                 <div class="flex flex-col gap-3 sm:flex-row">
                     <?php if ($hasWhatsApp): ?>
                         <button type="button" class="btn btn-whatsapp" id="whatsapp-submit"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Continue in WhatsApp</button>

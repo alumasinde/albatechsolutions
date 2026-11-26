@@ -15,6 +15,7 @@ use AlbaTech\Controllers\ServiceController;
 use AlbaTech\Controllers\SeoController;
 use AlbaTech\Controllers\StaticPageController;
 use AlbaTech\Controllers\WebhookController;
+use AlbaTech\Controllers\WhatsAppAdminController;
 use AlbaTech\Controllers\WorkController;
 use AlbaTech\Core\Response;
 
@@ -127,4 +128,9 @@ $app->router()->post('/admin/categories', [$admin, 'categorySave']);
 $app->router()->post('/admin/categories/{id}/edit', [$admin, 'categorySave']);
 $app->router()->get('/admin/settings', [$admin, 'settings']);
 $app->router()->post('/admin/settings', [$admin, 'settingsSave']);
+$whatsAppAdmin = new WhatsAppAdminController();
+$app->router()->get('/admin/whatsapp', [$whatsAppAdmin, 'inbox']);
+$app->router()->get('/admin/whatsapp/{number}', [$whatsAppAdmin, 'inbox']);
+$app->router()->post('/admin/whatsapp/{number}/send', [$whatsAppAdmin, 'send']);
+$app->router()->post('/admin/whatsapp/test', [$whatsAppAdmin, 'sendTest']);
 $app->router()->get('/health', static function (): void { Response::html('OK'); });
