@@ -69,5 +69,35 @@ $get = static fn(string $key, string $fallback = '') => View::escape($settings[$
         </div>
         <div class="form-grid"><label class="field">Analytics<select name="analytics_enabled"><option value="0"<?= ($get('analytics_enabled', '0') === '1') ? '' : ' selected'; ?>>Disabled</option><option value="1"<?= ($get('analytics_enabled', '0') === '1') ? ' selected' : ''; ?>>Enabled</option></select></label><label class="field">Provider<select name="analytics_provider"><option value=""<?= $get('analytics_provider') === '' ? ' selected' : ''; ?>>Choose a provider</option><option value="plausible"<?= $get('analytics_provider') === 'plausible' ? ' selected' : ''; ?>>Plausible</option><option value="ga4"<?= $get('analytics_provider') === 'ga4' ? ' selected' : ''; ?>>Google Analytics 4</option></select></label><label class="field">Domain (Plausible) or Measurement ID (GA4)<input name="analytics_domain" maxlength="255" value="<?= $get('analytics_domain') ?>" placeholder="albatechsolutions.co.ke or G-XXXXXXXXXX"></label><label class="field">Script URL<input type="url" name="analytics_script_url" maxlength="500" value="<?= $get('analytics_script_url') ?>" placeholder="https://plausible.io/js/script.js"><small>Must start with https://. CSP only allows plausible.io and googletagmanager.com.</small></label><label class="field">Consent before GA4 loads<select name="analytics_consent_enabled"><option value="1"<?= ($get('analytics_consent_enabled', '1') === '1') ? ' selected' : ''; ?>>Required (show consent banner)</option><option value="0"<?= ($get('analytics_consent_enabled', '1') === '1') ? '' : ' selected'; ?>>Not required</option></select><small>Plausible is cookieless and never waits for consent. GA4 does.</small></label><label class="field full">Footer description<textarea name="footer_description" rows="3" maxlength="500"><?= $get('footer_description', 'Practical website, online presence and digital assistance for people and businesses in Kenya. Clear scope, straightforward communication and realistic next steps.') ?></textarea></label></div>
     </section>
+    <section class="panel editor-section">
+        <div class="section-heading"><span><i class="fa-brands fa-whatsapp"></i></span>
+            <div>
+                <h3>WhatsApp Cloud API</h3>
+                <p>Configuration for the WhatsApp Business integration. Credentials stay in the server .env file and are never stored here.</p>
+            </div>
+        </div>
+        <div class="form-grid">
+            <label class="field">WhatsApp API<select name="whatsapp_api_enabled"><option value="0"<?= ($get('whatsapp_api_enabled', '0') === '1') ? '' : ' selected'; ?>>Disabled</option><option value="1"<?= ($get('whatsapp_api_enabled', '0') === '1') ? ' selected' : ''; ?>>Enabled</option></select></label>
+            <label class="field">Business display name<input name="whatsapp_business_display_name" maxlength="255" value="<?= $get('whatsapp_business_display_name') ?>" placeholder="AlbaTech Solutions"></label>
+            <label class="field">Notification number<input name="whatsapp_notify_number" value="<?= $get('whatsapp_notify_number') ?>" placeholder="2547XXXXXXXX"><small>Internal number that receives alerts for new WhatsApp messages.</small></label>
+            <label class="field">Template name<input name="whatsapp_template_name" maxlength="255" value="<?= $get('whatsapp_template_name') ?>" placeholder="enquiry_followup"><small>Approved template name from the Meta dashboard (lowercase, underscores).</small></label>
+            <label class="field">Template language<input name="whatsapp_template_language" maxlength="10" value="<?= $get('whatsapp_template_language') ?>" placeholder="en"><small>Language code such as en or en_US.</small></label>
+        </div>
+        <?php $envStatus = is_array($whatsAppEnv ?? null) ? $whatsAppEnv : []; ?>
+        <div class="mt-4">
+            <p class="text-sm font-semibold text-ink">Server credentials (.env)</p>
+            <ul class="mt-2 grid gap-1 text-sm">
+                <?php foreach ($envStatus as $envKey => $configured): ?>
+                    <li class="flex items-center gap-2"><i class="fa-solid <?= $configured ? 'fa-circle-check text-primary' : 'fa-circle-xmark text-muted' ?>" aria-hidden="true"></i><code><?= View::escape($envKey) ?></code><span class="text-muted"><?= $configured ? 'configured' : 'missing' ?></span></li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+        <?php $logLines = is_array($whatsAppLogTail ?? null) ? $whatsAppLogTail : []; if ($logLines !== []): ?>
+        <div class="mt-4">
+            <p class="text-sm font-semibold text-ink">Recent webhook events</p>
+            <pre class="mt-2 max-h-48 overflow-auto rounded-md bg-surface-muted p-3 text-xs leading-relaxed"><?= View::escape(implode("\n", $logLines)) ?></pre>
+        </div>
+        <?php endif; ?>
+    </section>
     <div class="settings-save"><span><i class="fa-solid fa-circle-info"></i> Changes save directly to the website database.</span><button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> Save settings</button></div>
 </form>

@@ -6,6 +6,7 @@ namespace AlbaTech\Controllers;
 
 use AlbaTech\Core\AdminSecurity;
 use AlbaTech\Core\Database;
+use AlbaTech\Core\Env;
 use AlbaTech\Core\Request;
 use AlbaTech\Core\Response;
 use AlbaTech\Core\RateLimiter;
@@ -301,7 +302,13 @@ final class AdminController
         $rows = Database::connection()->query('SELECT setting_key, setting_value, setting_group FROM site_settings ORDER BY setting_group, setting_key')->fetchAll();
         $settings = [];
         foreach ($rows as $row) $settings[$row['setting_key']] = $row;
-        $this->render('settings', ['pageTitle' => 'Site settings', 'settings' => $settings]);
+        $whatsAppEnv = [];
+        foreach (['WHATSAPP_PHONE_NUMBER_ID', 'WHATSAPP_BUSINESS_ACCOUNT_ID', 'WHATSAPP_ACCESS_TOKEN', 'WHATSAPP_VERIFY_TOKEN', 'WHATSAPP_APP_SECRET'] as $envKey) {
+            $whatsAppEnv[$envKey] = trim((string) Env::get($envKey, '')) !== '';
+        }
+        $logFile = dirname(__DIR__, 2) . '/storage/logs/whatsapp-webhook.log';
+        $logTail = is_file($logFile) ? array_slice(array_values(array_filter(array_map('trim', file($logFile) ?: []))), -8) : [];
+        $this->render('settings', ['pageTitle' => 'Site settings', 'settings' => $settings, 'whatsAppEnv' => $whatsAppEnv, 'whatsAppLogTail' => $logTail]);
     }
 
     public function settingsSave(Request $request): void
@@ -315,7 +322,8 @@ final class AdminController
         $socialKeys = ['social_facebook', 'social_twitter', 'social_linkedin', 'social_instagram'];
         $analyticsKeys = ['analytics_enabled', 'analytics_provider', 'analytics_domain', 'analytics_script_url', 'analytics_consent_enabled'];
         $founderKeys = ['founder_name', 'founder_title', 'founder_bio', 'founder_linkedin'];
-        $allowed = array_merge(['site_name', 'site_url', 'default_author', 'default_meta_title', 'default_meta_description', 'default_social_image', 'google_site_verification'], $founderKeys, $contactKeys, $socialKeys, $analyticsKeys, ['footer_description']);
+        $whatsAppApiKeys = ['whatsapp_api_enabled', 'whatsapp_business_display_name', 'whatsapp_notify_number', 'whatsapp_template_name', 'whatsapp_template_language'];
+        $allowed = array_merge(['site_name', 'site_url', 'default_author', 'default_meta_title', 'default_meta_description', 'default_social_image', 'google_site_verification'], $founderKeys, $contactKeys, $socialKeys, $analyticsKeys, $whatsAppApiKeys, ['footer_description']);
         $normalized = [];
         $siteUrl = trim((string) $request->input('site_url', ''));
         $defaultSocialImage = trim((string) $request->input('default_social_image', ''));
@@ -341,6 +349,26 @@ final class AdminController
             AdminSecurity::flash('error', 'Enter a valid WhatsApp contact number.');
             Response::redirect('/admin/settings');
         }
+        $notifyInput = trim((string) $request->input('whatsapp_notify_number', ''));
+        $notifyDigits = preg_replace('/\D+/', '', $notifyInput) ?? '';
+        if ($notifyInput !== '' && (!preg_match('/^[+0-9() .-]{7,25}$/', $notifyInput) || strlen($notifyDigits) < 8 || strlen($notifyDigits) > 15 || str_starts_with($notifyDigits, '0'))) {
+            AdminSecurity::flash('error', 'Enter a valid WhatsApp notification number in international format.');
+            Response::redirect('/admin/settings');
+        }
+        $normalized['whatsapp_notify_number'] = $notifyDigits;
+        $normalized['whatsapp_api_enabled'] = ((string) $request->input('whatsapp_api_enabled', '0')) === '1' ? '1' : '0';
+        $templateName = trim((string) $request->input('whatsapp_template_name', ''));
+        if ($templateName !== '' && preg_match('/^[a-z0-9_]{1,512}$/', $templateName) !== 1) {
+            AdminSecurity::flash('error', 'Template names use lowercase letters, numbers and underscores only.');
+            Response::redirect('/admin/settings');
+        }
+        $normalized['whatsapp_template_name'] = $templateName;
+        $templateLanguage = trim((string) $request->input('whatsapp_template_language', ''));
+        if ($templateLanguage !== '' && preg_match('/^[a-z]{2}(_[A-Z]{2})?$/', $templateLanguage) !== 1) {
+            AdminSecurity::flash('error', 'Template language should be a code like en or en_US.');
+            Response::redirect('/admin/settings');
+        }
+        $normalized['whatsapp_template_language'] = $templateLanguage;
         foreach ($socialKeys as $key) {
             $socialUrl = trim((string) $request->input($key, ''));
             if ($socialUrl !== '' && (!filter_var($socialUrl, FILTER_VALIDATE_URL) || preg_match('~^https://~i', $socialUrl) !== 1)) {
@@ -403,7 +431,7 @@ final class AdminController
         $urlKeys = ['site_url', 'default_social_image', 'analytics_script_url', 'founder_linkedin', ...$socialKeys];
         foreach ($allowed as $key) {
             $value = $normalized[$key] ?? trim((string) $request->input($key, ''));
-            $group = in_array($key, $contactKeys, true) ? 'contact' : (in_array($key, $seoKeys, true) || str_contains($key, 'meta') ? 'seo' : (str_starts_with($key, 'social_') ? 'social' : (str_starts_with($key, 'analytics_') ? 'analytics' : 'branding')));
+            $group = in_array($key, $contactKeys, true) ? 'contact' : (in_array($key, $whatsAppApiKeys, true) ? 'whatsapp' : (in_array($key, $seoKeys, true) || str_contains($key, 'meta') ? 'seo' : (str_starts_with($key, 'social_') ? 'social' : (str_starts_with($key, 'analytics_') ? 'analytics' : 'branding'))));
             $type = in_array($key, ['contact_email', 'support_email'], true) ? 'email' : (in_array($key, $urlKeys, true) ? 'url' : (in_array($key, ['business_latitude', 'business_longitude'], true) ? 'number' : 'string'));
             $stmt->execute(['key' => $key, 'value' => $value, 'type' => $type, 'group_name' => $group, 'user_id' => $user['id']]);
         }
