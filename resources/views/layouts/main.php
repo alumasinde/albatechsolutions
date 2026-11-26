@@ -307,7 +307,7 @@ if (!empty($faqItems) && is_array($faqItems) && $canonicalUrl !== '') {
 }
 
 $structuredData = $structuredData ?? ['@context' => 'https://schema.org', '@graph' => $structuredGraph];
-$whatsAppUrl = WhatsAppLink::build($siteSettings);
+$whatsAppUrl = WhatsAppLink::build($siteSettings, '/get-help', (string) (parse_url((string) ($canonicalUrl ?? ''), PHP_URL_PATH) ?: ''));
 $footerEmail = trim((string) ($siteSettings['contact_email'] ?? ''));
 $footerPhone = trim((string) ($siteSettings['business_phone'] ?? ''));
 $footerPhoneHref = preg_replace('/[^0-9+]/', '', $footerPhone) ?? '';

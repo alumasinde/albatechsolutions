@@ -87,6 +87,12 @@ $get = static fn(string $key, string $fallback = '') => View::escape($settings[$
             <label class="field full">Auto-reply text<textarea name="whatsapp_auto_reply_text" rows="3"><?= $get('whatsapp_auto_reply_text') ?></textarea><small>Sent inside the 24-hour reply window. Plain text only.</small></label>
             <label class="field">Keyword replies<select name="whatsapp_keyword_replies"><option value="1"<?= ($get('whatsapp_keyword_replies', '1') === '1') ? ' selected' : ''; ?>>Enabled</option><option value="0"<?= ($get('whatsapp_keyword_replies', '1') === '1') ? '' : ' selected'; ?>>Disabled</option></select><small>Answer common questions (price, KRA, hours, location) with the matching page link.</small></label>
             <label class="field">Email alerts<select name="whatsapp_email_alerts"><option value="1"<?= ($get('whatsapp_email_alerts', '1') === '1') ? ' selected' : ''; ?>>Enabled</option><option value="0"<?= ($get('whatsapp_email_alerts', '1') === '1') ? '' : ' selected'; ?>>Disabled</option></select><small>Email the contact address when a new conversation starts.</small></label>
+            <label class="field">Welcome menu<select name="whatsapp_menu_enabled"><option value="1"<?= ($get('whatsapp_menu_enabled', '1') === '1') ? ' selected' : ''; ?>>Enabled</option><option value="0"<?= ($get('whatsapp_menu_enabled', '1') === '1') ? '' : ' selected'; ?>>Disabled</option></select><small>New chats get a greeting with three buttons: Compliance help, Website / system, Talk to a person. Replaces the plain auto-reply.</small></label>
+            <label class="field">Business hours (Nairobi time)<input name="whatsapp_business_hours" maxlength="255" value="<?= $get('whatsapp_business_hours') ?>" placeholder="Mon-Fri 08:00-18:00; Sat 09:00-13:00"><small>Outside these hours the after-hours note is added to automatic replies. Leave empty for always open.</small></label>
+            <label class="field full">After-hours note<textarea name="whatsapp_after_hours_text" rows="2" maxlength="500"><?= $get('whatsapp_after_hours_text') ?></textarea></label>
+            <label class="field">Follow-up template<input name="whatsapp_reopen_template" maxlength="255" value="<?= $get('whatsapp_reopen_template') ?>" placeholder="follow_up"><small>Approved utility template sent from the inbox when the 24-hour window is closed. It receives {{customer_name}}.</small></label>
+            <label class="field">Keep raw message data (days)<input type="number" min="1" max="365" name="whatsapp_payload_retention_days" value="<?= $get('whatsapp_payload_retention_days', '30') ?>"><small>Raw Meta payloads are cleared after this. Message text stays until you delete the conversation.</small></label>
+            <label class="field">Keep customer files (days)<input type="number" min="1" max="365" name="whatsapp_media_retention_days" value="<?= $get('whatsapp_media_retention_days', '30') ?>"><small>Photos and documents customers send are deleted after this.</small></label>
         </div>
         <?php $envStatus = is_array($whatsAppEnv ?? null) ? $whatsAppEnv : []; ?>
         <div class="mt-4">
@@ -97,10 +103,11 @@ $get = static fn(string $key, string $fallback = '') => View::escape($settings[$
                 <?php endforeach; ?>
             </ul>
         </div>
-        <?php $logLines = is_array($whatsAppLogTail ?? null) ? $whatsAppLogTail : []; if ($logLines !== []): ?>
+        <?php $events = is_array($whatsAppEvents ?? null) ? $whatsAppEvents : []; if ($events !== []): ?>
         <div class="mt-4">
             <p class="text-sm font-semibold text-ink">Recent webhook events</p>
-            <pre class="mt-2 max-h-48 overflow-auto rounded-md bg-surface-muted p-3 text-xs leading-relaxed"><?= View::escape(implode("\n", $logLines)) ?></pre>
+            <ul class="mt-2 grid gap-1 text-xs"><?php foreach ($events as $event): ?><li>#<?= (int) $event['id'] ?> · <?= View::escape((string) $event['received_at']) ?> · <?= View::escape((string) $event['status']) ?><?= !empty($event['last_error']) ? ' · ' . View::escape((string) $event['last_error']) : '' ?></li><?php endforeach; ?></ul>
+            <p class="mt-1 text-xs text-muted">Payload contents are not shown here. Full details are in the inbox.</p>
         </div>
         <?php endif; ?>
     </section>

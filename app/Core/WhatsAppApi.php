@@ -7,10 +7,13 @@ namespace AlbaTech\Core;
 /**
  * Minimal WhatsApp Cloud API client (graph.facebook.com).
  * Credentials live in .env: WHATSAPP_PHONE_NUMBER_ID + WHATSAPP_ACCESS_TOKEN.
+ * Builds payloads and performs HTTP calls only; recording, retries and policy
+ * live in AlbaTech\Services\WhatsAppMessenger.
  */
 final class WhatsAppApi
 {
     private const API_BASE = 'https://graph.facebook.com/v22.0';
+    public const MAX_MEDIA_BYTES = 20971520;
 
     public static function configured(): bool
     {
@@ -34,43 +37,41 @@ final class WhatsAppApi
         return $digits;
     }
 
-    /** @return array{ok: bool, status: int, response: array} */
-    public static function sendText(string $to, string $body): array
+    public static function textPayload(string $to, string $body): array
     {
-        return self::post([
+        return [
             'messaging_product' => 'whatsapp',
             'recipient_type' => 'individual',
             'to' => $to,
             'type' => 'text',
             'text' => ['preview_url' => true, 'body' => $body],
-        ]);
+        ];
     }
 
     /**
-     * Send an approved template. $params as a list fills positional {{1}}/{{2}};
-     * an assoc array fills named parameters via parameter_name. If a named call
-     * is rejected (template actually uses positional), it retries positionally.
-     *
-     * @param array<int|string, string> $params
-     * @return array{ok: bool, status: int, response: array}
+     * Reply buttons (max 3, titles up to 20 characters).
+     * @param array<string, string> $buttons id => title
      */
-    public static function sendTemplate(string $to, string $template, string $language, array $params): array
+    public static function buttonsPayload(string $to, string $body, array $buttons): array
     {
-        $result = self::post(self::templatePayload($to, $template, $language, $params));
-        $isNamed = $params !== [] && array_keys($params) !== range(0, count($params) - 1);
-        if (!$result['ok'] && $isNamed) {
-            $retry = self::post(self::templatePayload($to, $template, $language, array_values($params)));
-            // When both fail, the original error is the informative one — the
-            // retry's is usually just "parameter name is missing or empty".
-            if ($retry['ok']) {
-                return $retry;
-            }
+        $rows = [];
+        foreach (array_slice($buttons, 0, 3, true) as $id => $title) {
+            $rows[] = ['type' => 'reply', 'reply' => ['id' => (string) $id, 'title' => mb_substr($title, 0, 20)]];
         }
-        return $result;
+        return [
+            'messaging_product' => 'whatsapp',
+            'recipient_type' => 'individual',
+            'to' => $to,
+            'type' => 'interactive',
+            'interactive' => ['type' => 'button', 'body' => ['text' => mb_substr($body, 0, 1024)], 'action' => ['buttons' => $rows]],
+        ];
     }
 
-    /** @param array<int|string, string> $params */
-    private static function templatePayload(string $to, string $template, string $language, array $params): array
+    /**
+     * $params as a list fills positional {{1}}/{{2}}; an assoc array fills named parameters.
+     * @param array<int|string, string> $params
+     */
+    public static function templatePayload(string $to, string $template, string $language, array $params): array
     {
         $isList = array_keys($params) === range(0, count($params) - 1);
         $parameters = [];
@@ -85,34 +86,107 @@ final class WhatsAppApi
         if ($parameters !== []) {
             $templateBody['components'] = [['type' => 'body', 'parameters' => $parameters]];
         }
-        return [
-            'messaging_product' => 'whatsapp',
-            'to' => $to,
-            'type' => 'template',
-            'template' => $templateBody,
-        ];
+        return ['messaging_product' => 'whatsapp', 'to' => $to, 'type' => 'template', 'template' => $templateBody];
+    }
+
+    /**
+     * Send an approved template. If a named-parameter call is rejected (template actually
+     * uses positional variables), retry once positionally and report whichever is informative.
+     *
+     * @param array<int|string, string> $params
+     * @return array{ok: bool, status: int, response: array, payload: array}
+     */
+    public static function sendTemplate(string $to, string $template, string $language, array $params): array
+    {
+        $payload = self::templatePayload($to, $template, $language, $params);
+        $result = self::send($payload);
+        $isNamed = $params !== [] && array_keys($params) !== range(0, count($params) - 1);
+        if (!$result['ok'] && $isNamed && $result['status'] !== 0) {
+            $positional = self::templatePayload($to, $template, $language, array_values($params));
+            $retry = self::send($positional);
+            if ($retry['ok']) {
+                return $retry;
+            }
+        }
+        return $result;
+    }
+
+    /** @return array{ok: bool, status: int, response: array, payload: array} */
+    public static function send(array $payload): array
+    {
+        if (!self::configured()) {
+            return ['ok' => false, 'status' => -1, 'response' => ['error' => ['code' => 'not_configured', 'message' => 'WhatsApp API is not configured (set WHATSAPP_PHONE_NUMBER_ID and WHATSAPP_ACCESS_TOKEN in .env).']], 'payload' => $payload];
+        }
+        $url = self::API_BASE . '/' . rawurlencode(trim((string) Env::get('WHATSAPP_PHONE_NUMBER_ID', ''))) . '/messages';
+        $result = self::request('POST', $url, (string) json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+        $result['payload'] = $payload;
+        return $result;
+    }
+
+    /** @return array{url: string, mime: string, size: int}|null */
+    public static function mediaInfo(string $mediaId): ?array
+    {
+        if (!self::configured() || preg_match('/^\d{1,40}$/', $mediaId) !== 1) {
+            return null;
+        }
+        $result = self::request('GET', self::API_BASE . '/' . $mediaId, null);
+        $url = (string) ($result['response']['url'] ?? '');
+        if (!$result['ok'] || !str_starts_with($url, 'https://')) {
+            return null;
+        }
+        return ['url' => $url, 'mime' => (string) ($result['response']['mime_type'] ?? ''), 'size' => (int) ($result['response']['file_size'] ?? 0)];
+    }
+
+    /** Download a media URL (needs the bearer token) to $destination. Returns false on any problem. */
+    public static function downloadMedia(string $url, string $destination): bool
+    {
+        $handle = fopen($destination, 'wb');
+        if ($handle === false) {
+            return false;
+        }
+        $ch = curl_init($url);
+        if ($ch === false) {
+            fclose($handle);
+            return false;
+        }
+        $received = 0;
+        curl_setopt_array($ch, [
+            CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . trim((string) Env::get('WHATSAPP_ACCESS_TOKEN', ''))],
+            CURLOPT_FILE => $handle,
+            CURLOPT_TIMEOUT => 60,
+            CURLOPT_FOLLOWLOCATION => false,
+            CURLOPT_NOPROGRESS => false,
+            CURLOPT_PROGRESSFUNCTION => static function ($ch, float $total, float $downloaded) use (&$received): int {
+                $received = (int) $downloaded;
+                return $downloaded > self::MAX_MEDIA_BYTES ? 1 : 0;
+            },
+        ]);
+        $ok = curl_exec($ch) !== false && (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE) === 200;
+        curl_close($ch);
+        fclose($handle);
+        if (!$ok || $received > self::MAX_MEDIA_BYTES) {
+            @unlink($destination);
+            return false;
+        }
+        return true;
     }
 
     /** @return array{ok: bool, status: int, response: array} */
-    private static function post(array $payload): array
+    private static function request(string $method, string $url, ?string $body): array
     {
-        if (!self::configured()) {
-            return ['ok' => false, 'status' => 0, 'response' => ['error' => ['message' => 'WhatsApp API is not configured (set WHATSAPP_PHONE_NUMBER_ID and WHATSAPP_ACCESS_TOKEN in .env).']]];
-        }
-        $ch = curl_init(self::API_BASE . '/' . rawurlencode(trim((string) Env::get('WHATSAPP_PHONE_NUMBER_ID', ''))) . '/messages');
+        $ch = curl_init($url);
         if ($ch === false) {
             return ['ok' => false, 'status' => 0, 'response' => ['error' => ['message' => 'curl_init failed']]];
         }
-        curl_setopt_array($ch, [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST => true,
-            CURLOPT_HTTPHEADER => [
-                'Authorization: Bearer ' . trim((string) Env::get('WHATSAPP_ACCESS_TOKEN', '')),
-                'Content-Type: application/json',
-            ],
-            CURLOPT_POSTFIELDS => (string) json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
-            CURLOPT_TIMEOUT => 15,
-        ]);
+        $headers = ['Authorization: Bearer ' . trim((string) Env::get('WHATSAPP_ACCESS_TOKEN', ''))];
+        $options = [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 15, CURLOPT_CONNECTTIMEOUT => 5];
+        if ($method === 'POST') {
+            $headers[] = 'Content-Type: application/json';
+            $options[CURLOPT_POST] = true;
+            $options[CURLOPT_POSTFIELDS] = (string) $body;
+        }
+        $options[CURLOPT_HTTPHEADER] = $headers;
+        curl_setopt_array($ch, $options);
         $raw = curl_exec($ch);
         $status = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
         if ($raw === false) {
@@ -125,7 +199,7 @@ final class WhatsAppApi
         $decoded = json_decode((string) $raw, true);
         $ok = $status >= 200 && $status < 300;
         if (!$ok) {
-            error_log('[WhatsApp API] HTTP ' . $status . ': ' . substr((string) $raw, 0, 500));
+            error_log('[WhatsApp API] HTTP ' . $status . ': ' . substr((string) $raw, 0, 300));
         }
         return ['ok' => $ok, 'status' => $status, 'response' => is_array($decoded) ? $decoded : []];
     }

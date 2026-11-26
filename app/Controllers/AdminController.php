@@ -306,9 +306,12 @@ final class AdminController
         foreach (['WHATSAPP_PHONE_NUMBER_ID', 'WHATSAPP_BUSINESS_ACCOUNT_ID', 'WHATSAPP_ACCESS_TOKEN', 'WHATSAPP_VERIFY_TOKEN', 'WHATSAPP_APP_SECRET'] as $envKey) {
             $whatsAppEnv[$envKey] = trim((string) Env::get($envKey, '')) !== '';
         }
-        $logFile = dirname(__DIR__, 2) . '/storage/logs/whatsapp-webhook.log';
-        $logTail = is_file($logFile) ? array_slice(array_values(array_filter(array_map('trim', file($logFile) ?: []))), -8) : [];
-        $this->render('settings', ['pageTitle' => 'Site settings', 'settings' => $settings, 'whatsAppEnv' => $whatsAppEnv, 'whatsAppLogTail' => $logTail]);
+        try {
+            $recentEvents = (new \AlbaTech\Repositories\WhatsAppRepository())->recentEvents(8);
+        } catch (Throwable $e) {
+            $recentEvents = [];
+        }
+        $this->render('settings', ['pageTitle' => 'Site settings', 'settings' => $settings, 'whatsAppEnv' => $whatsAppEnv, 'whatsAppEvents' => $recentEvents]);
     }
 
     public function settingsSave(Request $request): void
@@ -322,7 +325,7 @@ final class AdminController
         $socialKeys = ['social_facebook', 'social_twitter', 'social_linkedin', 'social_instagram'];
         $analyticsKeys = ['analytics_enabled', 'analytics_provider', 'analytics_domain', 'analytics_script_url', 'analytics_consent_enabled'];
         $founderKeys = ['founder_name', 'founder_title', 'founder_bio', 'founder_linkedin'];
-        $whatsAppApiKeys = ['whatsapp_api_enabled', 'whatsapp_business_display_name', 'whatsapp_notify_number', 'whatsapp_template_name', 'whatsapp_template_language', 'whatsapp_ack_enabled', 'whatsapp_auto_reply_enabled', 'whatsapp_auto_reply_text', 'whatsapp_keyword_replies', 'whatsapp_email_alerts'];
+        $whatsAppApiKeys = ['whatsapp_api_enabled', 'whatsapp_business_display_name', 'whatsapp_notify_number', 'whatsapp_template_name', 'whatsapp_template_language', 'whatsapp_ack_enabled', 'whatsapp_auto_reply_enabled', 'whatsapp_auto_reply_text', 'whatsapp_keyword_replies', 'whatsapp_email_alerts', 'whatsapp_menu_enabled', 'whatsapp_business_hours', 'whatsapp_after_hours_text', 'whatsapp_reopen_template', 'whatsapp_payload_retention_days', 'whatsapp_media_retention_days'];
         $allowed = array_merge(['site_name', 'site_url', 'default_author', 'default_meta_title', 'default_meta_description', 'default_social_image', 'google_site_verification'], $founderKeys, $contactKeys, $socialKeys, $analyticsKeys, $whatsAppApiKeys, ['footer_description']);
         $normalized = [];
         $siteUrl = trim((string) $request->input('site_url', ''));
@@ -369,7 +372,19 @@ final class AdminController
             Response::redirect('/admin/settings');
         }
         $normalized['whatsapp_template_language'] = $templateLanguage;
-        foreach (['whatsapp_ack_enabled', 'whatsapp_auto_reply_enabled', 'whatsapp_keyword_replies', 'whatsapp_email_alerts'] as $waToggle) {
+        $businessHours = trim((string) $request->input('whatsapp_business_hours', ''));
+        $parsedHours = \AlbaTech\Core\WhatsAppPolicy::parseHours($businessHours);
+        if ($businessHours !== '' && ($parsedHours === null || $parsedHours === [])) { AdminSecurity::flash('error', 'Enter WhatsApp business hours like: Mon-Fri 08:00-18:00; Sat 09:00-13:00'); Response::redirect('/admin/settings'); }
+        $normalized['whatsapp_business_hours'] = mb_substr($businessHours, 0, 255);
+        $normalized['whatsapp_after_hours_text'] = mb_substr(trim((string) $request->input('whatsapp_after_hours_text', '')), 0, 500);
+        $reopenTemplate = trim((string) $request->input('whatsapp_reopen_template', ''));
+        if ($reopenTemplate !== '' && preg_match('/^[a-z0-9_]{1,255}$/', $reopenTemplate) !== 1) { AdminSecurity::flash('error', 'The follow-up template name may only use lowercase letters, numbers and underscores.'); Response::redirect('/admin/settings'); }
+        $normalized['whatsapp_reopen_template'] = $reopenTemplate;
+        foreach (['whatsapp_payload_retention_days' => 30, 'whatsapp_media_retention_days' => 30] as $retentionKey => $retentionDefault) {
+            $days = (int) $request->input($retentionKey, (string) $retentionDefault);
+            $normalized[$retentionKey] = (string) max(1, min(365, $days > 0 ? $days : $retentionDefault));
+        }
+        foreach (['whatsapp_ack_enabled', 'whatsapp_auto_reply_enabled', 'whatsapp_keyword_replies', 'whatsapp_email_alerts', 'whatsapp_menu_enabled'] as $waToggle) {
             $normalized[$waToggle] = ((string) $request->input($waToggle, '0')) === '1' ? '1' : '0';
         }
         $normalized['whatsapp_auto_reply_text'] = mb_substr(trim((string) $request->input('whatsapp_auto_reply_text', '')), 0, 1000);

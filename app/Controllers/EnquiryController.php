@@ -15,10 +15,14 @@ use AlbaTech\Core\WhatsAppApi;
 use AlbaTech\Repositories\ServiceRepository;
 use AlbaTech\Repositories\SiteSettingsRepository;
 use AlbaTech\Repositories\WhatsAppRepository;
+use AlbaTech\Services\WhatsAppMessenger;
 use Throwable;
 
 final class EnquiryController
 {
+    /** Must match the consent checkbox wording on /get-help; stored as proof of consent. */
+    public const WHATSAPP_CONSENT_TEXT = 'I agree to be contacted on WhatsApp about this enquiry. We will not send marketing messages, and you can reply STOP at any time to opt out.';
+
     public function submit(Request $request): void
     {
         if ($request->method() !== 'POST') {
@@ -85,8 +89,10 @@ final class EnquiryController
         }
 
         $siteName = trim((string) ($settings['site_name'] ?? Env::get('APP_NAME', 'AlbaTech Solutions')));
+        $reference = 'AT-' . strtoupper(bin2hex(random_bytes(3)));
         $safeName = str_replace(["\r", "\n"], ' ', $name);
         $body = "A new website enquiry was submitted.\n\n"
+            . "Reference: {$reference}\n"
             . "Name: {$safeName}\n"
             . "Phone / WhatsApp: {$phone}\n"
             . "Email: " . ($senderEmail !== '' ? $senderEmail : 'Not provided') . "\n"
@@ -96,9 +102,10 @@ final class EnquiryController
             . "Source: " . (string) Env::get('APP_URL', '') . "/get-help\n";
 
         try {
-            SmtpMailer::send($recipient, 'Website enquiry: ' . $siteName, $body, $senderEmail, $safeName);
+            SmtpMailer::send($recipient, 'Website enquiry ' . $reference . ': ' . $siteName, $body, $senderEmail, $safeName);
             $whatsAppConsent = (string) $request->input('whatsapp_consent', '') === '1';
             if ($whatsAppConsent) {
+                $this->recordConsent($phoneDigits, $reference);
                 $this->sendWhatsAppAcknowledgment($phoneDigits, $safeName, $serviceName, $settings);
             }
             // Keep an audit trail without storing the enquiry body or personal data.
@@ -106,7 +113,7 @@ final class EnquiryController
                 Database::connection()->prepare(
                     "INSERT INTO admin_audit_logs (admin_user_id, action, entity_type, entity_id, details, ip_address) VALUES (NULL, 'public.enquiry.sent', 'enquiry', NULL, :details, :ip)"
                 )->execute([
-                    'details' => json_encode(['service' => $serviceName, 'whatsapp_consent' => $whatsAppConsent], JSON_UNESCAPED_SLASHES),
+                    'details' => json_encode(['reference' => $reference, 'service' => $serviceName, 'whatsapp_consent' => $whatsAppConsent], JSON_UNESCAPED_SLASHES),
                     'ip' => substr((string) ($_SERVER['REMOTE_ADDR'] ?? ''), 0, 45),
                 ]);
             } catch (Throwable $auditError) {
@@ -117,6 +124,15 @@ final class EnquiryController
             // Do not reveal SMTP host, credentials, or server diagnostics to visitors.
             error_log('[AlbaTech enquiry email] ' . $e->getMessage());
             Response::redirect('/get-help?sent=0', 303);
+        }
+    }
+
+    private function recordConsent(string $phoneDigits, string $reference): void
+    {
+        try {
+            (new WhatsAppRepository())->recordConsent(WhatsAppApi::normalizeNumber($phoneDigits), 'enquiry_form', self::WHATSAPP_CONSENT_TEXT, $reference, '/get-help');
+        } catch (Throwable $e) {
+            error_log('[AlbaTech whatsapp consent] ' . $e->getMessage());
         }
     }
 
@@ -137,22 +153,11 @@ final class EnquiryController
                 return;
             }
             $to = WhatsAppApi::normalizeNumber($phoneDigits);
-            $repo = new WhatsAppRepository();
-            if ($repo->isOptedOut($to)) {
+            if ((new WhatsAppRepository())->isOptedOut($to)) {
                 return;
             }
             $language = trim((string) ($settings['whatsapp_template_language'] ?? '')) ?: 'en';
-            $result = WhatsAppApi::sendTemplate($to, $template, $language, ['customer_name' => $name, 'service' => $serviceName]);
-            $repo->record(
-                'out',
-                $to,
-                $name,
-                'template',
-                'Template: ' . $template,
-                (string) ($result['response']['messages'][0]['id'] ?? ''),
-                $result['ok'] ? 'sent' : 'failed',
-                (string) json_encode($result['response'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
-            );
+            (new WhatsAppMessenger())->sendTemplate($to, $template, $language, ['customer_name' => $name, 'service' => $serviceName], 'system', null, 'Enquiry acknowledgment: ' . $template);
         } catch (Throwable $e) {
             error_log('[AlbaTech whatsapp ack] ' . $e->getMessage());
         }

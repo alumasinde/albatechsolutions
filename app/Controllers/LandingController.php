@@ -34,7 +34,7 @@ final class LandingController
             'metaImage' => $base . '/assets/images/albatech-social-card.jpg',
             'schemaPageType' => 'CollectionPage',
             'services' => $services,
-            'whatsAppUrl' => $this->whatsApp($settings, 'Hi AlbaTech, I need help with a KRA / eCitizen task. Here is what I need:'),
+            'whatsAppUrl' => $this->whatsApp($settings, 'Hi AlbaTech, I need help with a KRA / eCitizen task. Here is what I need:', '/services/kra-ecitizen-help'),
             'faqItems' => [
                 ['question' => 'Is AlbaTech Solutions a government agency?', 'answer' => 'No. We are an independent service provider. Government fees are paid to the relevant authority, and decisions, requirements and processing times remain with that authority.'],
                 ['question' => 'How do you handle my KRA or eCitizen login details?', 'answer' => 'We use your details only for the task you asked for, never share them, and delete any copies of your documents when the work is done. We recommend changing your password after the task.'],
@@ -64,7 +64,7 @@ final class LandingController
                 'short_description' => 'Business registration, KRA and eTIMS setup, .co.ke domain, business website and Google Business Profile for new Kenyan businesses.',
                 'pricing_type' => 'quote',
             ],
-            'whatsAppUrl' => $this->whatsApp($settings, 'Hi AlbaTech, I am interested in the SME Launchpad. My business is:'),
+            'whatsAppUrl' => $this->whatsApp($settings, 'Hi AlbaTech, I am interested in the SME Launchpad. My business is:', '/services/sme-launchpad'),
             'faqItems' => [
                 ['question' => 'Do I have to take the whole package?', 'answer' => 'No. Pick the steps you still need. If your business is already registered, we start from the domain and website.'],
                 ['question' => 'How much does it cost?', 'answer' => 'It depends on which steps you need and the size of the website. We confirm a fixed price in writing after a short call. Government fees, such as BRS registration, are paid to the authority and listed separately.'],
@@ -79,8 +79,8 @@ final class LandingController
         ]));
     }
 
-    private function whatsApp(array $settings, string $message): string
+    private function whatsApp(array $settings, string $message, string $path): string
     {
-        return WhatsAppLink::build(array_merge($settings, ['whatsapp_prefill_message' => $message]));
+        return WhatsAppLink::build(array_merge($settings, ['whatsapp_prefill_message' => $message]), '/get-help', $path);
     }
 }

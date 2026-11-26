@@ -112,7 +112,7 @@ $hasWhatsApp = strlen($whatsAppNumber) >= 8 && strlen($whatsAppNumber) <= 15 && 
 
                 <label class="flex items-start gap-3 text-sm leading-relaxed">
                     <input type="checkbox" name="whatsapp_consent" value="1" class="mt-1 shrink-0">
-                    <span>I agree to be contacted on WhatsApp about this enquiry. We will not send marketing messages, and you can reply STOP at any time to opt out.</span>
+                    <span><?= View::escape(\AlbaTech\Controllers\EnquiryController::WHATSAPP_CONSENT_TEXT) ?></span>
                 </label>
 
                 <div class="flex flex-col gap-3 sm:flex-row">

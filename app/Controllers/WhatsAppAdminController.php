@@ -12,11 +12,14 @@ use AlbaTech\Core\View;
 use AlbaTech\Core\WhatsAppApi;
 use AlbaTech\Repositories\SiteSettingsRepository;
 use AlbaTech\Repositories\WhatsAppRepository;
+use AlbaTech\Services\WhatsAppInbound;
+use AlbaTech\Services\WhatsAppMessenger;
 use Throwable;
 
 /**
- * Admin WhatsApp inbox: conversations from the webhook, free-text replies inside
- * Meta's 24-hour window, an opt-out list, and a test-template sender.
+ * Admin WhatsApp inbox: conversations, 24-hour window state, free-text replies inside the
+ * window, a follow-up template when it is closed, bot takeover, customer files, health,
+ * opt-outs and conversation deletion.
  */
 final class WhatsAppAdminController
 {
@@ -24,7 +27,8 @@ final class WhatsAppAdminController
     {
         AdminSecurity::requirePermission('whatsapp.manage');
         $repo = new WhatsAppRepository();
-        $number = preg_replace('/\D+/', '', (string) ($params['number'] ?? '')) ?? '';
+        $settings = (new SiteSettingsRepository())->publicValues();
+        $number = $this->number($params);
         $this->render('whatsapp', [
             'pageTitle' => 'WhatsApp inbox',
             'conversations' => $repo->conversations(),
@@ -32,120 +36,193 @@ final class WhatsAppAdminController
             'thread' => $number !== '' ? $repo->thread($number) : [],
             'threadNumber' => $number,
             'threadOptedOut' => $number !== '' && $repo->isOptedOut($number),
+            'contact' => $number !== '' ? $repo->contact($number) : null,
+            'consent' => $number !== '' ? $repo->latestConsent($number) : null,
+            'health' => $repo->health(),
             'apiConfigured' => WhatsAppApi::configured(),
+            'apiEnabled' => ($settings['whatsapp_api_enabled'] ?? '0') === '1',
+            'reopenTemplate' => trim((string) ($settings['whatsapp_reopen_template'] ?? '')),
         ]);
     }
 
     public function send(Request $request, array $params): void
     {
-        AdminSecurity::requirePermission('whatsapp.manage');
-        if (!AdminSecurity::verifyCsrf($request->input('_csrf'))) {
-            AdminSecurity::flash('error', 'Your session expired. Try again.');
-            Response::redirect('/admin/whatsapp');
-        }
-        $number = preg_replace('/\D+/', '', (string) ($params['number'] ?? '')) ?? '';
-        $back = $number !== '' ? '/admin/whatsapp/' . $number : '/admin/whatsapp';
-        if (strlen($number) < 8 || strlen($number) > 15) {
-            AdminSecurity::flash('error', 'Invalid WhatsApp number.');
-            Response::redirect('/admin/whatsapp');
-        }
+        $user = $this->guard($request);
+        $number = $this->number($params);
+        $back = $this->back($number);
         $body = trim((string) $request->input('body', ''));
         if ($body === '' || mb_strlen($body) > 4000) {
-            AdminSecurity::flash('error', 'Enter a message of up to 4,000 characters.');
-            Response::redirect($back);
+            $this->fail('Enter a message of up to 4,000 characters.', $back);
+        }
+        $repo = new WhatsAppRepository();
+        $contact = $repo->contact($number);
+        // Free text only works inside Meta's 24-hour customer-service window. Inside it, a
+        // personal reply is allowed even to opted-out numbers: they messaged us first.
+        if (empty($contact['window_open'])) {
+            $this->fail('The 24-hour reply window is closed. Send the follow-up template instead and reply once they answer.', $back);
+        }
+        $this->requireApi($back);
+
+        $result = (new WhatsAppMessenger($repo))->sendText($number, $body, 'agent', (int) $user['id']);
+        $repo->pauseBot($number, WhatsAppInbound::AGENT_PAUSE_HOURS);
+        $this->report($result, 'Message sent. Automatic replies are paused for this chat for 24 hours.', $back);
+        $this->audit('whatsapp.message.sent', $number, ['length' => mb_strlen($body), 'ok' => $result['ok']]);
+        Response::redirect($back);
+    }
+
+    public function sendTemplate(Request $request, array $params): void
+    {
+        $user = $this->guard($request);
+        $number = $this->number($params);
+        $back = $this->back($number);
+        $settings = (new SiteSettingsRepository())->publicValues();
+        $template = trim((string) ($settings['whatsapp_reopen_template'] ?? ''));
+        if ($template === '') {
+            $this->fail('Set a follow-up template name in Site settings first.', $back);
         }
         $repo = new WhatsAppRepository();
         if ($repo->isOptedOut($number)) {
-            AdminSecurity::flash('error', 'This number has opted out of WhatsApp messages.');
-            Response::redirect($back);
+            $this->fail('This number opted out. Templates cannot be sent until they message you again or reply START.', $back);
         }
-        if (!WhatsAppApi::configured()) {
-            AdminSecurity::flash('error', 'WhatsApp API is not configured. Set WHATSAPP_PHONE_NUMBER_ID and WHATSAPP_ACCESS_TOKEN in .env.');
-            Response::redirect($back);
-        }
-
-        $result = WhatsAppApi::sendText($number, $body);
-        $repo->record(
-            'out',
+        $this->requireApi($back);
+        $name = $repo->contactNameFor($number);
+        $result = (new WhatsAppMessenger($repo))->sendTemplate(
             $number,
-            $repo->contactNameFor($number),
-            'text',
-            $body,
-            (string) ($result['response']['messages'][0]['id'] ?? ''),
-            $result['ok'] ? 'sent' : 'failed',
-            (string) json_encode($result['response'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
+            $template,
+            trim((string) ($settings['whatsapp_template_language'] ?? '')) ?: 'en',
+            ['customer_name' => $name !== '' ? (string) preg_split('/\s+/', $name)[0] : 'there'],
+            'agent',
+            (int) $user['id'],
+            'Follow-up template: ' . $template
         );
-        if ($result['ok']) {
-            AdminSecurity::flash('success', 'Message sent.');
-            $this->audit('whatsapp.message.sent', $number, ['length' => mb_strlen($body)]);
-        } else {
-            AdminSecurity::flash('error', 'WhatsApp send failed: ' . $this->apiError($result));
-        }
+        $repo->pauseBot($number, WhatsAppInbound::AGENT_PAUSE_HOURS);
+        $this->report($result, 'Follow-up template sent. You can reply freely once they answer.', $back);
+        $this->audit('whatsapp.template.sent', $number, ['template' => $template, 'ok' => $result['ok']]);
         Response::redirect($back);
+    }
+
+    public function resumeBot(Request $request, array $params): void
+    {
+        $this->guard($request);
+        $number = $this->number($params);
+        (new WhatsAppRepository())->resumeBot($number);
+        AdminSecurity::flash('success', 'Automatic replies resumed for this chat.');
+        Response::redirect($this->back($number));
+    }
+
+    public function deleteConversation(Request $request, array $params): void
+    {
+        $this->guard($request);
+        $number = $this->number($params);
+        $paths = (new WhatsAppRepository())->deleteConversation($number);
+        foreach ($paths as $path) {
+            $this->deleteStoredFile($path);
+        }
+        $this->audit('whatsapp.conversation.deleted', $number, ['files' => count($paths)]);
+        AdminSecurity::flash('success', 'Conversation, contact details, consent records and files deleted. The opt-out (if any) is kept so the number is never messaged automatically.');
+        Response::redirect('/admin/whatsapp');
+    }
+
+    /** Stream a customer file to signed-in admins only. Files live outside the web root. */
+    public function media(Request $request, array $params): void
+    {
+        AdminSecurity::requirePermission('whatsapp.manage');
+        $message = (new WhatsAppRepository())->message((int) ($params['id'] ?? 0));
+        $relative = (string) ($message['media_path'] ?? '');
+        $path = $relative !== '' ? realpath(WhatsAppInbound::storagePath($relative)) : false;
+        $root = realpath(WhatsAppInbound::storagePath('whatsapp-media'));
+        if ($path === false || $root === false || !str_starts_with($path, $root . DIRECTORY_SEPARATOR) || !is_file($path)) {
+            Response::text('File not found', 404);
+            return;
+        }
+        $mime = (string) ($message['media_mime'] ?? '') ?: 'application/octet-stream';
+        $inline = preg_match('~^(image/(jpeg|png|webp)|application/pdf|audio/|video/)~', $mime) === 1;
+        header('Content-Type: ' . $mime);
+        header('Content-Length: ' . filesize($path));
+        header('Content-Disposition: ' . ($inline ? 'inline' : 'attachment') . '; filename="' . basename($path) . '"');
+        header('X-Content-Type-Options: nosniff');
+        header('Cache-Control: private, no-store');
+        header("Content-Security-Policy: default-src 'none'; img-src 'self'; media-src 'self'; style-src 'unsafe-inline'; sandbox");
+        readfile($path);
     }
 
     public function sendTest(Request $request): void
     {
-        AdminSecurity::requirePermission('whatsapp.manage');
-        if (!AdminSecurity::verifyCsrf($request->input('_csrf'))) {
-            AdminSecurity::flash('error', 'Your session expired. Try again.');
-            Response::redirect('/admin/whatsapp');
-        }
+        $this->guard($request);
         $settings = (new SiteSettingsRepository())->publicValues();
-        $repo = new WhatsAppRepository();
-
         $to = WhatsAppApi::normalizeNumber((string) ($settings['whatsapp_notify_number'] ?? ''));
         if ($to === '') {
             $to = WhatsAppApi::normalizeNumber((string) ($settings['whatsapp_number'] ?? ''));
         }
         if ($to === '') {
-            AdminSecurity::flash('error', 'Set a WhatsApp notification number in Site settings first.');
-            Response::redirect('/admin/whatsapp');
+            $this->fail('Set a WhatsApp notification number in Site settings first.', '/admin/whatsapp');
         }
         $template = trim((string) ($settings['whatsapp_template_name'] ?? ''));
         if ($template === '') {
-            AdminSecurity::flash('error', 'Set an approved template name in Site settings first.');
-            Response::redirect('/admin/whatsapp');
+            $this->fail('Set an approved template name in Site settings first.', '/admin/whatsapp');
         }
-        if (!WhatsAppApi::configured()) {
-            AdminSecurity::flash('error', 'WhatsApp API is not configured. Set WHATSAPP_PHONE_NUMBER_ID and WHATSAPP_ACCESS_TOKEN in .env.');
-            Response::redirect('/admin/whatsapp');
-        }
-        if ($repo->isOptedOut($to)) {
-            AdminSecurity::flash('error', 'The notification number has opted out of WhatsApp messages.');
-            Response::redirect('/admin/whatsapp');
-        }
-
-        $language = trim((string) ($settings['whatsapp_template_language'] ?? '')) ?: 'en';
-        $result = WhatsAppApi::sendTemplate($to, $template, $language, ['customer_name' => 'Test customer', 'service' => 'a test message']);
-        $repo->record(
-            'out',
-            $to,
-            '',
-            'template',
-            'Test template: ' . $template,
-            (string) ($result['response']['messages'][0]['id'] ?? ''),
-            $result['ok'] ? 'sent' : 'failed',
-            (string) json_encode($result['response'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
-        );
-        if ($result['ok']) {
-            AdminSecurity::flash('success', 'Test template sent to +' . $to . '.');
-        } else {
-            AdminSecurity::flash('error', 'Test send failed: ' . $this->apiError($result));
-        }
+        $this->requireApi('/admin/whatsapp');
+        $result = (new WhatsAppMessenger())->sendTemplate($to, $template, trim((string) ($settings['whatsapp_template_language'] ?? '')) ?: 'en', ['customer_name' => 'Test customer', 'service' => 'a test message'], 'system', null, 'Test template: ' . $template);
+        $this->report($result, 'Test template sent to +' . $to . '.', '/admin/whatsapp');
         Response::redirect('/admin/whatsapp');
     }
 
-    /** Meta's error.message plus the more precise error_data.details when present. */
-    private function apiError(array $result): string
+    /** @return array<string, mixed> admin user */
+    private function guard(Request $request): array
     {
-        $error = $result['response']['error'] ?? [];
-        $message = '(#' . (string) ($error['code'] ?? '?') . ') ' . (string) ($error['message'] ?? 'send failed');
-        $details = trim((string) ($error['error_data']['details'] ?? ''));
-        if ($details !== '' && !str_contains($message, $details)) {
-            $message .= ' — ' . $details;
+        $user = AdminSecurity::requirePermission('whatsapp.manage');
+        if (!AdminSecurity::verifyCsrf($request->input('_csrf'))) {
+            $this->fail('Your session expired. Try again.', '/admin/whatsapp');
         }
-        return mb_substr($message, 0, 300);
+        return $user;
+    }
+
+    private function number(array $params): string
+    {
+        $number = preg_replace('/\D+/', '', (string) ($params['number'] ?? '')) ?? '';
+        return strlen($number) >= 8 && strlen($number) <= 15 ? $number : '';
+    }
+
+    private function back(string $number): string
+    {
+        if ($number === '') {
+            $this->fail('Invalid WhatsApp number.', '/admin/whatsapp');
+        }
+        return '/admin/whatsapp/' . $number;
+    }
+
+    private function requireApi(string $back): void
+    {
+        if (!WhatsAppApi::configured()) {
+            $this->fail('WhatsApp API is not configured. Set WHATSAPP_PHONE_NUMBER_ID and WHATSAPP_ACCESS_TOKEN in .env.', $back);
+        }
+    }
+
+    /** @param array{ok: bool, queued: bool, error: string} $result */
+    private function report(array $result, string $success, string $back): void
+    {
+        if ($result['ok']) {
+            AdminSecurity::flash('success', $success);
+        } elseif ($result['queued']) {
+            AdminSecurity::flash('success', 'WhatsApp is busy right now. The message is queued and will be retried automatically. ' . $result['error']);
+        } else {
+            AdminSecurity::flash('error', 'WhatsApp send failed: ' . $result['error']);
+        }
+    }
+
+    private function fail(string $message, string $back): never
+    {
+        AdminSecurity::flash('error', $message);
+        Response::redirect($back);
+    }
+
+    private function deleteStoredFile(string $relative): void
+    {
+        $path = realpath(WhatsAppInbound::storagePath($relative));
+        $root = realpath(WhatsAppInbound::storagePath('whatsapp-media'));
+        if ($path !== false && $root !== false && str_starts_with($path, $root . DIRECTORY_SEPARATOR)) {
+            @unlink($path);
+        }
     }
 
     private function render(string $view, array $data): void
