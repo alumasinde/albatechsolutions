@@ -31,7 +31,7 @@ $statusClass = static fn (string $status): string => match ($status) { 'live' =>
                 <a class="btn <?= !empty($hasWhatsApp) ? 'btn-whatsapp' : 'btn-primary' ?>" href="<?= View::escape(!empty($hasWhatsApp) ? (string) $whatsAppUrl : ($homeContent['home_hero_primary_url'] ?? '/get-help')) ?>"><?php if (!empty($hasWhatsApp)): ?><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> <?php endif; ?><?= View::escape($homeContent['home_hero_primary_label'] ?? 'Chat on WhatsApp') ?></a>
                 <a class="btn btn-secondary" href="<?= View::escape($homeContent['home_hero_secondary_url'] ?? '#choose-path') ?>"><?= View::escape($homeContent['home_hero_secondary_label'] ?? 'Find the right help') ?></a>
             </div>
-            <div class="mt-6 flex flex-col gap-2 text-sm font-semibold text-body sm:flex-row sm:flex-wrap sm:gap-x-5">
+            <div class="mt-7 flex flex-col gap-2 border-t border-border pt-5 text-sm font-semibold text-body sm:flex-row sm:flex-wrap sm:gap-x-5">
                 <span class="inline-flex items-center gap-2"><i class="fa-solid fa-location-dot text-primary" aria-hidden="true"></i> Built in Nairobi, supporting clients across Kenya</span>
                 <span class="inline-flex items-center gap-2"><i class="fa-solid fa-receipt text-primary" aria-hidden="true"></i> Price agreed before we start</span>
                 <span class="inline-flex items-center gap-2"><i class="fa-solid fa-user-shield text-primary" aria-hidden="true"></i> Your documents kept confidential</span>
@@ -49,6 +49,7 @@ $statusClass = static fn (string $status): string => match ($status) { 'live' =>
                             <span class="block px-4 py-3 text-sm font-bold text-ink group-hover:text-primary"><?= View::escape($product['title']) ?></span>
                         </a>
                     <?php endforeach; ?>
+                    <div class="sm:col-span-2"><a class="link-arrow text-sm" href="/products">All products <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a></div>
                 </div>
             <?php else: ?>
                 <img src="<?= View::escape($homeContent['home_hero_image'] ?? '/assets/images/albatech-hero.webp') ?>" alt="<?= View::escape($appName ?? 'AlbaTech Solutions') ?> - software and websites for Kenya" class="w-full rounded-2xl border border-border object-cover" width="1200" height="630" loading="eager" fetchpriority="high" decoding="async">
@@ -67,10 +68,10 @@ $servicePrice = static function (array $service): string {
     return '';
 };
 $buildItems = [
-    ['label' => 'SME Launchpad: register, get online and get found', 'url' => '/services/sme-launchpad'],
+    ['label' => 'Register, launch and get found: SME Launchpad', 'url' => '/services/sme-launchpad'],
     ['label' => 'Business websites and landing pages', 'url' => '/services/website-design'],
-    ['label' => 'Google Business Profile setup', 'url' => '/services/google-business-profile-setup'],
-    ['label' => 'Booking, rental, stock and internal systems', 'url' => '/solutions'],
+    ['label' => 'Get found on Google: Business Profile setup', 'url' => '/services/google-business-profile-setup'],
+    ['label' => 'Booking, rental, stock and custom internal systems', 'url' => '/solutions'],
 ];
 ?>
 <section id="choose-path" class="section scroll-mt-20" aria-labelledby="home-paths-title">
@@ -84,7 +85,7 @@ $buildItems = [
                 <span class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary-light text-primary"><i class="fa-solid fa-rocket" aria-hidden="true"></i></span>
                 <span class="text-xs font-bold uppercase tracking-wide text-primary">For businesses and SMEs</span>
                 <h3 class="mt-2 text-2xl">Build &amp; grow</h3>
-                <p class="mt-2 text-sm">Starting a business or ready to run it better? We register it, put it online and build the systems behind it.</p>
+                <p class="mt-2 text-sm">Website design, booking and business systems, plus launch support from registration to your first customer online.</p>
                 <ul class="mt-5 grid flex-1 content-start gap-3 text-sm">
                     <?php foreach ($buildItems as $item): ?>
                         <li><a class="flex items-start gap-3 font-semibold text-ink hover:text-primary" href="<?= View::escape($item['url']) ?>"><i class="fa-solid fa-check mt-1 text-primary" aria-hidden="true"></i><span><?= View::escape($item['label']) ?></span></a></li>
@@ -99,7 +100,7 @@ $buildItems = [
                 <span class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary-light text-primary"><i class="fa-solid fa-file-circle-check" aria-hidden="true"></i></span>
                 <span class="text-xs font-bold uppercase tracking-wide text-primary">For individuals and busy owners</span>
                 <h3 class="mt-2 text-2xl">Get it sorted</h3>
-                <p class="mt-2 text-sm">Stuck on a government portal or short on time? Tell us the task and we handle it, with the price confirmed first.</p>
+                <p class="mt-2 text-sm">KRA returns, eTIMS, eCitizen, SHA, NTSA and other government services handled fast, with the price agreed before we start.</p>
                 <?php if (!empty($complianceServices)): ?>
                     <ul class="mt-5 grid flex-1 content-start gap-3 text-sm">
                         <?php foreach ($complianceServices as $service): $price = $servicePrice($service); ?>
@@ -119,7 +120,7 @@ $buildItems = [
 </section>
 
 <?php if (!empty($featuredProjects)): $needsWorkCarousel = true; ?>
-<section class="section" aria-labelledby="home-work-title">
+<section class="section section-tint" aria-labelledby="home-work-title">
     <div class="shell">
         <div class="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div class="max-w-2xl"><span class="kicker"><?= View::escape($homeContent['home_work_kicker'] ?? 'Client work') ?></span><h2 id="home-work-title"><?= View::escape($homeContent['home_work_title'] ?? 'Systems built for real businesses.') ?></h2></div>
@@ -186,33 +187,6 @@ $buildItems = [
 </section>
 <?php endif; ?>
 
-<?php if (!empty($featuredProducts)): ?>
-<section class="section" aria-labelledby="home-products-title">
-    <div class="shell">
-        <div class="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-            <div class="max-w-2xl"><span class="kicker">Products</span><h2 id="home-products-title">Products we build and run.</h2></div>
-            <a class="link-arrow text-sm" href="/products">All products <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
-        </div>
-        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            <?php foreach ($featuredProducts as $product): $productUrl = '/products/' . rawurlencode($product['slug']); ?>
-                <article class="card card-lift group flex flex-col overflow-hidden">
-                    <a class="media-16-10 relative block" href="<?= $productUrl ?>">
-                        <img class="transition-transform duration-300 group-hover:scale-[1.02]" src="/<?= View::escape(ltrim($product['cover_image'], '/')) ?>" alt="<?= View::escape($product['title']) ?>" width="1200" height="800" loading="lazy" decoding="async">
-                        <span class="badge badge-float <?= View::escape($statusClass((string) $product['lifecycle_status'])) ?>"><?= View::escape($statusLabel((string) $product['lifecycle_status'])) ?></span>
-                    </a>
-                    <div class="flex flex-1 flex-col p-5">
-                        <h3 class="text-lg"><a class="text-ink hover:text-primary" href="<?= $productUrl ?>"><?= View::escape($product['title']) ?></a></h3>
-                        <?php if (!empty($product['platform'])): ?><p class="mt-1 text-xs font-semibold uppercase tracking-wide text-subtle"><?= View::escape($product['platform']) ?></p><?php endif; ?>
-                        <p class="mt-2 flex-1 text-sm"><?= View::escape($product['description']) ?></p>
-                        <a class="link-arrow mt-4 text-sm" href="<?= $productUrl ?>">View product <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
-                    </div>
-                </article>
-            <?php endforeach; ?>
-        </div>
-    </div>
-</section>
-<?php endif; ?>
-
 <section class="section section-tint">
     <div class="shell">
         <div class="mx-auto mb-8 max-w-2xl text-center">
@@ -220,10 +194,10 @@ $buildItems = [
             <h2><?= View::escape($homeContent['home_process_title'] ?? 'A straightforward way to get started.') ?></h2>
             <p class="mt-3"><?= View::escape($homeContent['home_process_description'] ?? 'You do not need to know the technical details. Tell us the outcome you want, and we can work through the options together.') ?></p>
         </div>
-        <div class="grid gap-5 md:grid-cols-3">
-            <article class="card p-6"><span class="text-sm font-extrabold text-primary">01</span><h3 class="mt-3"><?= View::escape($homeContent['home_step1_title'] ?? 'Tell us what you need') ?></h3><p class="mt-2 text-sm"><?= View::escape($homeContent['home_step1_description'] ?? 'Describe the task, challenge or idea in your own words.') ?></p></article>
-            <article class="card p-6"><span class="text-sm font-extrabold text-primary">02</span><h3 class="mt-3"><?= View::escape($homeContent['home_step2_title'] ?? 'Agree on the plan') ?></h3><p class="mt-2 text-sm"><?= View::escape($homeContent['home_step2_description'] ?? 'We confirm the scope, price and expected next steps before work begins.') ?></p></article>
-            <article class="card p-6"><span class="text-sm font-extrabold text-primary">03</span><h3 class="mt-3"><?= View::escape($homeContent['home_step3_title'] ?? 'Move forward with clarity') ?></h3><p class="mt-2 text-sm"><?= View::escape($homeContent['home_step3_description'] ?? 'Know what happens next and what information or action is needed from you.') ?></p></article>
+        <div class="grid gap-8 md:grid-cols-3">
+            <article class="border-t-2 border-primary pt-5"><span class="font-display text-sm font-bold tracking-wide text-primary">01</span><h3 class="mt-3"><?= View::escape($homeContent['home_step1_title'] ?? 'Tell us what you need') ?></h3><p class="mt-2 text-sm"><?= View::escape($homeContent['home_step1_description'] ?? 'Describe the task, challenge or idea in your own words.') ?></p></article>
+            <article class="border-t-2 border-primary pt-5"><span class="font-display text-sm font-bold tracking-wide text-primary">02</span><h3 class="mt-3"><?= View::escape($homeContent['home_step2_title'] ?? 'Agree on the plan') ?></h3><p class="mt-2 text-sm"><?= View::escape($homeContent['home_step2_description'] ?? 'We confirm the scope, price and expected next steps before work begins.') ?></p></article>
+            <article class="border-t-2 border-primary pt-5"><span class="font-display text-sm font-bold tracking-wide text-primary">03</span><h3 class="mt-3"><?= View::escape($homeContent['home_step3_title'] ?? 'Move forward with clarity') ?></h3><p class="mt-2 text-sm"><?= View::escape($homeContent['home_step3_description'] ?? 'Know what happens next and what information or action is needed from you.') ?></p></article>
         </div>
     </div>
 </section>
@@ -253,7 +227,14 @@ $buildItems = [
     </div>
 </section>
 
-<section class="bg-deep py-12 text-white md:py-14">
+<section class="border-y border-warning-border bg-warning-bg py-5">
+    <div class="shell flex gap-3 text-sm leading-relaxed text-warning">
+        <i class="fa-solid fa-circle-info mt-1" aria-hidden="true"></i>
+        <p class="m-0 text-warning"><strong>Our service promise</strong> <?= View::escape($homeContent['home_promise'] ?? 'We explain the scope and charges before starting. For government-related assistance, AlbaTech Solutions is an independent service provider, not a government agency. Official decisions remain with the relevant authority.') ?></p>
+    </div>
+</section>
+
+<section class="bg-deep py-12 text-white md:py-16">
     <div class="shell flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
         <div class="max-w-2xl">
             <span class="kicker kicker-light"><?= View::escape($homeContent['home_cta_kicker'] ?? 'Let us talk') ?></span>
@@ -261,12 +242,5 @@ $buildItems = [
             <p class="mt-2 text-white/85"><?= View::escape($homeContent['home_cta_description'] ?? 'Tell us what you are trying to achieve. We will help you understand the next step.') ?></p>
         </div>
         <a class="btn btn-accent w-full shrink-0 md:w-auto" href="<?= View::escape($whatsAppUrl ?? '/get-help') ?>"><?php if (!empty($hasWhatsApp)): ?><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Start a WhatsApp chat<?php else: ?><i class="fa-regular fa-envelope" aria-hidden="true"></i> Send an enquiry<?php endif; ?></a>
-    </div>
-</section>
-
-<section class="border-y border-warning-border bg-warning-bg py-5">
-    <div class="shell flex gap-3 text-sm leading-relaxed text-warning">
-        <i class="fa-solid fa-circle-info mt-1" aria-hidden="true"></i>
-        <p class="m-0 text-warning"><strong>Our service promise</strong> <?= View::escape($homeContent['home_promise'] ?? 'We explain the scope and charges before starting. For government-related assistance, AlbaTech Solutions is an independent service provider, not a government agency. Official decisions remain with the relevant authority.') ?></p>
     </div>
 </section>

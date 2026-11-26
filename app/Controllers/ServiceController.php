@@ -29,8 +29,8 @@ final class ServiceController
 
         $baseUrl = SiteUrl::base();
         Response::html(View::render('services/index', [
-            'pageTitle' => SeoDefaults::title('', 'Software, Web & Business Services | AlbaTech Solutions'),
-            'metaDescription' => SeoDefaults::description('', 'Custom booking, property, visitor and inventory systems, business websites and independent assistance with business registration and KRA filing in Kenya.'),
+            'pageTitle' => SeoDefaults::title('', 'Software, Web & KRA Services in Kenya | AlbaTech Solutions'),
+            'metaDescription' => SeoDefaults::description('', 'Website design, booking, property, visitor and inventory systems, plus independent help with KRA returns, eTIMS, eCitizen and business registration in Kenya.'),
             'canonicalUrl' => $baseUrl . '/services',
             'metaImage' => SeoDefaults::image('', $baseUrl),
             'categories' => $categories,

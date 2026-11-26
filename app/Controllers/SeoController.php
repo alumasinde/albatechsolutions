@@ -146,7 +146,7 @@ final class SeoController
         $lines = [
             '# AlbaTech Solutions',
             '',
-            '> Nairobi software studio and compliance desk: client business systems, websites and its own products, plus help with KRA, eTIMS, eCitizen and business registration in Kenya.',
+            '> Websites, booking and business systems for Kenyan SMEs, plus practical help with KRA returns, eTIMS, eCitizen, SHA, NTSA and business registration. Based in Nairobi.',
             '',
             '## Main pages',
             '- [Home](' . $baseUrl . '/): Overview of AlbaTech Solutions, its products and client work.',

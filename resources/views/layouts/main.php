@@ -410,8 +410,8 @@ if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy',
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
     <link rel="stylesheet" href="<?= View::escape(View::asset('css/bundle.css')) ?>">
-    <!-- SVG sprite is the primary icon system. Font Awesome (self-hosted subset) remains for legacy solid/regular icons and brand marks until all legacy icons are migrated. -->
-    <link rel="stylesheet" href="<?= View::escape(View::asset('vendor/fontawesome/css/all.min.css')) ?>">
+    <!-- SVG sprite is the primary icon system. Font Awesome is trimmed to a subset containing only the icons the public site uses (bin/subset-fontawesome.php); admin loads the full file. -->
+    <link rel="stylesheet" href="<?= View::escape(View::asset('vendor/fontawesome/css/fa-subset.min.css')) ?>">
 
     <?php
     // Analytics: Plausible is cookieless and loads immediately; GA4 waits for consent.
@@ -459,7 +459,7 @@ if (!$footerInfoNavigation) $footerInfoNavigation = [['label'=>'Privacy policy',
             href="/"
             aria-label="<?= View::escape($siteName) ?> home"
         >
-            <img src="<?= View::escape(View::asset('images/albatech-logo.png')) ?>" alt="<?= View::escape($siteName) ?>" class="brand-logo" width="180" height="180">
+            <img src="<?= View::escape(View::asset('images/albatech-logo-sm.png')) ?>" alt="<?= View::escape($siteName) ?>" class="brand-logo" width="352" height="352">
         </a>
 
         <div class="flex items-center gap-1">

@@ -201,6 +201,26 @@ Set the destination in **Admin → Settings → Contact email** (preferred) or *
 The portfolio is managed from **Admin → Our Work**. Apply migration `007_work_projects.sql` with `php bin/migrate.php`, then sign in with an administrator account that has the `work.manage` permission. Add a title, active service category, description, and cover image; optional client names should only be published with permission, and live links must be HTTP(S). Draft and archived projects remain private. Mark a published project as featured to include it in the homepage carousel. Sort order uses lower numbers first. Public routes are `/work` and `/work/{slug}`. The `/work` page supports category filtering using `?category=category-slug`. Project cover uploads accept JPG, PNG, and WebP up to 8 MB; when PHP GD WebP support is available, uploads are resized to a maximum 1800px edge and converted to WebP. The carousel pauses on hover, focus, touch/pointer interaction, and hidden browser tabs; users can pause/play it, and reduced-motion preferences disable autoplay by default.
 
 
+## CI and deployment
+
+GitHub Actions runs two workflows:
+
+- `.github/workflows/ci.yml` — on every push and pull request: PHP 8.2 + MySQL 8 service, `composer install`, `php bin/migrate.php`, `php bin/seed.php`, `php bin/run-tests.php`, plus a freshness check for the Font Awesome subset.
+- `.github/workflows/deploy.yml` — manual trigger only (Actions → Deploy → Run workflow). SSHs into the production server, checks out the chosen branch, `git pull --ff-only`, `composer install --no-dev`, `php bin/migrate.php` and an optional post-deploy command.
+
+### Deploy secrets (repository Settings → Secrets and variables → Actions)
+
+| Secret | Required | Purpose |
+|---|---|---|
+| `PROD_SSH_HOST` | yes | Server hostname or IP |
+| `PROD_SSH_USER` | yes | SSH user that owns the project checkout |
+| `PROD_SSH_KEY` | yes | Private key; the matching public key goes in that user's `~/.ssh/authorized_keys` |
+| `PROD_PATH` | yes | Absolute project path on the server, e.g. `/var/www/albatechsolutions` |
+| `PROD_SSH_PORT` | no | SSH port, defaults to 22 |
+| `PROD_POST_CMD` | no | Command run after deploy, e.g. `sudo -n systemctl reload php-fpm` (required for OPcache, see below) |
+
+Notes for the deploy job: the server checkout must already `git pull` cleanly (`.env` and `storage/uploads/` are untracked and stay untouched). `git pull --ff-only` fails loudly if the server copy has local edits. The `production` environment in the workflow allows adding required reviewers in repo settings.
+
 ## Production performance
 
 ### OPcache

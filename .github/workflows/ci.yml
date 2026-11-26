@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Tests (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ['8.2']
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: albatechsolutions
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: pdo_mysql, mbstring, gd
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Configure environment
+        run: |
+          cp .env.example .env
+          sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=root/' .env
+          sed -i 's|^APP_URL=.*|APP_URL=http://localhost|' .env
+
+      - name: Run migrations
+        run: php bin/migrate.php
+
+      - name: Seed database
+        run: php bin/seed.php
+
+      - name: Run tests
+        run: php bin/run-tests.php
+
+      - name: Verify generated assets are fresh
+        run: |
+          php bin/subset-fontawesome.php
+          git diff --exit-code -- public/assets/vendor/fontawesome/css/fa-subset.min.css

@@ -1,0 +1,65 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to deploy'
+        required: true
+        default: 'v2'
+      run_migrations:
+        description: 'Run php bin/migrate.php after pull'
+        type: boolean
+        required: true
+        default: true
+
+# Deploys by SSHing into the production server: git pull, composer install,
+# migrations, optional post-deploy command (e.g. php-fpm/apache reload for
+# OPcache). Required repository secrets:
+#   PROD_SSH_HOST  server hostname or IP
+#   PROD_SSH_USER  SSH user
+#   PROD_SSH_KEY   private key whose public key is in the user's authorized_keys
+#   PROD_PATH      absolute project path on the server (the git checkout)
+# Optional secrets:
+#   PROD_SSH_PORT  SSH port (default 22)
+#   PROD_POST_CMD  shell command run after deploy (e.g. sudo -n systemctl reload php-fpm)
+
+jobs:
+  deploy:
+    name: Deploy to production
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Setup SSH key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.PROD_SSH_KEY }}
+
+      - name: git pull and migrate on production
+        env:
+          PROD_PORT: ${{ secrets.PROD_SSH_PORT }}
+        run: |
+          ssh -o StrictHostKeyChecking=accept-new -p "${PROD_PORT:-22}" "${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SSH_HOST }}" \
+            BRANCH='${{ inputs.branch }}' \
+            PROD_PATH='${{ secrets.PROD_PATH }}' \
+            POST_CMD='${{ secrets.PROD_POST_CMD }}' \
+            MIGRATE='${{ inputs.run_migrations }}' \
+            bash -s <<'EOF'
+            set -euo pipefail
+            cd "$PROD_PATH"
+            git fetch origin --prune
+            git checkout "$BRANCH"
+            git pull --ff-only origin "$BRANCH"
+            if command -v composer >/dev/null 2>&1; then
+              composer install --no-dev --prefer-dist --optimize-autoloader
+            else
+              echo "composer not found on PATH; skipping dependency install"
+            fi
+            if [ "$MIGRATE" = "true" ]; then
+              php bin/migrate.php
+            fi
+            if [ -n "$POST_CMD" ]; then
+              eval "$POST_CMD"
+            fi
+            echo "Deploy finished on $(hostname)."
+          EOF
