@@ -11,3 +11,4 @@
 .vscode/
 .DS_Store
 Thumbs.db
+/public/uploads/*
