@@ -59,7 +59,12 @@ final class WhatsAppApi
         $result = self::post(self::templatePayload($to, $template, $language, $params));
         $isNamed = $params !== [] && array_keys($params) !== range(0, count($params) - 1);
         if (!$result['ok'] && $isNamed) {
-            $result = self::post(self::templatePayload($to, $template, $language, array_values($params)));
+            $retry = self::post(self::templatePayload($to, $template, $language, array_values($params)));
+            // When both fail, the original error is the informative one — the
+            // retry's is usually just "parameter name is missing or empty".
+            if ($retry['ok']) {
+                return $retry;
+            }
         }
         return $result;
     }
