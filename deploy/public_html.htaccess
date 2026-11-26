@@ -1,0 +1,31 @@
+# Server-level .htaccess for the cPanel account webroot (~/public_html).
+#
+# The account's primary domain serves from ~/public_html, and each site lives in
+# a subdirectory. This file maps albatechsolutions.co.ke into the app's
+# public_html/ docroot and performs canonical redirects BEFORE the internal
+# mapping — they must run here because after the internal rewrite %{REQUEST_URI}
+# already contains the subdirectory path, which would double it in redirects.
+#
+# Deploy location: /home/<user>/public_html/.htaccess (outside the git checkout).
+
+RewriteEngine On
+
+# Canonical origin first: www -> bare HTTPS domain (before internal mapping).
+RewriteCond %{HTTP_HOST} ^www\.albatechsolutions\.co\.ke$ [NC]
+RewriteRule ^(.*)$ https://albatechsolutions.co.ke/$1 [R=301,L]
+
+# Plain HTTP on the bare domain -> HTTPS.
+RewriteCond %{HTTP_HOST} ^albatechsolutions\.co\.ke$ [NC]
+RewriteCond %{HTTPS} !=on
+RewriteRule ^(.*)$ https://albatechsolutions.co.ke/$1 [R=301,L]
+
+# Internally map all domain requests to the AlbaTech application.
+RewriteCond %{REQUEST_URI} !^/albatechsolutions\.co\.ke/public_html/
+RewriteRule ^(.*)$ albatechsolutions.co.ke/public_html/$1 [L]
+
+# php -- BEGIN cPanel-generated handler, do not edit
+# Set the "ea-php84" package as the default "PHP" programming language.
+<IfModule mime_module>
+  AddHandler application/x-httpd-ea-php84 .php .php8 .phtml
+</IfModule>
+# php -- END cPanel-generated handler, do not edit
