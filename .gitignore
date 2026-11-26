@@ -12,3 +12,7 @@
 .DS_Store
 Thumbs.db
 /public_html/uploads/*
+!/public_html/uploads/work/
+/public_html/uploads/work/*
+!/public_html/uploads/work/.htaccess
+!/public_html/uploads/work/index.html
