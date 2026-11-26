@@ -14,6 +14,7 @@ use AlbaTech\Controllers\GuideAdminController;
 use AlbaTech\Controllers\ServiceController;
 use AlbaTech\Controllers\SeoController;
 use AlbaTech\Controllers\StaticPageController;
+use AlbaTech\Controllers\WebhookController;
 use AlbaTech\Controllers\WorkController;
 use AlbaTech\Core\Response;
 
@@ -80,6 +81,10 @@ $app->router()->get('/privacy', [new StaticPageController(), 'privacy']);
 $app->router()->get('/data-deletion', [new StaticPageController(), 'dataDeletion']);
 $seo = new SeoController();
 $app->router()->get('/sitemap.xml', [$seo, 'sitemap']);
+
+$webhooks = new WebhookController();
+$app->router()->get('/webhooks/whatsapp', [$webhooks, 'verify']);
+$app->router()->post('/webhooks/whatsapp', [$webhooks, 'receive']);
 $app->router()->get('/robots.txt', [$seo, 'robots']);
 $app->router()->get('/llms.txt', [$seo, 'llms']);
 $guideAdmin = new GuideAdminController();
