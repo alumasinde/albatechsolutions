@@ -16,3 +16,4 @@ Thumbs.db
 /public_html/uploads/work/*
 !/public_html/uploads/work/.htaccess
 !/public_html/uploads/work/index.html
+/vendor.zip
