@@ -112,20 +112,21 @@ final class WhatsAppRepository
     public function conversations(int $limit = 100): array
     {
         $stmt = $this->db()->prepare(
-            'SELECT m.wa_number,
-                    MAX(m.created_at) AS last_at,
-                    (SELECT x.body FROM whatsapp_messages x WHERE x.wa_number = m.wa_number ORDER BY x.created_at DESC, x.id DESC LIMIT 1) AS last_body,
-                    (SELECT x.direction FROM whatsapp_messages x WHERE x.wa_number = m.wa_number ORDER BY x.created_at DESC, x.id DESC LIMIT 1) AS last_direction,
-                    COALESCE(NULLIF(c.contact_name, \'\'), (SELECT x.contact_name FROM whatsapp_messages x WHERE x.wa_number = m.wa_number AND x.contact_name <> \'\' ORDER BY x.created_at DESC LIMIT 1)) AS contact_name,
+            // Aggregate in a derived table first so the outer query has no GROUP BY:
+            // works under ONLY_FULL_GROUP_BY (the production MySQL/MariaDB default).
+            'SELECT agg.wa_number,
+                    agg.last_at,
+                    agg.total,
+                    (SELECT x.body FROM whatsapp_messages x WHERE x.wa_number = agg.wa_number ORDER BY x.created_at DESC, x.id DESC LIMIT 1) AS last_body,
+                    (SELECT x.direction FROM whatsapp_messages x WHERE x.wa_number = agg.wa_number ORDER BY x.created_at DESC, x.id DESC LIMIT 1) AS last_direction,
+                    COALESCE(NULLIF(c.contact_name, \'\'), (SELECT x.contact_name FROM whatsapp_messages x WHERE x.wa_number = agg.wa_number AND x.contact_name <> \'\' ORDER BY x.created_at DESC LIMIT 1)) AS contact_name,
                     c.topic, c.source_page,
                     (c.last_inbound_at IS NOT NULL AND c.last_inbound_at >= NOW() - INTERVAL 24 HOUR) AS window_open,
-                    COUNT(*) AS total,
                     (o.wa_number IS NOT NULL) AS opted_out
-             FROM whatsapp_messages m
-             LEFT JOIN whatsapp_contacts c ON c.wa_number = m.wa_number
-             LEFT JOIN whatsapp_optouts o ON o.wa_number = m.wa_number
-             GROUP BY m.wa_number, c.wa_number, o.wa_number
-             ORDER BY last_at DESC
+             FROM (SELECT wa_number, MAX(created_at) AS last_at, COUNT(*) AS total FROM whatsapp_messages GROUP BY wa_number) agg
+             LEFT JOIN whatsapp_contacts c ON c.wa_number = agg.wa_number
+             LEFT JOIN whatsapp_optouts o ON o.wa_number = agg.wa_number
+             ORDER BY agg.last_at DESC
              LIMIT :lim'
         );
         $stmt->bindValue('lim', $limit, PDO::PARAM_INT);

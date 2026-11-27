@@ -60,6 +60,8 @@ $assert((WhatsAppPolicy::keywordTopic('Do you build POS systems?')['path'] ?? ''
 $assert(WhatsAppPolicy::keywordTopic('what time is it') === null, 'Generic words like "time" no longer trigger replies');
 
 // ---- database behaviour (API disabled, nothing is sent) ---------------------------------
+// Production MySQL/MariaDB runs with ONLY_FULL_GROUP_BY; local XAMPP does not. Test like production.
+\AlbaTech\Core\Database::connection()->exec("SET SESSION sql_mode = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION'");
 $repo = new WhatsAppRepository();
 $number = '254700999001';
 $repo->deleteConversation($number);
@@ -78,6 +80,17 @@ $contact = $repo->contact($number) ?? [];
 $assert(!empty($contact['window_open']), 'Inbound message opens the 24-hour window');
 $assert(($contact['source_page'] ?? '') === '/services/sme-launchpad', 'Source page recorded on the contact');
 $assert(($contact['contact_name'] ?? '') === 'Test Person', 'Contact name recorded');
+$inboxRow = null;
+try {
+    foreach ($repo->conversations() as $row) {
+        if ($row['wa_number'] === $number) { $inboxRow = $row; }
+    }
+    $repo->health();
+    $repo->optOuts();
+} catch (Throwable $e) {
+    echo 'Inbox query error: ' . $e->getMessage() . "\n";
+}
+$assert($inboxRow !== null && (int) $inboxRow['total'] === 1 && $inboxRow['contact_name'] === 'Test Person' && !empty($inboxRow['window_open']), 'Inbox list works under ONLY_FULL_GROUP_BY');
 
 $outId = $repo->recordMessage(['direction' => 'out', 'origin' => 'agent', 'wa_number' => $number, 'message_type' => 'text', 'body' => 'Reply', 'wa_message_id' => 'wamid.TEST-HARDENING-OUT', 'status' => 'sent']);
 $repo->markStatus('wamid.TEST-HARDENING-OUT', 'read');
